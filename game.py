@@ -46,7 +46,6 @@ class Game:
                 self.surface.blit(particle.image, particle.pos)
         move = pygame.Vector2(0, 0)
         value = 0.5 * dt
-
         if self.keys.get(pygame.K_LEFT):
             move.x -= value
         if self.keys.get(pygame.K_RIGHT):

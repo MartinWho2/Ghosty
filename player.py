@@ -29,7 +29,8 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.surface = surface
         self.surface_above = pygame.Surface((surface.get_width(), surface.get_height()), pygame.SRCALPHA)
-        self.tiles = create_rect_map(tiles, tile_factor)
+        self.tiles = tiles
+        self.tile_factor = tile_factor
         self.image = pygame.transform.scale(pygame.image.load('chevalier.png').convert_alpha(), (64, 64))
         self.image_copy = self.image.copy()
         self.images = {True: self.image, False: pygame.transform.flip(self.image, True, False)}
@@ -141,7 +142,7 @@ class Player(pygame.sprite.Sprite):
         self.fantom.rect.x = int(self.fantom.pos.x)
         self.fantom.rect.y = int(self.fantom.pos.y)
         self.fantom.particle_counter += dt
-        if self.fantom.particle_counter > 20:
+        if self.fantom.particle_counter > 10:
             self.fantom.particles.append(Particle(self.fantom.particle_image, 5, (
                 random.randint(self.fantom.rect.x, self.fantom.rect.right), self.fantom.rect.bottom),
                                                   pygame.Vector2(0, 0.5)))
@@ -154,26 +155,29 @@ class Player(pygame.sprite.Sprite):
 
     def check_collision(self):
         get_hits = []
-        for rect in self.tiles:
-            if collide_with_rects(rect, self.rect):
-                get_hits.append(rect)
+        for row in range(len(self.tiles)):
+            for column in range(len(self.tiles[row])):
+                if self.tiles[row][column] != '0':
+                    rect = (column*self.tile_factor, row*self.tile_factor, self.tile_factor, self.tile_factor)
+                    if collide_with_rects(rect, self.rect):
+                        get_hits.append(rect)
         return get_hits
 
     def collide(self, hits, axis):
         for rect in hits:
             if axis:
                 if self.speed.y > 0:
-                    self.pos.y = rect.top - self.rect.h
+                    self.pos.y = rect[1] - self.rect.h
                     self.is_jumping = False
                 elif self.speed.y < 0:
-                    self.pos.y = rect.bottom
+                    self.pos.y = rect[1]+rect[3]
                 self.speed.y = 0
                 self.rect.y = self.pos.y
 
             else:
                 if self.speed.x > 0:
-                    self.pos.x = rect.x - self.rect.w
+                    self.pos.x = rect[0] - self.rect.w
                 elif self.speed.x < 0:
-                    self.pos.x = rect.right
+                    self.pos.x = rect[0] + rect[2]
                 self.speed.x = 0
                 self.rect.x = self.pos.x

@@ -3,7 +3,7 @@ import pygame
 from game import Game
 
 pygame.init()
-w, h = 512, 512
+w, h = 576+64, 576+64
 window = pygame.display.set_mode((w, h),pygame.SRCALPHA)
 clock = pygame.time.Clock()
 

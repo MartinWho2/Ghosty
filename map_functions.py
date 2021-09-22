@@ -1,6 +1,7 @@
 import pygame
 
-def create_map(filename:str,) ->list:
+
+def create_map(filename: str, ) -> list:
     """
     Read a file and create a list corresponding to the map
     :param filename: name of the file
@@ -37,7 +38,8 @@ def create_rect_map(tiles: list, factor: int) -> list:
     return rects
 
 
-def collide_with_rects(rect1, rect2):
-    if rect2.x + rect2.w > rect1.x > rect2.x - rect1.w and rect2.y + rect2.h > rect1.y > rect2.y - rect1.h:
+def collide_with_rects(rect_style_tuple: tuple, rect2: pygame.Rect) -> bool:
+    if rect2.x + rect2.w > rect_style_tuple[0] > rect2.x - rect_style_tuple[2] and rect2.y + rect2.h > rect_style_tuple[
+        1] > rect2.y - rect_style_tuple[3]:
         return True
     return False
