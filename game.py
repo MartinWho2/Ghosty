@@ -6,8 +6,9 @@ from map_functions import create_map
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
         self.window = window
+        self.window_size = self.window.get_size()
         self.surface = pygame.Surface((self.window.get_width(), self.window.get_height()))
-        self.scroll = [0,0]
+        self.scroll = pygame.Vector2(0,0)
         self.map = create_map("map.txt")
 
         self.player = Player(self.map, 64, self.surface)
@@ -31,8 +32,11 @@ class Game:
         self.bg = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
 
     def update(self, dt: float) -> None:
+        self.scroll.x = self.player.pos.x+self.player.rect.w/2 - self.window_size[0] / 2
+        self.scroll.y = self.player.pos.y+self.player.rect.h/2 - self.window_size[1] / 2
+        print(self.scroll.x, self.scroll.y)
         self.surface.fill(self.bg[self.moving_character])
-        self.window.fill((0,0,0,0))
+        self.window.fill((0, 0, 0, 0))
         self.draw_map()
         for index, particle in reversed(list(enumerate(self.player.fantom.particles))):
             particle.size -= 0.1
@@ -63,8 +67,8 @@ class Game:
         self.sprites.draw(self.surface)
         if self.moving_character == "player":
             self.player.fantom_replace(dt)
-        self.window.blit(self.surface, (0,0))
-        
+        self.window.blit(self.surface, (0, 0))
+
     def change_character(self, dt: float) -> None:
         """
         Makes the selected character blink
