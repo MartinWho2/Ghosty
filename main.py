@@ -1,7 +1,7 @@
 import pygame
 
 from game import Game
-
+print("done from school")
 pygame.init()
 w, h = 576, 576
 window = pygame.display.set_mode((w, h),pygame.SRCALPHA)
