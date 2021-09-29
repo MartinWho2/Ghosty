@@ -20,7 +20,7 @@ class Fantom(pygame.sprite.Sprite):
         # The reached value gets lower if the fantom goes away
         self.particles = []
         self.speed = pygame.Vector2(0, 0)
-        self.friction = -0.05
+        self.friction = -0.1
         self.particle_image = pygame.image.load("particle.png")
 
 
@@ -45,18 +45,22 @@ class Player(pygame.sprite.Sprite):
         self.fantom.pos.x, self.fantom.pos.y = self.fantom.rect.x, self.fantom.rect.y
         self.dist_max = 200
         self.speed = pygame.Vector2(0, 0)
-        self.gravity, self.friction = 0.4, -0.15
+        self.gravity, self.friction = 0, -0.3
         self.is_jumping = False
 
-    def move(self, acceleration: pygame.Vector2, moving_object: str, dt: float) -> None:
+    def move(self, acceleration: pygame.Vector2, moving_object: str, dt: float, scroll:pygame.Vector2) -> None:
         """
         Moves the player or the fantom with a given acceleration
         :param acceleration: Acceleration of the moving object
         :param moving_object: Player or Fantom
         :param dt: Value to compensate a hypothetical FPS loss
+        :param scroll: Value to scroll
         :return: None
         """
         if moving_object == "player":
+            self.pos += scroll
+            self.rect.x += scroll.x
+            self.rect.y += scroll.y
             acceleration.x += self.speed.x * self.friction
             # acceleration.y += self.speed.y * self.friction
             self.speed.x += acceleration.x * dt
@@ -151,7 +155,7 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         if not self.is_jumping:
             self.is_jumping = True
-            self.speed.y -= 15
+            self.speed.y = -8
 
     def check_collision(self):
         get_hits = []
