@@ -38,8 +38,8 @@ def create_rect_map(tiles: list, factor: int) -> list:
     return rects
 
 
-def collide_with_rects(rect_style_tuple: tuple, rect2: pygame.Rect) -> bool:
-    if rect2.x + rect2.w > rect_style_tuple[0] > rect2.x - rect_style_tuple[2] and rect2.y + rect2.h > rect_style_tuple[
-        1] > rect2.y - rect_style_tuple[3]:
+def collide_with_rects(rect_style_tuple: tuple, rect2: tuple) -> bool:
+    if rect2[0] + rect2[2] > rect_style_tuple[0] > rect2[0] - rect_style_tuple[2] and rect2[1] + rect2[3] > rect_style_tuple[
+        1] > rect2[1] - rect_style_tuple[3]:
         return True
     return False

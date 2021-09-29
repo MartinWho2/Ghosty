@@ -13,7 +13,7 @@ class Game:
         self.map = create_map("levels/level1.txt")
 
         self.player = Player(self.map, self.size_world, self.surface)
-        self.camera_pos = pygame.Vector2(self.player.rect.centerx-self.window.get_width()/2,self.player.rect.centery-self.window.get_height()/2)
+        self.camera_pos = pygame.Vector2(self.player.rect.centerx-self.w/2,self.player.rect.centery-self.h/2)
         self.sprites = pygame.sprite.Group(self.player, self.player.fantom)
 
         self.keys = {}
@@ -36,7 +36,7 @@ class Game:
     def update(self, dt: float) -> None:
         self.surface.fill(self.bg[self.moving_character])
         self.window.fill((0,0,0,0))
-        self.camera_pos = (self.player.rect.centerx-self.w/2,self.player.rect.centery-self.h/2)
+        self.camera_pos = pygame.Vector2(self.player.pos.x+self.player.rect.w/2-self.w/2,self.player.pos.y + self.player.rect.h/2-self.h/2)
         self.draw_map()
         for index, particle in reversed(list(enumerate(self.player.fantom.particles))):
             particle.size -= 0.1
@@ -49,7 +49,7 @@ class Game:
                 particle.image = pygame.transform.scale(particle.image_copy, (size, size))
                 self.surface.blit(particle.image, particle.pos)
         move = pygame.Vector2(0, 0)
-        value = 0.5 * dt
+        value = 0.8 * dt
         if self.keys.get(pygame.K_LEFT):
             move.x -= value
         if self.keys.get(pygame.K_RIGHT):
@@ -59,14 +59,18 @@ class Game:
                 move.y -= value
             if self.keys.get(pygame.K_DOWN):
                 move.y += value
-        self.player.move(move, self.moving_character, dt, self.scroll)
+        self.player.move(move, self.moving_character, dt,self.camera_pos)
         if self.moving_character == "fantom":
-            self.player.move(pygame.Vector2(0, 0), "player", dt, self.scroll)
+            self.player.move(pygame.Vector2(0, 0), "player", dt,self.camera_pos)
         if self.timer_characters:
             self.change_character(dt)
-        self.sprites.draw(self.surface)
+        for sprite in self.sprites:
+            if sprite.__class__ == Player:
+                pass
+                #print(sprite.rect.x-round(self.camera_pos.x),sprite.rect.y-round(self.camera_pos.y))
+            self.surface.blit(sprite.image,(sprite.rect.x-round(self.camera_pos.x),sprite.rect.y-round(self.camera_pos.y)))
         if self.moving_character == "player":
-            self.player.fantom_replace(dt)
+            self.player.fantom_replace(dt,self.camera_pos)
         self.window.blit(self.surface, (0,0))
         
     def change_character(self, dt: float) -> None:

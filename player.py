@@ -37,7 +37,7 @@ class Player(pygame.sprite.Sprite):
         self.empty_image = self.image.copy()
         self.empty_image.set_alpha(0)
         self.rect = self.image.get_rect()
-        self.rect.center = (0, 0)
+        self.rect.center = (100, 100)
         self.facing_right = True
         self.pos = pygame.Vector2(self.rect.x, self.rect.y)
         self.fantom = Fantom()
@@ -45,10 +45,10 @@ class Player(pygame.sprite.Sprite):
         self.fantom.pos.x, self.fantom.pos.y = self.fantom.rect.x, self.fantom.rect.y
         self.dist_max = 200
         self.speed = pygame.Vector2(0, 0)
-        self.gravity, self.friction = 0, -0.3
+        self.gravity, self.friction = 0.4, -0.2
         self.is_jumping = False
 
-    def move(self, acceleration: pygame.Vector2, moving_object: str, dt: float, scroll:pygame.Vector2) -> None:
+    def move(self, acceleration: pygame.Vector2, moving_object: str, dt: float, camera_pos:pygame.Vector2) -> None:
         """
         Moves the player or the fantom with a given acceleration
         :param acceleration: Acceleration of the moving object
@@ -58,9 +58,6 @@ class Player(pygame.sprite.Sprite):
         :return: None
         """
         if moving_object == "player":
-            self.pos += scroll
-            self.rect.x += scroll.x
-            self.rect.y += scroll.y
             acceleration.x += self.speed.x * self.friction
             # acceleration.y += self.speed.y * self.friction
             self.speed.x += acceleration.x * dt
@@ -102,9 +99,9 @@ class Player(pygame.sprite.Sprite):
             self.fantom.pos.y += self.fantom.speed.y * dt
             self.fantom.rect.x = int(self.fantom.pos.x)
             self.fantom.rect.y = int(self.fantom.pos.y)
-            self.calculate_distance(dt)
+            self.calculate_distance(dt,camera_pos)
 
-    def calculate_distance(self, dt: float) -> None:
+    def calculate_distance(self, dt: float, camera_pos:pygame.Vector2) -> None:
         """
         Calculates if the ghost is too far away from the player and replaces it
         :param dt:
@@ -119,27 +116,27 @@ class Player(pygame.sprite.Sprite):
             particles_value = self.dist_max
         alpha = positive(particles_value - 150)
         self.surface_above.fill((0, 0, 0, 0))
-        pygame.draw.circle(self.surface_above, (120, 120, 120, alpha), self.rect.center, self.dist_max, 10)
+        pygame.draw.circle(self.surface_above, (120, 120, 120, alpha), pygame.Vector2(self.rect.center)-camera_pos, self.dist_max, 10)
         self.surface.blit(self.surface_above, (0, 0))
-        self.spawn_particles(vector, particles_value, dt)
+        self.spawn_particles(vector, particles_value, dt, camera_pos)
         self.fantom.pos.x = self.pos.x + self.rect.w / 2 + vector.x - self.fantom.rect.w / 2
         self.fantom.pos.y = self.pos.y + self.rect.h / 2 + vector.y - self.fantom.rect.h / 2
         self.fantom.rect.x = round(self.fantom.pos.x)
         self.fantom.rect.y = round(self.fantom.pos.y)
 
-    def spawn_particles(self, vector: pygame.Vector2, particles_value: float, dt: float):
+    def spawn_particles(self, vector: pygame.Vector2, particles_value: float, dt: float,camera_pos):
         vector_fantom_player = pygame.Vector2(vector.x * -1, vector.y * -1)
         if self.fantom.particle_counter >= 200:
             self.fantom.particles.append(
                 Particle(self.fantom.particle_image, random.randint(round(particles_value / 17),
                                                                     round(particles_value / 13)),
-                         (self.fantom.rect.centerx + random.randint(-10, 10),
-                          self.fantom.rect.centery + random.randint(-10, 10)), vector_fantom_player.normalize()))
+                         (self.fantom.rect.centerx - camera_pos.x + random.randint(-10, 10),
+                          self.fantom.rect.centery - camera_pos.y + random.randint(-10, 10)), vector_fantom_player.normalize()))
             self.fantom.particle_counter = 0
         else:
             self.fantom.particle_counter += particles_value / dt
 
-    def fantom_replace(self, dt):
+    def fantom_replace(self, dt: float, camera_pos: pygame.Vector2):
         x, y = self.fantom.rect.right - self.rect.x, self.fantom.rect.centery - self.rect.y
         self.fantom.pos.x -= 0.1 * x
         self.fantom.pos.y -= 0.1 * y
@@ -147,15 +144,14 @@ class Player(pygame.sprite.Sprite):
         self.fantom.rect.y = int(self.fantom.pos.y)
         self.fantom.particle_counter += dt
         if self.fantom.particle_counter > 10:
-            self.fantom.particles.append(Particle(self.fantom.particle_image, 5, (
-                random.randint(self.fantom.rect.x, self.fantom.rect.right), self.fantom.rect.bottom),
+            self.fantom.particles.append(Particle(self.fantom.particle_image, 5, (random.randint(self.fantom.rect.x , self.fantom.rect.right)-camera_pos.x, self.fantom.rect.bottom-camera_pos.y),
                                                   pygame.Vector2(0, 0.5)))
             self.fantom.particle_counter = 0
 
     def jump(self):
         if not self.is_jumping:
             self.is_jumping = True
-            self.speed.y = -8
+            self.speed.y = -10
 
     def check_collision(self):
         get_hits = []
@@ -163,7 +159,8 @@ class Player(pygame.sprite.Sprite):
             for column in range(len(self.tiles[row])):
                 if self.tiles[row][column] != '0':
                     rect = (column*self.tile_factor, row*self.tile_factor, self.tile_factor, self.tile_factor)
-                    if collide_with_rects(rect, self.rect):
+                    player_rect = (self.pos.x,self.pos.y,self.rect.w,self.rect.h)
+                    if collide_with_rects(rect, player_rect):
                         get_hits.append(rect)
         return get_hits
 
