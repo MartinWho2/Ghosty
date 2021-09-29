@@ -42,6 +42,7 @@ class Game:
             particle.size -= 0.1
             if particle.size <= 0:
                 self.player.fantom.particles.pop(index)
+                print(True)
             else:
                 particle.pos.x += particle.speed.x
                 particle.pos.y += particle.speed.y
