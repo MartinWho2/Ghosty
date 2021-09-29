@@ -6,14 +6,14 @@ from map_functions import create_map
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
         self.window = window
+        self.w, self.h = self.window.get_width(), self.window.get_height()
         self.size_world = 64
-        self.surface = pygame.Surface((self.window.get_width(), self.window.get_height()))
+        self.surface = pygame.Surface((self.w, self.h))
 
         self.map = create_map("levels/level1.txt")
 
         self.player = Player(self.map, self.size_world, self.surface)
         self.camera_pos = pygame.Vector2(self.player.rect.centerx-self.window.get_width()/2,self.player.rect.centery-self.window.get_height()/2)
-        self.scroll = pygame.Vector2(0, 0)
         self.sprites = pygame.sprite.Group(self.player, self.player.fantom)
 
         self.keys = {}
@@ -36,11 +36,7 @@ class Game:
     def update(self, dt: float) -> None:
         self.surface.fill(self.bg[self.moving_character])
         self.window.fill((0,0,0,0))
-        self.scroll.x = self.player.rect.centerx - self.camera_pos.x - self.window.get_width()/2
-        self.scroll.y = self.player.rect.centery - self.camera_pos.y - self.window.get_height()/2
-        self.scroll /= 3
-        print(self.scroll)
-        self.camera_pos += self.scroll
+        self.camera_pos = (self.player.rect.centerx-self.w/2,self.player.rect.centery-self.h/2)
         self.draw_map()
         for index, particle in reversed(list(enumerate(self.player.fantom.particles))):
             particle.size -= 0.1
