@@ -45,7 +45,7 @@ class Player(pygame.sprite.Sprite):
         self.fantom.pos.x, self.fantom.pos.y = self.fantom.rect.x, self.fantom.rect.y
         self.dist_max = 200
         self.speed = pygame.Vector2(0, 0)
-        self.gravity, self.friction = 0.4, -0.2
+        self.gravity, self.friction = 0.3, -0.2
         self.is_jumping = False
 
     def move(self, acceleration: pygame.Vector2, moving_object: str, dt: float, camera_pos:pygame.Vector2) -> None:
@@ -54,7 +54,7 @@ class Player(pygame.sprite.Sprite):
         :param acceleration: Acceleration of the moving object
         :param moving_object: Player or Fantom
         :param dt: Value to compensate a hypothetical FPS loss
-        :param scroll: Value to scroll
+        :param camera_pos: position of the camera
         :return: None
         """
         if moving_object == "player":
@@ -100,11 +100,13 @@ class Player(pygame.sprite.Sprite):
             self.fantom.rect.x = int(self.fantom.pos.x)
             self.fantom.rect.y = int(self.fantom.pos.y)
             self.calculate_distance(dt,camera_pos)
+        print(self.pos.y,self.rect.y)
 
-    def calculate_distance(self, dt: float, camera_pos:pygame.Vector2) -> None:
+    def calculate_distance(self, dt: float, camera_pos: pygame.Vector2) -> None:
         """
         Calculates if the ghost is too far away from the player and replaces it
-        :param dt:
+        :param dt: Value to compensate
+        :param camera_pos: Position of the camera
         :return:
         """
         vector = pygame.Vector2(self.fantom.pos.x + self.fantom.rect.w / 2 - self.pos.x - self.rect.w / 2,

@@ -36,7 +36,9 @@ class Game:
     def update(self, dt: float) -> None:
         self.surface.fill(self.bg[self.moving_character])
         self.window.fill((0,0,0,0))
-        self.camera_pos = pygame.Vector2(self.player.pos.x+self.player.rect.w/2-self.w/2,self.player.pos.y + self.player.rect.h/2-self.h/2)
+        scroll = pygame.Vector2(self.player.pos.x+self.player.rect.w/2-self.w/2 - self.camera_pos.x,self.player.pos.y + self.player.rect.h/2-self.h/2-self.camera_pos.y)
+        scroll /= 10
+        self.camera_pos += scroll
         self.draw_map()
         for index, particle in reversed(list(enumerate(self.player.fantom.particles))):
             particle.size -= 0.1
@@ -72,7 +74,7 @@ class Game:
         if self.moving_character == "player":
             self.player.fantom_replace(dt,self.camera_pos)
         self.window.blit(self.surface, (0,0))
-        
+
     def change_character(self, dt: float) -> None:
         """
         Makes the selected character blink

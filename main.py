@@ -27,7 +27,6 @@ def main():
                     game.player.fantom.speed = pygame.Vector2(0,0)
                     game.player.image_copy = game.player.image.copy()
                     game.change_character(1)
-
                 elif e.key == pygame.K_SPACE and game.moving_character == "player":
                     game.player.jump()
             if e.type == pygame.KEYUP:
