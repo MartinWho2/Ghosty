@@ -14,6 +14,7 @@ def main():
     game = Game(window)
     before = pygame.time.get_ticks()
     while playing:
+        print(clock.get_fps())
         clock.tick(60)
         dt = (pygame.time.get_ticks() - before) * fps / 1000
         game.update(dt)
@@ -34,8 +35,8 @@ def main():
                 if e.key == pygame.K_SPACE:
                     if game.player.is_jumping and game.player.speed.y < 0:
                         game.player.speed.y *= 0.5
-                if e.key == pygame.K_p:
-                    game.player.pos.y, game.player.rect.y = -1000, -1000
+                if e.key == pygame.K_w and game.moving_character == "player":
+                    game.shoot()
             if e.type == pygame.QUIT:
                 pygame.quit()
                 playing = False

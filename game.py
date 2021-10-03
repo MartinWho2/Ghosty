@@ -1,8 +1,8 @@
 import pygame
 from player import Player
 from map_functions import create_map
-
-
+from ennemy import Ennemy
+from bullet import Bullet
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
         self.window = window
@@ -15,7 +15,7 @@ class Game:
         self.player = Player(self.map, self.size_world, self.surface)
         self.camera_pos = pygame.Vector2(self.player.rect.centerx-self.w/2,self.player.rect.centery-self.h/2)
         self.sprites = pygame.sprite.Group(self.player, self.player.fantom)
-
+        self.bullets = pygame.sprite.Group()
         self.keys = {}
         self.characters = ["player", "fantom"]
         self.characters_class = {"player": self.player, "fantom": self.player.fantom}
@@ -32,6 +32,20 @@ class Game:
                                                    (self.size_world, self.size_world))}
         }
         self.bg = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
+        counter = 0
+        spawns = []
+        for row in range(len(self.map)):
+            for column in range(len(self.map[row])):
+                if self.map[row][column] == '2':
+                    counter += 1
+                    if counter == 2:
+                        spawns.append([row,column])
+                        counter = 0
+        self.ennemies = pygame.sprite.Group()
+        for spawn in spawns:
+            ennemy = Ennemy(pygame.image.load("ennemy.png").convert_alpha(),pygame.Vector2(spawn[1]*64,spawn[0]*64),True,100,self.map,64)
+
+            ennemy.add(self.ennemies,self.sprites)
 
     def update(self, dt: float) -> None:
         self.surface.fill(self.bg[self.moving_character])
@@ -50,6 +64,14 @@ class Game:
                 size = round(particle.size)
                 particle.image = pygame.transform.scale(particle.image_copy, (size, size))
                 self.surface.blit(particle.image, particle.pos)
+        for bullet in self.bullets:
+            bullet.move(dt)
+        for person in self.ennemies:
+            person.move(dt)
+            for bullet in self.bullets:
+                if pygame.sprite.collide_mask(person,bullet):
+                    bullet.kill()
+                    person.kill()
         move = pygame.Vector2(0, 0)
         value = 0.8 * dt
         if self.keys.get(pygame.K_LEFT):
@@ -69,12 +91,17 @@ class Game:
         for sprite in self.sprites:
             if sprite.__class__ == Player:
                 pass
-                #print(sprite.rect.x-round(self.camera_pos.x),sprite.rect.y-round(self.camera_pos.y))
             self.surface.blit(sprite.image,(sprite.rect.x-round(self.camera_pos.x),sprite.rect.y-round(self.camera_pos.y)))
         if self.moving_character == "player":
             self.player.fantom_replace(dt,self.camera_pos)
         self.window.blit(self.surface, (0,0))
-
+    def shoot(self):
+        speed = pygame.Vector2(5,0)
+        if speed.x < 0:
+            speed.x = -5
+        pos = pygame.Vector2(self.player.rect.right,self.player.rect.centery)
+        bullet = Bullet(pos,pygame.Vector2(speed.x,speed.y))
+        bullet.add(self.bullets,self.sprites)
     def change_character(self, dt: float) -> None:
         """
         Makes the selected character blink
