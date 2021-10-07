@@ -22,14 +22,12 @@ class Game:
         self.moving_character = self.characters[0]
         self.timer_characters = 0.0
         self.tiles = {
-            "fantom": {"1": pygame.transform.scale(pygame.image.load("tiles/fantom/up.png").convert(), (self.size_world, self.size_world)),
+            "fantom": {"1": pygame.transform.scale(pygame.image.load("tiles/fantom/up.png").convert_alpha(), (self.size_world, self.size_world)),
                        "2": pygame.transform.scale(pygame.image.load("tiles/fantom/mid.png").convert(), (self.size_world, self.size_world)),
-                       "3": pygame.transform.scale(pygame.image.load("tiles/fantom/button.png").convert_alpha(),
-                                                   (self.size_world, self.size_world))},
-            "player": {"1": pygame.transform.scale(pygame.image.load("tiles/player/up.png").convert(), (self.size_world, self.size_world)),
-                       "2": pygame.transform.scale(pygame.image.load("tiles/player/mid.png").convert(), (self.size_world, self.size_world)),
-                       "3": pygame.transform.scale(pygame.image.load("tiles/player/button.png").convert_alpha(),
-                                                   (self.size_world, self.size_world))}
+                       },
+            "player": {"1": pygame.transform.scale(pygame.image.load("tiles/player/up.png").convert_alpha(), (self.size_world, self.size_world)),
+                       "2": pygame.transform.scale(pygame.image.load("tiles/player/mid.png").convert_alpha(), (self.size_world, self.size_world)),
+                       }
         }
         self.bg = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
         counter = 0
