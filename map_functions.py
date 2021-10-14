@@ -1,12 +1,13 @@
 import pygame
 
 
-def create_map(filename: str, ) -> list:
+def create_map(level: int, level_objects: dict) -> list:
     """
     Read a file and create a list corresponding to the map
-    :param filename: name of the file
+    :param level: name of the file
     :return carte: map
     """
+    filename = f"levels/level{level}.txt"
     with open(filename, "r") as file:
         text = file.read()
         carte = []
@@ -20,6 +21,7 @@ def create_map(filename: str, ) -> list:
         if temporary_list:
             carte.append(temporary_list)
         file.close()
+
     return carte
 
 

@@ -1,4 +1,5 @@
 import pygame
+import json
 from player import Player
 from map_functions import create_map
 from ennemy import Ennemy
@@ -6,11 +7,14 @@ from bullet import Bullet
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
         self.window = window
+        with open("level_objects.json","r") as f:
+            self.level_objects = json.load(f)
+            f.close()
         self.w, self.h = self.window.get_width(), self.window.get_height()
         self.size_world = 64
         self.surface = pygame.Surface((self.w, self.h))
 
-        self.map = create_map("levels/level1.txt")
+        self.map = create_map(1,self.level_objects["levels"][str(1)])
 
         self.player = Player(self.map, self.size_world, self.surface)
         self.camera_pos = pygame.Vector2(self.player.rect.centerx-self.w/2,self.player.rect.centery-self.h/2)
@@ -93,6 +97,7 @@ class Game:
         if self.moving_character == "player":
             self.player.fantom_replace(dt,self.camera_pos)
         self.window.blit(self.surface, (0,0))
+
     def shoot(self):
         speed = pygame.Vector2(5,0)
         if speed.x < 0:
@@ -100,6 +105,7 @@ class Game:
         pos = pygame.Vector2(self.player.rect.right,self.player.rect.centery)
         bullet = Bullet(pos,pygame.Vector2(speed.x,speed.y))
         bullet.add(self.bullets,self.sprites)
+
     def change_character(self, dt: float) -> None:
         """
         Makes the selected character blink
