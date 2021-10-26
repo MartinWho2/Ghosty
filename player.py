@@ -128,8 +128,7 @@ class Player(Moving_sprite):
         if self.fantom.particle_counter > 10:
             self.fantom.particles.append(Particle(self.fantom.particle_image, 5, (
             random.randint(self.fantom.rect.x, self.fantom.rect.right) - camera_pos.x,
-            self.fantom.rect.bottom - camera_pos.y),
-                                                  pygame.Vector2(0, 0.5)))
+            self.fantom.rect.bottom - camera_pos.y), pygame.Vector2(0, 0.5)))
             self.fantom.particle_counter = 0
 
     def jump(self):

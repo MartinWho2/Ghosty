@@ -49,7 +49,7 @@ class Moving_sprite(pygame.sprite.Sprite):
                 self.speed.x = 0
                 self.rect.x = self.pos.x
 
-    def fall(self,acceleration,dt):
+    def fall(self, acceleration, dt):
         self.speed.y += (acceleration.y + self.gravity) * dt
         self.speed.y = limit_speed(self.speed.y, self.max_speed)
         self.pos.y += self.speed.y * dt

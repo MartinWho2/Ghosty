@@ -5,8 +5,8 @@ class Bullet(pygame.sprite.Sprite):
     def __init__(self, pos: pygame.Vector2, speed: pygame.Vector2) -> None:
         super().__init__()
         self.image = pygame.image.load("bullet.png").convert_alpha()
-        if speed.x <0:
-            self.image = pygame.transform.flip(self.image,True,False)
+        if speed.x < 0:
+            self.image = pygame.transform.flip(self.image, True, False)
         self.image = pygame.transform.scale(self.image, (15, 15))
         self.pos = pos
         self.rect = self.image.get_rect()

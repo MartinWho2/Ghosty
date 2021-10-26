@@ -5,7 +5,6 @@ from typing import Union
 from player import Player
 from map_functions import create_map
 from enemy import Enemy
-from bullet import Bullet
 
 
 class Game:
@@ -22,7 +21,7 @@ class Game:
         self.map = create_map(1)
         self.sprites = pygame.sprite.Group()
 
-        self.player: pygame.sprite.Sprite = Player(self.map, self.size_world, self.surface, self.sprites)
+        self.player: Player = Player(self.map, self.size_world, self.surface, self.sprites)
         self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
 
         self.bullets = pygame.sprite.Group()
@@ -122,7 +121,8 @@ class Game:
                 tile = self.map[row][column]
                 if tile != "0":
                     self.surface.blit(tiles[tile], (
-                        column * self.size_world - round(self.camera_pos.x), row * self.size_world - round(self.camera_pos.y)))
+                        column * self.size_world - round(self.camera_pos.x), row * self.size_world -
+                        round(self.camera_pos.y)))
 
     def spawn_enemy(self, pos: Union[list, tuple]) -> None:
         """
