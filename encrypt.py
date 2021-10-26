@@ -16,4 +16,3 @@ def encrypt(msg):
     return encrypted
 enc = encrypt(message)
 # Write(enc, Readme.md)
-
