@@ -11,7 +11,7 @@ def fnd_plc(char):
 def encrypt(msg):
     encrypted = ""
     for i in range(len(msg)):
-        encrypted += string.printable[:94][fnd_plc(msg[i])*2%94]
+        encrypted += string.printable[:94][(fnd_plc(msg[i]) + 50) % 94]
         encrypted += rndm_str()
     return encrypted
 enc = encrypt(message)
