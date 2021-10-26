@@ -1,7 +1,7 @@
 import pygame
 
 
-def create_map(level: int, level_objects: dict) -> list:
+def create_map(level: int) -> list:
     """
     Read a file and create a list corresponding to the map
     :param level: name of the file

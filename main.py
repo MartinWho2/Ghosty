@@ -1,7 +1,7 @@
 import pygame
 
 from game import Game
-print("done from school")
+
 pygame.init()
 w, h = 576, 576
 window = pygame.display.set_mode((w, h),pygame.SRCALPHA)
@@ -14,7 +14,6 @@ def main():
     game = Game(window)
     before = pygame.time.get_ticks()
     while playing:
-        print(clock.get_fps())
         clock.tick(60)
         dt = (pygame.time.get_ticks() - before) * fps / 1000
         game.update(dt)
@@ -24,11 +23,13 @@ def main():
             if e.type == pygame.KEYDOWN:
                 game.keys[e.key] = True
                 if e.key == pygame.K_q:
+                    "Change Character"
                     game.moving_character = game.characters[-1 * game.characters.index(game.moving_character) + 1]
                     game.player.fantom.speed = pygame.Vector2(0,0)
                     game.player.image_copy = game.player.image.copy()
                     game.change_character(1)
                 elif e.key == pygame.K_SPACE and game.moving_character == "player":
+                    "Jump"
                     game.player.jump()
             if e.type == pygame.KEYUP:
                 game.keys[e.key] = False
@@ -36,7 +37,7 @@ def main():
                     if game.player.is_jumping and game.player.speed.y < 0:
                         game.player.speed.y *= 0.5
                 if e.key == pygame.K_w and game.moving_character == "player":
-                    game.shoot()
+                    game.player.shoot(game.sprites, game.bullets)
             if e.type == pygame.QUIT:
                 pygame.quit()
                 playing = False

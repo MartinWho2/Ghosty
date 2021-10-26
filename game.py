@@ -1,24 +1,30 @@
 import pygame
 import json
+from typing import Union
+
 from player import Player
 from map_functions import create_map
-from ennemy import Ennemy
+from enemy import Enemy
 from bullet import Bullet
+
+
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
         self.window = window
-        with open("level_objects.json","r") as f:
+        with open("level_objects.json", "r") as f:
             self.level_objects = json.load(f)
             f.close()
         self.w, self.h = self.window.get_width(), self.window.get_height()
+
         self.size_world = 64
         self.surface = pygame.Surface((self.w, self.h))
 
-        self.map = create_map(1,self.level_objects["levels"][str(1)])
+        self.map = create_map(1)
+        self.sprites = pygame.sprite.Group()
 
-        self.player = Player(self.map, self.size_world, self.surface)
-        self.camera_pos = pygame.Vector2(self.player.rect.centerx-self.w/2,self.player.rect.centery-self.h/2)
-        self.sprites = pygame.sprite.Group(self.player, self.player.fantom)
+        self.player = Player(self.map, self.size_world, self.surface, self.sprites)
+        self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
+
         self.bullets = pygame.sprite.Group()
         self.keys = {}
         self.characters = ["player", "fantom"]
@@ -26,33 +32,31 @@ class Game:
         self.moving_character = self.characters[0]
         self.timer_characters = 0.0
         self.tiles = {
-            "fantom": {"1": pygame.transform.scale(pygame.image.load("tiles/fantom/up.png").convert_alpha(), (self.size_world, self.size_world)),
-                       "2": pygame.transform.scale(pygame.image.load("tiles/fantom/mid.png").convert(), (self.size_world, self.size_world)),
+            "fantom": {"1": pygame.transform.scale(pygame.image.load("tiles/fantom/up.png").convert_alpha(),
+                                                   (self.size_world, self.size_world)),
+                       "2": pygame.transform.scale(pygame.image.load("tiles/fantom/mid.png").convert(),
+                                                   (self.size_world, self.size_world)),
                        },
-            "player": {"1": pygame.transform.scale(pygame.image.load("tiles/player/up.png").convert_alpha(), (self.size_world, self.size_world)),
-                       "2": pygame.transform.scale(pygame.image.load("tiles/player/mid.png").convert_alpha(), (self.size_world, self.size_world)),
+            "player": {"1": pygame.transform.scale(pygame.image.load("tiles/player/up.png").convert_alpha(),
+                                                   (self.size_world, self.size_world)),
+                       "2": pygame.transform.scale(pygame.image.load("tiles/player/mid.png").convert_alpha(),
+                                                   (self.size_world, self.size_world)),
                        }
         }
         self.bg = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
-        counter = 0
-        spawns = []
-        for row in range(len(self.map)):
-            for column in range(len(self.map[row])):
-                if self.map[row][column] == '2':
-                    counter += 1
-                    if counter == 2:
-                        spawns.append([row,column])
-                        counter = 0
-        self.ennemies = pygame.sprite.Group()
-        for spawn in spawns:
-            ennemy = Ennemy(pygame.image.load("ennemy.png").convert_alpha(),pygame.Vector2(spawn[1]*64,spawn[0]*64),True,100,self.map,64)
-
-            ennemy.add(self.ennemies,self.sprites)
+        self.enemies = pygame.sprite.Group()
+        self.spawn_objects(1)
 
     def update(self, dt: float) -> None:
+        """
+        update the screen (central method)
+        :param dt: difference of time with last frame
+        :return:
+        """
         self.surface.fill(self.bg[self.moving_character])
-        self.window.fill((0,0,0,0))
-        scroll = pygame.Vector2(self.player.pos.x+self.player.rect.w/2-self.w/2 - self.camera_pos.x,self.player.pos.y + self.player.rect.h/2-self.h/2-self.camera_pos.y)
+        self.window.fill((0, 0, 0, 0))
+        scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
+                                self.player.pos.y + self.player.rect.h / 2 - self.h / 2 - self.camera_pos.y)
         scroll /= 10
         self.camera_pos += scroll
         self.draw_map()
@@ -68,10 +72,10 @@ class Game:
                 self.surface.blit(particle.image, particle.pos)
         for bullet in self.bullets:
             bullet.move(dt)
-        for person in self.ennemies:
+        for person in self.enemies:
             person.move(dt)
             for bullet in self.bullets:
-                if pygame.sprite.collide_mask(person,bullet):
+                if pygame.sprite.collide_mask(person, bullet):
                     bullet.kill()
                     person.kill()
         move = pygame.Vector2(0, 0)
@@ -85,26 +89,17 @@ class Game:
                 move.y -= value
             if self.keys.get(pygame.K_DOWN):
                 move.y += value
-        self.player.move(move, self.moving_character, dt,self.camera_pos)
+        self.player.move(move, self.moving_character, dt, self.camera_pos)
         if self.moving_character == "fantom":
-            self.player.move(pygame.Vector2(0, 0), "player", dt,self.camera_pos)
+            self.player.move(pygame.Vector2(0, 0), "player", dt, self.camera_pos)
         if self.timer_characters:
             self.change_character(dt)
         for sprite in self.sprites:
-            if sprite.__class__ == Player:
-                pass
-            self.surface.blit(sprite.image,(sprite.rect.x-round(self.camera_pos.x),sprite.rect.y-round(self.camera_pos.y)))
+            self.surface.blit(sprite.image,
+                              (sprite.rect.x - round(self.camera_pos.x), sprite.rect.y - round(self.camera_pos.y)))
         if self.moving_character == "player":
-            self.player.fantom_replace(dt,self.camera_pos)
-        self.window.blit(self.surface, (0,0))
-
-    def shoot(self):
-        speed = pygame.Vector2(5,0)
-        if speed.x < 0:
-            speed.x = -5
-        pos = pygame.Vector2(self.player.rect.right,self.player.rect.centery)
-        bullet = Bullet(pos,pygame.Vector2(speed.x,speed.y))
-        bullet.add(self.bullets,self.sprites)
+            self.player.fantom_replace(dt, self.camera_pos)
+        self.window.blit(self.surface, (0, 0))
 
     def change_character(self, dt: float) -> None:
         """
@@ -125,4 +120,19 @@ class Game:
             for column in range(len(self.map[row])):
                 tile = self.map[row][column]
                 if tile != "0":
-                    self.surface.blit(tiles[tile], (column * self.size_world - self.camera_pos.x, row * self.size_world - self.camera_pos.y))
+                    self.surface.blit(tiles[tile], (
+                    column * self.size_world - self.camera_pos.x, row * self.size_world - self.camera_pos.y))
+
+    def spawn_enemy(self, pos: Union[list, tuple]) -> None:
+        """
+        Spawns an enemy
+        :param pos: Given position of spawn
+        """
+        Enemy(pygame.image.load("enemy.png").convert_alpha(), pygame.Vector2(pos[1] * self.size_world, pos[0] * self.size_world),
+              True, 100, self.map, self.size_world, self.enemies, self.sprites)
+
+    def spawn_objects(self, level: int) -> None:
+        objects = self.level_objects[str(level)]
+        for pos in objects["Enemies"]:
+            self.spawn_enemy(pos)
+

@@ -3,6 +3,8 @@ import random
 from particle import Particle
 from math_functions import positive, limit_speed
 from moving_sprite import Moving_sprite
+from bullet import Bullet
+
 
 class Fantom(pygame.sprite.Sprite):
     def __init__(self):
@@ -24,8 +26,8 @@ class Fantom(pygame.sprite.Sprite):
 
 
 class Player(Moving_sprite):
-    def __init__(self, tiles: list, tile_factor: int, surface: pygame.Surface) -> None:
-        super().__init__(pygame.Vector2(0,0),pygame.image.load('chevalier.png').convert_alpha(),64,tiles,tile_factor)
+    def __init__(self, tiles: list, tile_factor: int, surface: pygame.Surface,*args:pygame.sprite.Group) -> None:
+        super().__init__(pygame.Vector2(0,0),pygame.image.load('chevalier.png').convert_alpha(),64,tiles,tile_factor,*args)
         self.surface = surface
         self.surface_above = pygame.Surface((surface.get_width(), surface.get_height()), pygame.SRCALPHA)
         self.image_copy = self.image.copy()
@@ -37,6 +39,7 @@ class Player(Moving_sprite):
         self.facing_right = True
         self.pos = pygame.Vector2(self.rect.x, self.rect.y)
         self.fantom = Fantom()
+        self.fantom.add(group for group in args)
         self.fantom.rect.center = (self.rect.x - self.fantom.rect.w / 2, self.rect.y)
         self.fantom.pos.x, self.fantom.pos.y = self.fantom.rect.x, self.fantom.rect.y
         self.dist_max = 200
@@ -141,4 +144,18 @@ class Player(Moving_sprite):
         if not self.is_jumping:
             self.is_jumping = True
             self.speed.y = -10
+
+    def shoot(self,*args: pygame.sprite.Group) -> None:
+        """
+        Shoots a bullet
+        :return: None
+        """
+        speed = pygame.Vector2(5, 0)
+        x_pos = self.rect.right
+        if self.speed.x < 0:
+            speed.x = -5
+            x_pos = self.rect.x - 10
+        pos = pygame.Vector2(x_pos, self.rect.centery)
+        bullet = Bullet(pos, pygame.Vector2(speed.x, speed.y))
+        bullet.add(group for group in args)
 
