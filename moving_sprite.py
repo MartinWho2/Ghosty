@@ -1,20 +1,22 @@
 import pygame
 from map_functions import collide_with_rects
+from math_functions import limit_speed
 
 
 class Moving_sprite(pygame.sprite.Sprite):
-    def __init__(self, pos: pygame.Vector2, image: pygame.Surface, resize: int,tiles: list,tile_factor: int,
+    def __init__(self, pos: pygame.Vector2, image: pygame.Surface, resize: int, tiles: list, tile_factor: int,
                  *args: pygame.sprite.Group) -> None:
         super().__init__()
         self.add(sprite_group for sprite_group in args)
         self.tiles = tiles
         self.tile_factor = tile_factor
         self.pos = pos
-        self.image = pygame.transform.scale(image,(resize,resize))
+        self.image = pygame.transform.scale(image, (resize, resize))
         self.rect = self.image.get_rect()
-        self.rect.x,self.rect.y = pos.x,pos.y
-        self.speed = pygame.Vector2(0,0)
-        self.gravity, self.friction = 0.3, -0.2
+        self.rect.x, self.rect.y = pos.x, pos.y
+        self.speed = pygame.Vector2(0, 0)
+        self.gravity, self.friction = 0.5, -0.2
+        self.max_speed = 10
         self.mask = pygame.mask.from_surface(self.image)
 
     def check_collision(self):
@@ -23,12 +25,12 @@ class Moving_sprite(pygame.sprite.Sprite):
             for column in range(len(self.tiles[row])):
                 if self.tiles[row][column] != '0':
                     rect = (column*self.tile_factor, row*self.tile_factor, self.tile_factor, self.tile_factor)
-                    player_rect = (self.pos.x,self.pos.y,self.rect.w,self.rect.h)
+                    player_rect = (self.pos.x, self.pos.y, self.rect.w, self.rect.h)
                     if collide_with_rects(rect, player_rect):
                         get_hits.append(rect)
         return get_hits
 
-    def collide(self, hits:list, axis:bool):
+    def collide(self, hits: list, axis: bool):
         for rect in hits:
             if axis:
                 if self.speed.y > 0:
@@ -49,7 +51,7 @@ class Moving_sprite(pygame.sprite.Sprite):
 
     def fall(self,acceleration,dt):
         self.speed.y += (acceleration.y + self.gravity) * dt
-        # self.speed.y = limit_speed(self.speed.y,10)
+        self.speed.y = limit_speed(self.speed.y, self.max_speed)
         self.pos.y += self.speed.y * dt
         self.rect.y = round(self.pos.y)
         hits = self.check_collision()

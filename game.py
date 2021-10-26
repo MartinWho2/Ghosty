@@ -22,15 +22,15 @@ class Game:
         self.map = create_map(1)
         self.sprites = pygame.sprite.Group()
 
-        self.player = Player(self.map, self.size_world, self.surface, self.sprites)
+        self.player: pygame.sprite.Sprite = Player(self.map, self.size_world, self.surface, self.sprites)
         self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
 
         self.bullets = pygame.sprite.Group()
-        self.keys = {}
+        self.keys: dict = {}
         self.characters = ["player", "fantom"]
-        self.characters_class = {"player": self.player, "fantom": self.player.fantom}
-        self.moving_character = self.characters[0]
-        self.timer_characters = 0.0
+        self.characters_class: dict = {"player": self.player, "fantom": self.player.fantom}
+        self.moving_character: str = self.characters[0]
+        self.timer_characters: float = 0.0
         self.tiles = {
             "fantom": {"1": pygame.transform.scale(pygame.image.load("tiles/fantom/up.png").convert_alpha(),
                                                    (self.size_world, self.size_world)),
@@ -78,20 +78,21 @@ class Game:
                 if pygame.sprite.collide_mask(person, bullet):
                     bullet.kill()
                     person.kill()
-        move = pygame.Vector2(0, 0)
+        movement = pygame.Vector2(0, 0)
         value = 0.8 * dt
         if self.keys.get(pygame.K_LEFT):
-            move.x -= value
+            movement.x -= value
         if self.keys.get(pygame.K_RIGHT):
-            move.x += value
+            movement.x += value
         if self.moving_character == "fantom":
             if self.keys.get(pygame.K_UP):
-                move.y -= value
+                movement.y -= value
             if self.keys.get(pygame.K_DOWN):
-                move.y += value
-        self.player.move(move, self.moving_character, dt, self.camera_pos)
+                movement.y += value
+
+        self.player.move(movement, self.characters_class[self.moving_character], dt, self.camera_pos)
         if self.moving_character == "fantom":
-            self.player.move(pygame.Vector2(0, 0), "player", dt, self.camera_pos)
+            self.player.move(pygame.Vector2(0, 0), self.characters_class["player"], dt, self.camera_pos)
         if self.timer_characters:
             self.change_character(dt)
         for sprite in self.sprites:
@@ -121,18 +122,18 @@ class Game:
                 tile = self.map[row][column]
                 if tile != "0":
                     self.surface.blit(tiles[tile], (
-                    column * self.size_world - self.camera_pos.x, row * self.size_world - self.camera_pos.y))
+                        column * self.size_world - round(self.camera_pos.x), row * self.size_world - round(self.camera_pos.y)))
 
     def spawn_enemy(self, pos: Union[list, tuple]) -> None:
         """
         Spawns an enemy
         :param pos: Given position of spawn
         """
-        Enemy(pygame.image.load("enemy.png").convert_alpha(), pygame.Vector2(pos[1] * self.size_world, pos[0] * self.size_world),
+        Enemy(pygame.image.load("enemy.png").convert_alpha(),
+              pygame.Vector2(pos[0] * self.size_world, pos[1] * self.size_world),
               True, 100, self.map, self.size_world, self.enemies, self.sprites)
 
     def spawn_objects(self, level: int) -> None:
         objects = self.level_objects[str(level)]
         for pos in objects["Enemies"]:
             self.spawn_enemy(pos)
-

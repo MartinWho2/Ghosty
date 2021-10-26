@@ -20,14 +20,15 @@ class Fantom(pygame.sprite.Sprite):
         self.particle_counter = 0
         # The reached value gets lower if the fantom goes away
         self.particles = []
-        self.speed = pygame.Vector2(0, 0)
+        self.max_speed = 5
         self.friction = -0.1
         self.particle_image = pygame.image.load("particle.png")
 
 
 class Player(Moving_sprite):
-    def __init__(self, tiles: list, tile_factor: int, surface: pygame.Surface,*args:pygame.sprite.Group) -> None:
-        super().__init__(pygame.Vector2(0,0),pygame.image.load('chevalier.png').convert_alpha(),64,tiles,tile_factor,*args)
+    def __init__(self, tiles: list, tile_factor: int, surface: pygame.Surface, *args: pygame.sprite.Group) -> None:
+        super().__init__(pygame.Vector2(0, 0), pygame.image.load('chevalier.png').convert_alpha(), 64, tiles,
+                         tile_factor, *args)
         self.surface = surface
         self.surface_above = pygame.Surface((surface.get_width(), surface.get_height()), pygame.SRCALPHA)
         self.image_copy = self.image.copy()
@@ -43,10 +44,11 @@ class Player(Moving_sprite):
         self.fantom.rect.center = (self.rect.x - self.fantom.rect.w / 2, self.rect.y)
         self.fantom.pos.x, self.fantom.pos.y = self.fantom.rect.x, self.fantom.rect.y
         self.dist_max = 200
-        self.speed = pygame.Vector2(0, 0)
+        self.max_speed = 10
         self.is_jumping = False
 
-    def move(self, acceleration: pygame.Vector2, moving_object: str, dt: float, camera_pos:pygame.Vector2) -> None:
+    def move(self, acceleration: pygame.Vector2, moving_object: Moving_sprite, dt: float,
+             camera_pos: pygame.Vector2) -> None:
         """
         Moves the player or the fantom with a given acceleration
         :param acceleration: Acceleration of the moving object
@@ -55,42 +57,28 @@ class Player(Moving_sprite):
         :param camera_pos: position of the camera
         :return: None
         """
-        if moving_object == "player":
-            acceleration.x += self.speed.x * self.friction
-            # acceleration.y += self.speed.y * self.friction
-            self.speed.x += acceleration.x * dt
-            self.speed.x = limit_speed(self.speed.x, 10)
-            self.pos.x += self.speed.x * dt
-            self.rect.x = round(self.pos.x)
+        acceleration.x += moving_object.speed.x * self.friction
+        moving_object.speed.x += acceleration.x * dt
+        # moving_object.speed.x = limit_speed(moving_object.speed.x, 10)
+        moving_object.pos.x += moving_object.speed.x * dt
+        moving_object.rect.x = round(moving_object.pos.x)
+
+        if moving_object.__class__ == Player:
             if self.speed.x > 0:
                 self.image = self.images[True]
             elif self.speed.x < 0:
                 self.image = self.images[False]
             hits = self.check_collision()
             self.collide(hits, False)
+            self.fall(acceleration, dt)
 
-            self.fall(acceleration,dt)
-        else:
-            acceleration.x += self.fantom.speed.x * self.fantom.friction
-            self.fantom.speed.x += acceleration.x * dt
-            if abs(self.fantom.speed.x) > 5:
-                if self.fantom.speed.x > 0:
-                    self.fantom.speed.x = 5
-                else:
-                    self.fantom.speed.x = -5
-            self.fantom.pos.x += self.fantom.speed.x * dt
-
-            acceleration.y += self.fantom.speed.y * self.fantom.friction
-            self.fantom.speed.y += acceleration.y * dt
-            if abs(self.fantom.speed.y) > 5:
-                if self.fantom.speed.y > 0:
-                    self.fantom.speed.y = 5
-                else:
-                    self.fantom.speed.y = -5
-            self.fantom.pos.y += self.fantom.speed.y * dt
-            self.fantom.rect.x = int(self.fantom.pos.x)
-            self.fantom.rect.y = int(self.fantom.pos.y)
-            self.calculate_distance(dt,camera_pos)
+        elif moving_object.__class__ == Fantom:
+            acceleration.y += moving_object.speed.y * moving_object.friction
+            moving_object.speed.y += acceleration.y * dt
+            # moving_object.speed.y = limit_speed(moving_object.speed.y, moving_object.max_speed)
+            moving_object.pos.y += moving_object.speed.y * dt
+            moving_object.rect.y = round(moving_object.pos.y)
+            self.calculate_distance(dt, camera_pos)
 
     def calculate_distance(self, dt: float, camera_pos: pygame.Vector2) -> None:
         """
@@ -108,7 +96,8 @@ class Player(Moving_sprite):
             particles_value = self.dist_max
         alpha = positive(particles_value - 150)
         self.surface_above.fill((0, 0, 0, 0))
-        pygame.draw.circle(self.surface_above, (120, 120, 120, alpha), pygame.Vector2(self.rect.center)-camera_pos, self.dist_max, 10)
+        pygame.draw.circle(self.surface_above, (120, 120, 120, alpha), pygame.Vector2(self.rect.center) - camera_pos,
+                           self.dist_max, 10)
         self.surface.blit(self.surface_above, (0, 0))
         self.spawn_particles(vector, particles_value, dt, camera_pos)
         self.fantom.pos.x = self.pos.x + self.rect.w / 2 + vector.x - self.fantom.rect.w / 2
@@ -116,14 +105,15 @@ class Player(Moving_sprite):
         self.fantom.rect.x = round(self.fantom.pos.x)
         self.fantom.rect.y = round(self.fantom.pos.y)
 
-    def spawn_particles(self, vector: pygame.Vector2, particles_value: float, dt: float,camera_pos):
+    def spawn_particles(self, vector: pygame.Vector2, particles_value: float, dt: float, camera_pos):
         vector_fantom_player = pygame.Vector2(vector.x * -1, vector.y * -1)
         if self.fantom.particle_counter >= 200:
             self.fantom.particles.append(
                 Particle(self.fantom.particle_image, random.randint(round(particles_value / 17),
                                                                     round(particles_value / 13)),
                          (self.fantom.rect.centerx - camera_pos.x + random.randint(-10, 10),
-                          self.fantom.rect.centery - camera_pos.y + random.randint(-10, 10)), vector_fantom_player.normalize()))
+                          self.fantom.rect.centery - camera_pos.y + random.randint(-10, 10)),
+                         vector_fantom_player.normalize()))
             self.fantom.particle_counter = 0
         else:
             self.fantom.particle_counter += particles_value / dt
@@ -136,16 +126,18 @@ class Player(Moving_sprite):
         self.fantom.rect.y = int(self.fantom.pos.y)
         self.fantom.particle_counter += dt
         if self.fantom.particle_counter > 10:
-            self.fantom.particles.append(Particle(self.fantom.particle_image, 5, (random.randint(self.fantom.rect.x , self.fantom.rect.right)-camera_pos.x, self.fantom.rect.bottom-camera_pos.y),
+            self.fantom.particles.append(Particle(self.fantom.particle_image, 5, (
+            random.randint(self.fantom.rect.x, self.fantom.rect.right) - camera_pos.x,
+            self.fantom.rect.bottom - camera_pos.y),
                                                   pygame.Vector2(0, 0.5)))
             self.fantom.particle_counter = 0
 
     def jump(self):
         if not self.is_jumping:
             self.is_jumping = True
-            self.speed.y = -10
+            self.speed.y = -12
 
-    def shoot(self,*args: pygame.sprite.Group) -> None:
+    def shoot(self, *args: pygame.sprite.Group) -> None:
         """
         Shoots a bullet
         :return: None
@@ -158,4 +150,3 @@ class Player(Moving_sprite):
         pos = pygame.Vector2(x_pos, self.rect.centery)
         bullet = Bullet(pos, pygame.Vector2(speed.x, speed.y))
         bullet.add(group for group in args)
-
