@@ -21,7 +21,7 @@ class Game:
         self.map = create_map(1)
         self.sprites = pygame.sprite.Group()
 
-        self.player: Player = Player(self.map, self.size_world, self.surface, self.sprites)
+        self.player: Player = Player(self.map, self.size_world, self.surface, [self.sprites])
         self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
 
         self.bullets = pygame.sprite.Group()
@@ -131,7 +131,7 @@ class Game:
         """
         Enemy(pygame.image.load("enemy.png").convert_alpha(),
               pygame.Vector2(pos[0] * self.size_world, pos[1] * self.size_world),
-              True, 100, self.map, self.size_world, self.enemies, self.sprites)
+              True, 100, self.map, self.size_world, [self.enemies, self.sprites])
 
     def spawn_objects(self, level: int) -> None:
         objects = self.level_objects[str(level)]

@@ -37,7 +37,7 @@ def main():
                     if game.player.is_jumping and game.player.speed.y < 0:
                         game.player.speed.y *= 0.5
                 if e.key == pygame.K_w and game.moving_character == "player":
-                    game.player.shoot(game.sprites, game.bullets)
+                    game.player.shoot([game.sprites, game.bullets])
             if e.type == pygame.QUIT:
                 pygame.quit()
                 playing = False

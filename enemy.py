@@ -4,7 +4,7 @@ from moving_sprite import Moving_sprite
 
 class Enemy(Moving_sprite):
     def __init__(self, image: pygame.Surface, pos: pygame.Vector2, move_bool: bool, limit: int, tiles: list,
-                 tile_factor: int, *args: pygame.sprite.Group) -> None:
+                 tile_factor: int, groups: list[pygame.sprite.Group]) -> None:
         """
         Init the class
         :param image: Image of the enemy
@@ -13,9 +13,9 @@ class Enemy(Moving_sprite):
         :param limit: Limit of movement until he turns around
         :param tiles: The map
         :param tile_factor: The size of the tiles
-        :param sprite_group: His sprite group
+        :param groups: His sprite group(s)
         """
-        super().__init__(pos, image, 70, tiles, tile_factor, *args)
+        super().__init__(pos, image, 70, tiles, tile_factor, groups)
         self.move_bool = move_bool
         self.speed = pygame.Vector2(1, 0)
         self.limit = limit

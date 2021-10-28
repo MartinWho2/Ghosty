@@ -5,9 +5,9 @@ from math_functions import limit_speed
 
 class Moving_sprite(pygame.sprite.Sprite):
     def __init__(self, pos: pygame.Vector2, image: pygame.Surface, resize: int, tiles: list, tile_factor: int,
-                 *args: pygame.sprite.Group) -> None:
+                 sprite_groups: list[pygame.sprite.Group]) -> None:
         super().__init__()
-        self.add(sprite_group for sprite_group in args)
+        self.add(sprite_group for sprite_group in sprite_groups)
         self.tiles = tiles
         self.tile_factor = tile_factor
         self.pos = pos
@@ -51,7 +51,7 @@ class Moving_sprite(pygame.sprite.Sprite):
 
     def fall(self, acceleration, dt):
         self.speed.y += (acceleration.y + self.gravity) * dt
-        self.speed.y = limit_speed(self.speed.y, self.max_speed)
+        # self.speed.y = limit_speed(self.speed.y, self.max_speed)
         self.pos.y += self.speed.y * dt
         self.rect.y = round(self.pos.y)
         hits = self.check_collision()
