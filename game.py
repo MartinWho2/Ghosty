@@ -5,6 +5,7 @@ from typing import Union
 from player import Player
 from map_functions import create_map
 from enemy import Enemy
+from button import Button
 
 
 class Game:
@@ -19,12 +20,15 @@ class Game:
         self.surface = pygame.Surface((self.w, self.h))
 
         self.map = create_map(1)
-        self.sprites = pygame.sprite.Group()
+        self.object_sprites = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group()
+        self.bullets = pygame.sprite.Group()
+        self.player_sprite = pygame.sprite.Group()
 
-        self.player: Player = Player(self.map, self.size_world, self.surface, [self.sprites])
+        self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite])
         self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
 
-        self.bullets = pygame.sprite.Group()
+
         self.keys: dict = {}
         self.characters = ["player", "fantom"]
         self.characters_class: dict = {"player": self.player, "fantom": self.player.fantom}
@@ -43,7 +47,7 @@ class Game:
                        }
         }
         self.bg = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
-        self.enemies = pygame.sprite.Group()
+
         self.spawn_objects(1)
 
     def update(self, dt: float) -> None:
@@ -94,12 +98,21 @@ class Game:
             self.player.move(pygame.Vector2(0, 0), self.characters_class["player"], dt, self.camera_pos)
         if self.timer_characters:
             self.change_character(dt)
-        for sprite in self.sprites:
-            self.surface.blit(sprite.image,
-                              (sprite.rect.x - round(self.camera_pos.x), sprite.rect.y - round(self.camera_pos.y)))
+        for sprite in self.object_sprites:
+            self.blit_sprite(sprite)
+        for sprite in self.enemies:
+            self.blit_sprite(sprite)
+        for sprite in self.bullets:
+            self.blit_sprite(sprite)
+        for sprite in self.player_sprite:
+            self.blit_sprite(sprite)
         if self.moving_character == "player":
             self.player.fantom_replace(dt, self.camera_pos)
         self.window.blit(self.surface, (0, 0))
+
+    def blit_sprite(self,sprite: pygame.sprite.Sprite):
+        self.surface.blit(sprite.image,
+                          (sprite.rect.x - round(self.camera_pos.x), sprite.rect.y - round(self.camera_pos.y)))
 
     def change_character(self, dt: float) -> None:
         """
@@ -131,9 +144,18 @@ class Game:
         """
         Enemy(pygame.image.load("enemy.png").convert_alpha(),
               pygame.Vector2(pos[0] * self.size_world, pos[1] * self.size_world),
-              True, 100, self.map, self.size_world, [self.enemies, self.sprites])
+              True, 100, self.map, self.size_world, [self.enemies])
+
+    def spawn_button(self, button_pos: Union[list, tuple], doors: list[Union[tuple, list]]) -> None:
+        pos = [round((button_pos[0] + 0.5) * self.size_world), (button_pos[1] + 1) * self.size_world]
+        button = Button(pos, doors, self.size_world)
+        button.add(self.object_sprites)
 
     def spawn_objects(self, level: int) -> None:
         objects = self.level_objects[str(level)]
         for pos in objects["Enemies"]:
             self.spawn_enemy(pos)
+        for pos in objects["Buttons"]:
+            button_pos = pos[0]
+            doors = pos[1]
+            self.spawn_button(button_pos, doors)

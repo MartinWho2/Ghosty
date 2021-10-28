@@ -27,7 +27,7 @@ class Fantom(pygame.sprite.Sprite):
 
 class Player(Moving_sprite):
     def __init__(self, tiles: list, tile_factor: int, surface: pygame.Surface, groups: list[pygame.sprite.Group]) -> None:
-        super().__init__(pygame.Vector2(0, 0), pygame.image.load('chevalier.png').convert_alpha(), 64, tiles,
+        super().__init__(pygame.Vector2(0, 0), pygame.image.load('chevalier.png').convert_alpha(), tile_factor, tiles,
                          tile_factor, groups)
         self.surface = surface
         self.surface_above = pygame.Surface((surface.get_width(), surface.get_height()), pygame.SRCALPHA)
@@ -36,7 +36,7 @@ class Player(Moving_sprite):
         self.empty_image = self.image.copy()
         self.empty_image.set_alpha(0)
         self.rect = self.image.get_rect()
-        self.rect.center = (100, 100)
+        self.rect.center = (0, 0)
         self.facing_right = True
         self.pos = pygame.Vector2(self.rect.x, self.rect.y)
         self.fantom = Fantom()
