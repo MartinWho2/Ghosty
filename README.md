@@ -5,6 +5,8 @@ After many attempts at writing games in python with pygame, I have finally decid
 The game is a 2D platformer (WOW such creativity ! yes I know) about a soldier and a ghost. It is all about the collaboration of powers between the two differents characters, where each has his unique 
 abilities. They will need to cooperate to free a person who was captured by the horrible government of Arstotzka in a concentration camp. The game is made of levels with an increasing difficulty and more and more challenges.
 
+How can I center this image ?![image](https://user-images.githubusercontent.com/72351629/139261718-a36a3f47-e6ad-48eb-8a52-d0aaba448ee5.png) 
+
 .
 
 .
