@@ -146,11 +146,15 @@ class Game:
               pygame.Vector2(pos[0] * self.size_world, pos[1] * self.size_world),
               True, 100, self.map, self.size_world, [self.enemies])
 
-    def spawn_button(self, button_pos: Union[list, tuple], doors: list[Union[tuple, list]]) -> None:
+    def spawn_button(self, button_pos: Union[list, tuple], doors: list[Union[tuple, list]]) -> pygame.sprite:
         pos = [round((button_pos[0] + 0.5) * self.size_world), (button_pos[1] + 1) * self.size_world]
         button = Button(pos, doors, self.size_world)
         button.add(self.object_sprites)
+        return button
 
+    def spawn_door(self,door):
+        # I'll do it later
+        pass
     def spawn_objects(self, level: int) -> None:
         objects = self.level_objects[str(level)]
         for pos in objects["Enemies"]:
@@ -158,4 +162,8 @@ class Game:
         for pos in objects["Buttons"]:
             button_pos = pos[0]
             doors = pos[1]
-            self.spawn_button(button_pos, doors)
+            for door in doors:
+                self.spawn_door(door)
+            button = self.spawn_button(button_pos, )
+
+
