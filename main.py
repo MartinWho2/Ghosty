@@ -1,10 +1,11 @@
 import pygame
+import random
 
 from game import Game
 
 pygame.init()
 w, h = 576, 576
-window = pygame.display.set_mode((w, h),pygame.SRCALPHA)
+window = pygame.display.set_mode((w, h), pygame.SRCALPHA)
 clock = pygame.time.Clock()
 
 
@@ -26,11 +27,14 @@ def main():
                 if e.key == pygame.K_q:
                     "Change Character"
                     game.moving_character = game.characters[-1 * game.characters.index(game.moving_character) + 1]
-                    game.player.fantom.speed = pygame.Vector2(0,0)
+                    game.player.fantom.speed = pygame.Vector2(0, 0)
                     game.player.image_copy = game.player.image.copy()
                     game.change_character(1)
                     for button in game.object_sprites:
                         button.change_image(game.moving_character)
+                if e.key == pygame.K_a:
+                    for button in game.object_sprites:
+                        button.activate()
                 elif e.key == pygame.K_SPACE and game.moving_character == "player":
                     "Jump"
                     game.player.jump()

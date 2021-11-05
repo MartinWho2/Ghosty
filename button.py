@@ -29,5 +29,5 @@ class Button(pygame.sprite.Sprite):
         self.image = self.images[key]
 
     def activate(self) -> None:
-        pass
-        # self.door.activate()
+        for door in self.door:
+            door.activate()

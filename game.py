@@ -6,7 +6,7 @@ from player import Player
 from map_functions import create_map
 from enemy import Enemy
 from button import Button
-
+from door import Door
 
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
@@ -21,6 +21,7 @@ class Game:
 
         self.map = create_map(1)
         self.object_sprites = pygame.sprite.Group()
+        self.doors_sprites = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.player_sprite = pygame.sprite.Group()
@@ -100,6 +101,8 @@ class Game:
             self.change_character(dt)
         for sprite in self.object_sprites:
             self.blit_sprite(sprite)
+        for sprite in self.doors_sprites:
+            self.blit_sprite(sprite)
         for sprite in self.enemies:
             self.blit_sprite(sprite)
         for sprite in self.bullets:
@@ -152,9 +155,12 @@ class Game:
         button.add(self.object_sprites)
         return button
 
-    def spawn_door(self,door):
-        # I'll do it later
-        pass
+    def spawn_door(self, door):
+        pos = [round((door[0][0] + 0.5) * self.size_world), (door[0][1] + 1) * self.size_world]
+        door = Door(door[1], pos, self.moving_character, self.size_world)
+        door.add(self.doors_sprites)
+        return door
+
     def spawn_objects(self, level: int) -> None:
         objects = self.level_objects[str(level)]
         for pos in objects["Enemies"]:
@@ -162,8 +168,10 @@ class Game:
         for pos in objects["Buttons"]:
             button_pos = pos[0]
             doors = pos[1]
+            doors_class = []
             for door in doors:
-                self.spawn_door(door)
-            button = self.spawn_button(button_pos, )
+                doors_class.append(self.spawn_door(door))
+            self.spawn_button(button_pos, doors_class)
+
 
 
