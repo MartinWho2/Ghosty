@@ -1,6 +1,5 @@
 import pygame
-import random
-
+import sys
 from game import Game
 
 pygame.init()
@@ -16,7 +15,6 @@ def main():
     before = pygame.time.get_ticks()
     while playing:
         clock.tick(60)
-        print(clock.get_fps())
         dt = (pygame.time.get_ticks() - before) * fps / 1000
         game.update(dt)
         before = pygame.time.get_ticks()
@@ -25,7 +23,7 @@ def main():
             if e.type == pygame.KEYDOWN:
                 game.keys[e.key] = True
                 if e.key == pygame.K_q:
-                    "Change Character"
+                    # Change Character
                     game.moving_character = game.characters[-1 * game.characters.index(game.moving_character) + 1]
                     game.player.fantom.speed = pygame.Vector2(0, 0)
                     game.player.image_copy = game.player.image.copy()
@@ -36,7 +34,7 @@ def main():
                     for button in game.object_sprites:
                         button.activate()
                 elif e.key == pygame.K_SPACE and game.moving_character == "player":
-                    "Jump"
+                    # Jump
                     game.player.jump()
             elif e.type == pygame.KEYUP:
                 game.keys[e.key] = False
@@ -47,6 +45,7 @@ def main():
                     game.player.shoot([game.bullets])
             elif e.type == pygame.QUIT:
                 pygame.quit()
+                sys.exit()
                 playing = False
 
 

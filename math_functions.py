@@ -10,7 +10,7 @@ def positive(value: Union[int, float]) -> Union[int, float]:
     return value
 
 
-def limit_speed(speed: float, max_speed: int) -> float:
+def limit_speed(speed: float, max_speed: Union[int, float]) -> float:
     """
     Limits a value if it is over the given limit
     :param speed: Value that needs to be regulated

@@ -29,7 +29,6 @@ class Game:
         self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite])
         self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
 
-
         self.keys: dict = {}
         self.characters = ["player", "fantom"]
         self.characters_class: dict = {"player": self.player, "fantom": self.player.fantom}
@@ -172,6 +171,3 @@ class Game:
             for door in doors:
                 doors_class.append(self.spawn_door(door))
             self.spawn_button(button_pos, doors_class)
-
-
-
