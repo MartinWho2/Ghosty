@@ -45,3 +45,11 @@ def collide_with_rects(rect_style_tuple: tuple, rect2: tuple) -> bool:
         1] > rect2[1] - rect_style_tuple[3]:
         return True
     return False
+def show_mask(mask:pygame.mask.Mask):
+    size = mask.get_size()
+    for row in range(size[0]):
+        list = []
+        for column in range(size[1]):
+            list.append(mask.get_at((column,row)))
+        print(list)
+

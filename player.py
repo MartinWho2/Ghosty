@@ -66,8 +66,10 @@ class Player(Moving_sprite):
         if moving_object.__class__ == Player:
             if self.speed.x > 0:
                 self.image = self.images[True]
+                self.mask = self.masks[True]
             elif self.speed.x < 0:
                 self.image = self.images[False]
+                self.mask = self.masks[False]
             hits = self.check_collision()
             self.collide(hits, False)
             self.fall(acceleration, dt)

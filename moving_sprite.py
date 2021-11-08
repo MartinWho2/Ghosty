@@ -1,5 +1,5 @@
 import pygame
-from map_functions import collide_with_rects
+from map_functions import collide_with_rects, show_mask
 from math_functions import limit_speed
 
 
@@ -16,12 +16,14 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = pos.x, pos.y
         self.speed = pygame.Vector2(0, 0)
         self.gravity, self.friction = 0.5, -0.18
+        self.is_jumping = False
         self.max_speed = 10
         self.mask = pygame.mask.from_surface(self.image)
+        self.masks = {True: self.mask, False: pygame.mask.from_surface(pygame.transform.flip(self.image, True, False))}
         self.tile = pygame.mask.Mask((tile_factor, tile_factor), fill=True)
 
     def collide_with_mask(self, mask, pos_mask):
-        return self.mask.overlap_mask(mask, (pos_mask[0]-self.rect.x,pos_mask[1]-self.rect.y))
+        return self.mask.overlap_mask(mask, (pos_mask[0]-self.rect. x, pos_mask[1]-self.rect.y))
 
     def check_collision(self):
         get_hits = []
@@ -33,7 +35,7 @@ class Moving_sprite(pygame.sprite.Sprite):
                     # player_rect = (self.pos.x, self.pos.y, self.rect.w, self.rect.h)
                     # if collide_with_rects(rect, player_rect):
                     mask = self.collide_with_mask(self.tile, (column * self.tile_factor, row * self.tile_factor))
-                    print("Mask overlapping is ",mask)
+
                     if mask.count():
                         rect = (column*self.tile_factor, row*self.tile_factor, self.tile_factor, self.tile_factor)
                         get_hits.append(mask)
@@ -49,7 +51,7 @@ class Moving_sprite(pygame.sprite.Sprite):
         for mask in hits:
             if axis:
                 if self.speed.y > 0:
-                    movement = self.find_bits_from_mask(mask,"down")
+                    movement = self.find_bits_from_mask(mask, "down")
                     self.pos.y -= movement
                     self.is_jumping = False
                 elif self.speed.y < 0:
@@ -60,35 +62,36 @@ class Moving_sprite(pygame.sprite.Sprite):
 
             else:
                 if self.speed.x > 0:
-                    movement = self.find_bits_from_mask(mask, "left")
-                    self.pos.x += movement
-                elif self.speed.x < 0:
                     movement = self.find_bits_from_mask(mask, "right")
                     self.pos.x -= movement
+                elif self.speed.x < 0:
+                    movement = self.find_bits_from_mask(mask, "left")
+                    self.pos.x += movement
                 self.speed.x = 0
                 self.rect.x = self.pos.x
 
     def find_bits_from_mask(self, mask: pygame.mask.Mask, direction: str) -> int:
+        if direction != "down":
+            print(f"Collision {direction}")
         size = mask.get_size()
         for column in range(size[0]):
             found = False
             for row in range(size[1]):
-                if direction == "left":
-                    coordinate = (column, row)
-                elif direction == "right":
-                    coordinate= (size[0]-1-column, row)
+                coordinate = (column, row)
+                if direction == "right":
+                    coordinate = (size[0]-1-column, row)
                 elif direction == "up":
                     coordinate = (row, column)
                 elif direction == "down":
-                    coordinate = (size[1]-1-row, column)
+                    coordinate = (row, size[1]-1-column)
                 if mask.get_at(coordinate) == 1:
                     found = True
                     break
             if not found:
-                if direction == "right":
-                    return column + 1
-                return column - 1
+                return column
         print("ERROR")
+        print(show_mask(mask))
+        raise ZeroDivisionError
 
     def fall(self, acceleration, dt):
         self.speed.y += (acceleration.y + self.gravity) * dt
