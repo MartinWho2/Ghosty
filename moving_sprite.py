@@ -25,7 +25,7 @@ class Moving_sprite(pygame.sprite.Sprite):
     def collide_with_mask(self, mask, pos_mask):
         return self.mask.overlap_mask(mask, (pos_mask[0]-self.rect. x, pos_mask[1]-self.rect.y))
 
-    def check_collision(self):
+    def check_collision(self)-> list[pygame.mask.Mask]:
         get_hits = []
         for row in range(len(self.tiles)):
             for column in range(len(self.tiles[row])):
@@ -37,7 +37,7 @@ class Moving_sprite(pygame.sprite.Sprite):
                     mask = self.collide_with_mask(self.tile, (column * self.tile_factor, row * self.tile_factor))
 
                     if mask.count():
-                        rect = (column*self.tile_factor, row*self.tile_factor, self.tile_factor, self.tile_factor)
+                        # rect = (column*self.tile_factor, row*self.tile_factor, self.tile_factor, self.tile_factor)
                         get_hits.append(mask)
         return get_hits
 
@@ -61,11 +61,13 @@ class Moving_sprite(pygame.sprite.Sprite):
                 self.rect.y = self.pos.y
 
             else:
+
                 if self.speed.x > 0:
                     movement = self.find_bits_from_mask(mask, "right")
                     self.pos.x -= movement
                 elif self.speed.x < 0:
                     movement = self.find_bits_from_mask(mask, "left")
+                    print(f"move to {movement}")
                     self.pos.x += movement
                 self.speed.x = 0
                 self.rect.x = self.pos.x
@@ -74,24 +76,25 @@ class Moving_sprite(pygame.sprite.Sprite):
         if direction != "down":
             print(f"Collision {direction}")
         size = mask.get_size()
+
         for column in range(size[0]):
-            found = False
             for row in range(size[1]):
                 coordinate = (column, row)
-                if direction == "right":
+                if direction == "left":
                     coordinate = (size[0]-1-column, row)
-                elif direction == "up":
-                    coordinate = (row, column)
                 elif direction == "down":
+                    coordinate = (row, column)
+                elif direction == "up":
                     coordinate = (row, size[1]-1-column)
                 if mask.get_at(coordinate) == 1:
-                    found = True
-                    break
-            if not found:
-                return column
+                    if direction in {"right", "left"}:
+                        if direction == "left":
+                            #print(show_mask(mask),size[0]-column)
+                            pass
+                        return size[0]-column
+                    return size[1]-column
         print("ERROR")
         print(show_mask(mask))
-        raise ZeroDivisionError
 
     def fall(self, acceleration, dt):
         self.speed.y += (acceleration.y + self.gravity) * dt
