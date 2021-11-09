@@ -72,7 +72,7 @@ class Player(Moving_sprite):
                 self.mask = self.masks[False]
             hits = self.check_collision()
             for mask in hits:
-                self.surface.blit(mask.to_surface(),self.rect)
+                self.surface.blit(mask.to_surface(), self.rect)
             self.collide(hits, False)
             self.fall(acceleration, dt)
 

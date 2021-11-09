@@ -21,11 +21,12 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.masks = {True: self.mask, False: pygame.mask.from_surface(pygame.transform.flip(self.image, True, False))}
         self.tile = pygame.mask.Mask((tile_factor, tile_factor), fill=True)
+        self.collision_test = False
 
     def collide_with_mask(self, mask, pos_mask):
         return self.mask.overlap_mask(mask, (pos_mask[0]-self.rect. x, pos_mask[1]-self.rect.y))
 
-    def check_collision(self)-> list[pygame.mask.Mask]:
+    def check_collision(self) -> list[pygame.mask.Mask]:
         get_hits = []
         for row in range(len(self.tiles)):
             for column in range(len(self.tiles[row])):
@@ -69,6 +70,10 @@ class Moving_sprite(pygame.sprite.Sprite):
                     movement = self.find_bits_from_mask(mask, "left")
                     print(f"move to {movement}")
                     self.pos.x += movement
+                    self.collision_test = True
+                    self.rect.x = round(self.pos.x)
+                    if self.check_collision():
+                        self.collide(self.check_collision(), False)
                 self.speed.x = 0
                 self.rect.x = self.pos.x
 
@@ -88,20 +93,20 @@ class Moving_sprite(pygame.sprite.Sprite):
                     coordinate = (row, size[1]-1-column)
                 if mask.get_at(coordinate) == 1:
                     if direction in {"right", "left"}:
-                        if direction == "left":
-                            #print(show_mask(mask),size[0]-column)
-                            pass
                         return size[0]-column
                     return size[1]-column
         print("ERROR")
-        print(show_mask(mask))
 
     def fall(self, acceleration, dt):
+        if self.collision_test:
+            if len(self.check_collision()):
+                for mask in self.check_collision():
+                    show_mask(mask)
+                pass
         self.speed.y += (acceleration.y + self.gravity) * dt
         # self.speed.y = limit_speed(self.speed.y, self.max_speed)
         self.pos.y += self.speed.y * dt
         self.rect.y = round(self.pos.y)
         hits = self.check_collision()
         self.collide(hits, True)
-        self.rect.x = round(self.pos.x)
         self.rect.y = round(self.pos.y)
