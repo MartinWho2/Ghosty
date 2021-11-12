@@ -21,7 +21,6 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.masks = {True: self.mask, False: pygame.mask.from_surface(pygame.transform.flip(self.image, True, False))}
         self.tile = pygame.mask.Mask((tile_factor, tile_factor), fill=True)
-        self.collision_test = False
 
     def collide_with_mask(self, mask, pos_mask):
         return self.mask.overlap_mask(mask, (pos_mask[0]-self.rect. x, pos_mask[1]-self.rect.y))
@@ -59,7 +58,7 @@ class Moving_sprite(pygame.sprite.Sprite):
                     movement = self.find_bits_from_mask(mask, "up")
                     self.pos.y += movement
                 self.speed.y = 0
-                self.rect.y = self.pos.y
+                self.rect.y = round(self.pos.y)
 
             else:
 
@@ -68,14 +67,9 @@ class Moving_sprite(pygame.sprite.Sprite):
                     self.pos.x -= movement
                 elif self.speed.x < 0:
                     movement = self.find_bits_from_mask(mask, "left")
-                    print(f"move to {movement}")
                     self.pos.x += movement
-                    self.collision_test = True
-                    self.rect.x = round(self.pos.x)
-                    if self.check_collision():
-                        self.collide(self.check_collision(), False)
                 self.speed.x = 0
-                self.rect.x = self.pos.x
+                self.rect.x = round(self.pos.x)
 
     def find_bits_from_mask(self, mask: pygame.mask.Mask, direction: str) -> int:
         if direction != "down":
@@ -98,11 +92,6 @@ class Moving_sprite(pygame.sprite.Sprite):
         print("ERROR")
 
     def fall(self, acceleration, dt):
-        if self.collision_test:
-            if len(self.check_collision()):
-                for mask in self.check_collision():
-                    show_mask(mask)
-                pass
         self.speed.y += (acceleration.y + self.gravity) * dt
         # self.speed.y = limit_speed(self.speed.y, self.max_speed)
         self.pos.y += self.speed.y * dt
