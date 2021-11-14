@@ -20,3 +20,7 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = self.pos.x, self.pos.y
         if abs(self.pos.x) > 1000:
             self.kill()
+
+    def collide(self, sprite: pygame.sprite.Sprite):
+        if pygame.sprite.collide_mask(self, sprite):
+            self.kill()

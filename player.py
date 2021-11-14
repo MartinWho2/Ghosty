@@ -26,14 +26,15 @@ class Fantom(pygame.sprite.Sprite):
 
 
 class Player(Moving_sprite):
-    def __init__(self, tiles: list, tile_factor: int, surface: pygame.Surface, groups: list[pygame.sprite.Group]) -> None:
+    def __init__(self, tiles: list, tile_factor: int, surface: pygame.Surface, groups: list[pygame.sprite.Group],
+                 elements) -> None:
         super().__init__(pygame.Vector2(0, 0), pygame.image.load('chevalier.png').convert_alpha(), tile_factor, tiles,
-                         tile_factor, groups)
+                         tile_factor, elements, groups)
         self.surface = surface
         self.surface_above = pygame.Surface((surface.get_width(), surface.get_height()), pygame.SRCALPHA)
         self.image_copy = self.image.copy()
-        self.images = {True: self.image, False: pygame.transform.flip(self.image, True, False)}
         self.empty_image = self.image.copy()
+        self.heading_right = True
         self.empty_image.set_alpha(0)
         self.rect = self.image.get_rect()
         self.rect.center = (0, 0)
@@ -67,12 +68,12 @@ class Player(Moving_sprite):
             if self.speed.x > 0:
                 self.image = self.images[True]
                 self.mask = self.masks[True]
+                self.heading_right = True
             elif self.speed.x < 0:
                 self.image = self.images[False]
                 self.mask = self.masks[False]
+                self.heading_right = False
             hits = self.check_collision()
-            for mask in hits:
-                self.surface.blit(mask.to_surface(), self.rect)
             self.collide(hits, False)
             self.fall(acceleration, dt)
 
@@ -145,11 +146,11 @@ class Player(Moving_sprite):
         Shoots a bullet
         :return: None
         """
-        speed = pygame.Vector2(5, 0)
-        x_pos = self.rect.right
-        if self.speed.x < 0:
-            speed.x = -5
-            x_pos = self.rect.x - 10
+        speed = pygame.Vector2(-5, 0)
+        x_pos = self.rect.left -10
+        if self.heading_right:
+            speed.x = 5
+            x_pos = self.rect.right
         pos = pygame.Vector2(x_pos, self.rect.centery)
         bullet = Bullet(pos, pygame.Vector2(speed.x, speed.y))
         bullet.add(group for group in sprite_groups)

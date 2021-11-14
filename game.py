@@ -1,9 +1,10 @@
 import pygame
 import json
+import math
 from typing import Union
 
 from player import Player
-from map_functions import create_map
+from map_functions import create_map, collide_with_rects
 from enemy import Enemy
 from button import Button
 from door import Door
@@ -26,7 +27,7 @@ class Game:
         self.bullets = pygame.sprite.Group()
         self.player_sprite = pygame.sprite.Group()
 
-        self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite])
+        self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite], [self.doors_sprites,self.object_sprites])
         self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
 
         self.keys: dict = {}
@@ -34,7 +35,7 @@ class Game:
         self.characters_class: dict = {"player": self.player, "fantom": self.player.fantom}
         self.moving_character: str = self.characters[0]
         self.timer_characters: float = 0.0
-        self.tiles = {
+        self.tiles: dict = {
             "fantom": {"1": pygame.transform.scale(pygame.image.load("tiles/fantom/up.png").convert_alpha(),
                                                    (self.size_world, self.size_world)),
                        "2": pygame.transform.scale(pygame.image.load("tiles/fantom/mid.png").convert(),
@@ -46,7 +47,7 @@ class Game:
                                                    (self.size_world, self.size_world)),
                        }
         }
-        self.bg = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
+        self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
 
         self.spawn_objects(1)
 
@@ -75,12 +76,23 @@ class Game:
                 self.surface.blit(particle.image, particle.pos)
         for bullet in self.bullets:
             bullet.move(dt)
+            colliding = [self.doors_sprites,self.object_sprites]
+            for group in colliding:
+                for object in group:
+                    bullet.collide(object)
+            for row in range(len(self.map)):
+                for column in range(len(self.map[row])):
+                    tile = self.map[row][column]
+                    if tile != "0":
+                        if collide_with_rects((bullet.rect.x,bullet.rect.y,bullet.rect.w,bullet.rect.h),
+                        (column * self.size_world, row * self.size_world,self.size_world,self.size_world)):
+                            bullet.kill()
+
         for person in self.enemies:
             person.move(dt)
             for bullet in self.bullets:
-                if pygame.sprite.collide_mask(person, bullet):
-                    bullet.kill()
-                    person.kill()
+                bullet.collide(person)
+                person.kill()
         movement = pygame.Vector2(0, 0)
         value = 0.8 * dt
         if self.keys.get(pygame.K_LEFT):
@@ -146,7 +158,7 @@ class Game:
         """
         Enemy(pygame.image.load("enemy.png").convert_alpha(),
               pygame.Vector2(pos[0] * self.size_world, pos[1] * self.size_world),
-              True, 100, self.map, self.size_world, [self.enemies])
+              True, 100, self.map, self.size_world, [self.enemies], [self.doors_sprites, self.object_sprites])
 
     def spawn_button(self, button_pos: Union[list, tuple], doors: list[Union[tuple, list]]) -> pygame.sprite:
         pos = [round((button_pos[0] + 0.5) * self.size_world), (button_pos[1] + 1) * self.size_world]

@@ -4,7 +4,7 @@ from moving_sprite import Moving_sprite
 
 class Enemy(Moving_sprite):
     def __init__(self, image: pygame.Surface, pos: pygame.Vector2, move_bool: bool, limit: int, tiles: list,
-                 tile_factor: int, groups: list[pygame.sprite.Group]) -> None:
+                 tile_factor: int, groups: list[pygame.sprite.Group],elements) -> None:
         """
         Init the class
         :param image: Image of the enemy
@@ -15,24 +15,24 @@ class Enemy(Moving_sprite):
         :param tile_factor: The size of the tiles
         :param groups: His sprite group(s)
         """
-        super().__init__(pos, image, 70, tiles, tile_factor, groups)
+        super().__init__(pos, image, 70, tiles, tile_factor, elements, groups)
         self.move_bool = move_bool
         self.speed = pygame.Vector2(1, 0)
         self.limit = limit
         self.counter = 0.0
-        self.speeds = {-1: 1, 1: -1}
+        self.speeds = {True: 1, False: -1}
+        self.heading_right = True
 
     def move(self, dt):
         self.counter += round(abs(self.speed.x * dt), 5)
-        if self.counter >= self.limit:
-            self.speed.x = self.speeds[int(self.speed.x)]
-            self.image = pygame.transform.flip(self.image, True, False)
+        hits = self.check_collision()
+        if self.counter >= self.limit or hits:
+            if hits:
+                self.collide(hits, False)
+            self.heading_right = not self.heading_right
+            self.speed.x = self.speeds[self.heading_right]
+            self.image = self.images[self.heading_right]
             self.counter = 0.0
         self.pos.x += self.speed.x * dt
-        hits = self.check_collision()
-        if hits:
-            self.counter = self.limit
-            speed_x = self.speed.x
-            self.collide(hits, False)
-            self.speed.x = speed_x
+        self.rect.x = round(self.pos.x)
         self.fall(pygame.Vector2(0, 0), dt)

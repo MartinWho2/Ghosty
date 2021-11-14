@@ -24,6 +24,7 @@ class Button(pygame.sprite.Sprite):
         else:
             self.rect.centerx, self.rect.bottom = pos.x, pos.y
         self.door = door
+        self.mask = pygame.mask.from_surface(self.image)
 
     def change_image(self, key: str) -> None:
         self.image = self.images[key]
