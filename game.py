@@ -91,8 +91,8 @@ class Game:
         for person in self.enemies:
             person.move(dt)
             for bullet in self.bullets:
-                bullet.collide(person)
-                person.kill()
+                if bullet.collide(person):
+                    person.kill()
         movement = pygame.Vector2(0, 0)
         value = 0.8 * dt
         if self.keys.get(pygame.K_LEFT):

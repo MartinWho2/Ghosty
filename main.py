@@ -6,7 +6,7 @@ pygame.init()
 w, h = 576, 576
 window = pygame.display.set_mode((w, h), pygame.SRCALPHA)
 clock = pygame.time.Clock()
-
+font = pygame.font.SysFont("arial",30)
 
 def main():
     playing = True
@@ -15,9 +15,12 @@ def main():
     before = pygame.time.get_ticks()
     while playing:
         clock.tick(60)
+        ips = str(clock.get_fps())
+        text = font.render(ips,False,(0,0,0))
         dt = (pygame.time.get_ticks() - before) * fps / 1000
         game.update(dt)
         before = pygame.time.get_ticks()
+        window.blit(text, (0, 0))
         pygame.display.flip()
         for e in pygame.event.get():
             if e.type == pygame.KEYDOWN:
@@ -47,7 +50,6 @@ def main():
                 pygame.quit()
                 sys.exit()
                 playing = False
-
 
 if __name__ == '__main__':
     main()

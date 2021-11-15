@@ -24,3 +24,5 @@ class Bullet(pygame.sprite.Sprite):
     def collide(self, sprite: pygame.sprite.Sprite):
         if pygame.sprite.collide_mask(self, sprite):
             self.kill()
+            return True
+        return False
