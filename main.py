@@ -1,3 +1,5 @@
+import time
+
 import pygame
 import sys
 from game import Game
@@ -12,14 +14,16 @@ def main():
     playing = True
     fps = 60
     game = Game(window)
-    before = pygame.time.get_ticks()
+    before = time.time()
     while playing:
         clock.tick(60)
         ips = str(clock.get_fps())
-        text = font.render(ips,False,(0,0,0))
-        dt = (pygame.time.get_ticks() - before) * fps / 1000
+        text = font.render(ips, False, (0, 0, 0))
+        dt = (time.time() - before) * fps
+        while dt == 0.0:
+            dt = (time.time() - before) * fps
         game.update(dt)
-        before = pygame.time.get_ticks()
+        before = time.time()
         window.blit(text, (0, 0))
         pygame.display.flip()
         for e in pygame.event.get():
@@ -33,7 +37,11 @@ def main():
                     game.change_character(1)
                     for button in game.object_sprites:
                         button.change_image(game.moving_character)
+                    for door in game.doors_sprites:
+                        door.change_image(game.moving_character)
                 if e.key == pygame.K_a:
+                    if game.moving_character == "fantom" and game.can_push_button:
+                        game.can_push_button.activate()
                     for button in game.object_sprites:
                         button.activate()
                 elif e.key == pygame.K_SPACE and game.moving_character == "player":
@@ -45,7 +53,7 @@ def main():
                     if game.player.is_jumping and game.player.speed.y < 0:
                         game.player.speed.y *= 0.5
                 elif e.key == pygame.K_w and game.moving_character == "player":
-                    game.player.shoot([game.bullets])
+                    game.player.shoot([game.bullets],[game.doors_sprites,game.object_sprites,game.enemies])
             elif e.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()

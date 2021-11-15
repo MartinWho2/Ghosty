@@ -3,7 +3,7 @@ from typing import Union
 
 
 class Door(pygame.sprite.Sprite):
-    def __init__(self, image: pygame.surface.Surface, pos: Union[tuple, list], moving_character: str, size_world: int):
+    def __init__(self, image: str, pos: Union[tuple, list], moving_character: str, size_world: int):
         super().__init__()
         self.open = False
         self.img_size = round(size_world / 2)
@@ -12,6 +12,9 @@ class Door(pygame.sprite.Sprite):
             f"tiles/player/{self.names[image]}.png").convert_alpha(), (self.img_size, self.img_size)),
                        "fantom": pygame.transform.scale(pygame.image.load(
             f"tiles/fantom/{self.names[image]}.png").convert_alpha(), (self.img_size, self.img_size))}
+        if image == "bot":
+            self.images["player"] = pygame.transform.flip(self.images["player"],False,True)
+            self.images["fantom"] = pygame.transform.flip(self.images["fantom"],False,True)
         self.image = self.images[moving_character]
         self.rect = self.image.get_rect()
         self.rect.midbottom = pos

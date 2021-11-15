@@ -30,6 +30,7 @@ class Game:
         self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite], [self.doors_sprites,self.object_sprites])
         self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
 
+        self.can_push_button = False
         self.keys: dict = {}
         self.characters = ["player", "fantom"]
         self.characters_class: dict = {"player": self.player, "fantom": self.player.fantom}
@@ -58,41 +59,19 @@ class Game:
         :return:
         """
         self.surface.fill(self.bg[self.moving_character])
-        self.window.fill((0, 0, 0, 0))
+        if self.can_push_button:
+            self.surface.fill((200,0,0))
+        # self.window.fill((0, 0, 0, 0))
         scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
                                 self.player.pos.y + self.player.rect.h / 2 - self.h / 2 - self.camera_pos.y)
         scroll /= 10
         self.camera_pos += scroll
         self.draw_map()
-        for index, particle in reversed(list(enumerate(self.player.fantom.particles))):
-            particle.size -= 0.1
-            if particle.size <= 0:
-                self.player.fantom.particles.pop(index)
-            else:
-                particle.pos.x += particle.speed.x
-                particle.pos.y += particle.speed.y
-                size = round(particle.size)
-                particle.image = pygame.transform.scale(particle.image_copy, (size, size))
-                self.surface.blit(particle.image, particle.pos)
+        self.deal_with_particles()
         for bullet in self.bullets:
-            bullet.move(dt)
-            colliding = [self.doors_sprites,self.object_sprites]
-            for group in colliding:
-                for object in group:
-                    bullet.collide(object)
-            for row in range(len(self.map)):
-                for column in range(len(self.map[row])):
-                    tile = self.map[row][column]
-                    if tile != "0":
-                        if collide_with_rects((bullet.rect.x,bullet.rect.y,bullet.rect.w,bullet.rect.h),
-                        (column * self.size_world, row * self.size_world,self.size_world,self.size_world)):
-                            bullet.kill()
-
+            bullet.move_and_collide(dt)
         for person in self.enemies:
             person.move(dt)
-            for bullet in self.bullets:
-                if bullet.collide(person):
-                    person.kill()
         movement = pygame.Vector2(0, 0)
         value = 0.8 * dt
         if self.keys.get(pygame.K_LEFT):
@@ -108,6 +87,12 @@ class Game:
         self.player.move(movement, self.characters_class[self.moving_character], dt, self.camera_pos)
         if self.moving_character == "fantom":
             self.player.move(pygame.Vector2(0, 0), self.characters_class["player"], dt, self.camera_pos)
+            for button in self.object_sprites:
+                ray = pygame.Vector2(self.player.fantom.rect.centerx-button.rect.centerx,self.player.fantom.rect.centery-button.rect.centery)
+                if ray.length() < self.size_world * 0.7:
+                    self.can_push_button = button
+                else:
+                    self.can_push_button = False
         if self.timer_characters:
             self.change_character(dt)
         for sprite in self.object_sprites:
@@ -150,6 +135,18 @@ class Game:
                     self.surface.blit(tiles[tile], (
                         column * self.size_world - round(self.camera_pos.x), row * self.size_world -
                         round(self.camera_pos.y)))
+
+    def deal_with_particles(self):
+        for index, particle in reversed(list(enumerate(self.player.fantom.particles))):
+            particle.size -= 0.1
+            if particle.size <= 0:
+                self.player.fantom.particles.pop(index)
+            else:
+                particle.pos.x += particle.speed.x
+                particle.pos.y += particle.speed.y
+                size = round(particle.size)
+                particle.image = pygame.transform.scale(particle.image_copy, (size, size))
+                self.surface.blit(particle.image, particle.pos)
 
     def spawn_enemy(self, pos: Union[list, tuple]) -> None:
         """

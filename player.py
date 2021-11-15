@@ -144,16 +144,18 @@ class Player(Moving_sprite):
             self.is_jumping = True
             self.speed.y = -12
 
-    def shoot(self, sprite_groups: list[pygame.sprite.Group]) -> None:
+    def shoot(self, sprite_groups: list[pygame.sprite.Group], group_collisions:list[pygame.sprite.Group]) -> None:
         """
-        Shoots a bullet
-        :return: None
+
+        :param sprite_groups: Groups to include the bullet
+        :param group_collisions: Groups colliding with the bullet
+        :return:
         """
-        speed = pygame.Vector2(-5, 0)
+        speed = pygame.Vector2(-10, 0)
         x_pos = self.rect.left -10
         if self.heading_right:
-            speed.x = 5
+            speed.x = 10
             x_pos = self.rect.right
         pos = pygame.Vector2(x_pos, self.rect.centery)
-        bullet = Bullet(pos, pygame.Vector2(speed.x, speed.y))
+        bullet = Bullet(pos, pygame.Vector2(speed.x, speed.y), group_collisions, self.tile_factor, self.tiles)
         bullet.add(group for group in sprite_groups)
