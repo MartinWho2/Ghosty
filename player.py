@@ -77,7 +77,7 @@ class Player(Moving_sprite):
             self.collide(hits, False)
             self.fall(acceleration, dt)
             # !!!! THIS IS REALLY BAD BUT I DON'T KNOW HOW ELSE I COULD DO IT
-            if self.speed.y > 1:
+            if self.speed.y > 1.5:
                 self.is_jumping = True
 
         elif moving_object.__class__ == Fantom:

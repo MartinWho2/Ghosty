@@ -49,7 +49,7 @@ class Game:
                        }
         }
         self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
-
+        self.a_img = pygame.transform.scale(pygame.image.load("key_a.png").convert(),(16,16))
         self.spawn_objects(1)
 
     def update(self, dt: float) -> None:
@@ -59,8 +59,6 @@ class Game:
         :return:
         """
         self.surface.fill(self.bg[self.moving_character])
-        if self.can_push_button:
-            self.surface.fill((200,0,0))
         # self.window.fill((0, 0, 0, 0))
         scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
                                 self.player.pos.y + self.player.rect.h / 2 - self.h / 2 - self.camera_pos.y)
@@ -91,6 +89,7 @@ class Game:
                 ray = pygame.Vector2(self.player.fantom.rect.centerx-button.rect.centerx,self.player.fantom.rect.centery-button.rect.centery)
                 if ray.length() < self.size_world * 0.7:
                     self.can_push_button = button
+
                 else:
                     self.can_push_button = False
         if self.timer_characters:
@@ -107,6 +106,9 @@ class Game:
             self.blit_sprite(sprite)
         if self.moving_character == "player":
             self.player.fantom_replace(dt, self.camera_pos)
+        if self.can_push_button:
+            self.surface.blit(self.a_img,(self.player.fantom.rect.centerx - self.a_img.get_width()/2 -
+        round(self.camera_pos.x), self.player.fantom.rect.y - 5 - self.a_img.get_height()-round(self.camera_pos.y)))
         self.window.blit(self.surface, (0, 0))
 
     def blit_sprite(self,sprite: pygame.sprite.Sprite):

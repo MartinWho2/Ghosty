@@ -35,6 +35,7 @@ def main():
                     game.player.fantom.speed = pygame.Vector2(0, 0)
                     game.player.image_copy = game.player.image.copy()
                     game.change_character(1)
+                    game.can_push_button = False
                     for button in game.object_sprites:
                         button.change_image(game.moving_character)
                     for door in game.doors_sprites:
@@ -42,8 +43,6 @@ def main():
                 if e.key == pygame.K_a:
                     if game.moving_character == "fantom" and game.can_push_button:
                         game.can_push_button.activate()
-                    for button in game.object_sprites:
-                        button.activate()
                 elif e.key == pygame.K_SPACE and game.moving_character == "player":
                     # Jump
                     game.player.jump()
