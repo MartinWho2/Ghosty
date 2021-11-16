@@ -70,50 +70,39 @@ class Game:
             bullet.move_and_collide(dt)
         for person in self.enemies:
             person.move(dt)
-        movement = pygame.Vector2(0, 0)
-        value = 0.8 * dt
-        if self.keys.get(pygame.K_LEFT):
-            movement.x -= value
-        if self.keys.get(pygame.K_RIGHT):
-            movement.x += value
-        if self.moving_character == "fantom":
-            if self.keys.get(pygame.K_UP):
-                movement.y -= value
-            if self.keys.get(pygame.K_DOWN):
-                movement.y += value
-
-        self.player.move(movement, self.characters_class[self.moving_character], dt, self.camera_pos)
+        self.player.move(self.get_input_for_movement(dt), self.characters_class[self.moving_character], dt, self.camera_pos)
         if self.moving_character == "fantom":
             self.player.move(pygame.Vector2(0, 0), self.characters_class["player"], dt, self.camera_pos)
             for button in self.object_sprites:
                 ray = pygame.Vector2(self.player.fantom.rect.centerx-button.rect.centerx,self.player.fantom.rect.centery-button.rect.centery)
                 if ray.length() < self.size_world * 0.7:
                     self.can_push_button = button
-
                 else:
                     self.can_push_button = False
+        else:
+            self.player.fantom_replace(dt, self.camera_pos)
         if self.timer_characters:
             self.change_character(dt)
-        for sprite in self.object_sprites:
-            self.blit_sprite(sprite)
-        for sprite in self.doors_sprites:
-            self.blit_sprite(sprite)
-        for sprite in self.enemies:
-            self.blit_sprite(sprite)
-        for sprite in self.bullets:
-            self.blit_sprite(sprite)
-        for sprite in self.player_sprite:
-            self.blit_sprite(sprite)
-        if self.moving_character == "player":
-            self.player.fantom_replace(dt, self.camera_pos)
-        if self.can_push_button:
-            self.surface.blit(self.a_img,(self.player.fantom.rect.centerx - self.a_img.get_width()/2 -
-        round(self.camera_pos.x), self.player.fantom.rect.y - 5 - self.a_img.get_height()-round(self.camera_pos.y)))
-        self.window.blit(self.surface, (0, 0))
+        self.blit_everything()
 
     def blit_sprite(self,sprite: pygame.sprite.Sprite):
         self.surface.blit(sprite.image,
                           (sprite.rect.x - round(self.camera_pos.x), sprite.rect.y - round(self.camera_pos.y)))
+
+    def blit_everything(self):
+        groups = [self.object_sprites, self.doors_sprites, self.enemies, self.bullets, self.player_sprite]
+
+        # mask_sprite = self.player.mask.to_surface()
+        # self.surface.blit(mask_sprite,
+                          #(self.player.rect.x - round(self.camera_pos.x), self.player.rect.y - round(self.camera_pos.y)))
+        for group in groups:
+            for sprite in group:
+                self.blit_sprite(sprite)
+
+        if self.can_push_button:
+            self.surface.blit(self.a_img,(self.player.fantom.rect.centerx - self.a_img.get_width()/2 -
+        round(self.camera_pos.x), self.player.fantom.rect.y - 5 - self.a_img.get_height()-round(self.camera_pos.y)))
+        self.window.blit(self.surface, (0, 0))
 
     def change_character(self, dt: float) -> None:
         """
@@ -149,6 +138,20 @@ class Game:
                 size = round(particle.size)
                 particle.image = pygame.transform.scale(particle.image_copy, (size, size))
                 self.surface.blit(particle.image, particle.pos)
+
+    def get_input_for_movement(self, dt: float) -> pygame.Vector2:
+        value = 0.8 * dt
+        movement = pygame.Vector2(0, 0)
+        if self.keys.get(pygame.K_LEFT):
+            movement.x -= value
+        if self.keys.get(pygame.K_RIGHT):
+            movement.x += value
+        if self.moving_character == "fantom":
+            if self.keys.get(pygame.K_UP):
+                movement.y -= value
+            if self.keys.get(pygame.K_DOWN):
+                movement.y += value
+        return movement
 
     def spawn_enemy(self, pos: Union[list, tuple]) -> None:
         """

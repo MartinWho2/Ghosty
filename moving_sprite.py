@@ -21,6 +21,7 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.is_jumping = False
         self.max_speed = 10
         self.mask = pygame.mask.from_surface(self.image)
+        self.flip_mask = 0
         self.masks = {True: self.mask, False: pygame.mask.from_surface(pygame.transform.flip(self.image, True, False))}
         self.tile = pygame.mask.Mask((tile_factor, tile_factor), fill=True)
 

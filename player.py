@@ -58,6 +58,12 @@ class Player(Moving_sprite):
         :param camera_pos: position of the camera
         :return: None
         """
+        if self.flip_mask:
+            self.flip_mask += dt
+            if self.flip_mask > 15:
+                self.mask = self.masks[self.heading_right]
+                self.flip_mask = 0
+
         acceleration.x += moving_object.speed.x * self.friction
         moving_object.speed.x += acceleration.x * dt
         moving_object.speed.x = limit_speed(moving_object.speed.x, 3.5)
@@ -67,11 +73,13 @@ class Player(Moving_sprite):
         if moving_object.__class__ == Player:
             if self.speed.x > 0:
                 self.image = self.images[True]
-                self.mask = self.masks[True]
+                if not self.flip_mask:
+                    self.flip_mask = 1
                 self.heading_right = True
             elif self.speed.x < 0:
                 self.image = self.images[False]
-                self.mask = self.masks[False]
+                if not self.flip_mask:
+                    self.flip_mask = 1
                 self.heading_right = False
             hits = self.check_collision()
             self.collide(hits, False)

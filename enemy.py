@@ -24,6 +24,11 @@ class Enemy(Moving_sprite):
         self.heading_right = True
 
     def move(self, dt):
+        if self.flip_mask:
+            self.flip_mask += dt
+            if self.flip_mask > 10:
+                self.mask = self.masks[self.heading_right]
+                self.flip_mask = 0
         self.counter += round(abs(self.speed.x * dt), 5)
         hits = self.check_collision()
         if self.counter >= self.limit or hits:
@@ -32,6 +37,7 @@ class Enemy(Moving_sprite):
             self.heading_right = not self.heading_right
             self.speed.x = self.speeds[self.heading_right]
             self.image = self.images[self.heading_right]
+            self.flip_mask = 1
             self.counter = 0.0
         self.pos.x += self.speed.x * dt
         self.rect.x = round(self.pos.x)
