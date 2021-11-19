@@ -27,7 +27,7 @@ class Game:
         self.bullets = pygame.sprite.Group()
         self.player_sprite = pygame.sprite.Group()
 
-        self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite], [self.doors_sprites,self.object_sprites])
+        self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite], [self.doors_sprites])
         self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
 
         self.can_push_button = False
@@ -94,7 +94,7 @@ class Game:
 
         # mask_sprite = self.player.mask.to_surface()
         # self.surface.blit(mask_sprite,
-                          #(self.player.rect.x - round(self.camera_pos.x), self.player.rect.y - round(self.camera_pos.y)))
+        #(self.player.rect.x - round(self.camera_pos.x), self.player.rect.y - round(self.camera_pos.y)))
         for group in groups:
             for sprite in group:
                 self.blit_sprite(sprite)
