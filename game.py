@@ -8,6 +8,7 @@ from map_functions import create_map, collide_with_rects
 from enemy import Enemy
 from button import Button
 from door import Door
+from text_sprites import Text_sprite
 
 
 class Game:
@@ -27,6 +28,13 @@ class Game:
         self.enemies = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.player_sprite = pygame.sprite.Group()
+        self.texts = pygame.sprite.Group()
+
+        self.press_w_text = Text_sprite("pixel-font.ttf", "Press W to shoot a bullet", self.size_world * 4, (0, 0, 0),
+                                        (600, 50))
+        self.press_q_text = Text_sprite("pixel-font.ttf", "Press Q to switch between the player and the ghost",
+                                    self.size_world * 10, (0, 0, 0), (-150, -100))
+        self.texts.add(self.press_w_text,self.press_q_text)
 
         self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite],
                                      [self.doors_sprites], [self.enemies])
@@ -100,7 +108,7 @@ class Game:
                           (sprite.rect.x - round(self.camera_pos.x), sprite.rect.y - round(self.camera_pos.y)))
 
     def blit_everything(self):
-        groups = [self.object_sprites, self.doors_sprites, self.enemies, self.bullets, self.player_sprite]
+        groups = [self.object_sprites, self.doors_sprites, self.enemies, self.bullets,self.texts, self.player_sprite]
 
         # mask_sprite = self.player.mask.to_surface()
         # self.surface.blit(mask_sprite,
