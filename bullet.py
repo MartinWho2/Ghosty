@@ -32,13 +32,13 @@ class Bullet(pygame.sprite.Sprite):
             return True
         return False
 
-    def move_and_collide(self, dt):
+    def move_and_collide(self, moving_character, dt):
         self.move(dt)
         for group in self.colisions_objects:
             for object in group:
                 if self.collide(object):
                     if object.__class__ == Button:
-                        object.activate()
+                        object.activate(moving_character)
                     elif object.__class__ == Enemy:
                         object.kill()
 

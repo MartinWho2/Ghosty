@@ -42,7 +42,7 @@ def main():
                         door.change_image(game.moving_character)
                 if e.key == pygame.K_a:
                     if game.moving_character == "fantom" and game.can_push_button:
-                        game.can_push_button.activate()
+                        game.can_push_button.activate(game.moving_character)
                 elif e.key == pygame.K_SPACE and game.moving_character == "player":
                     # Jump
                     game.player.jump()

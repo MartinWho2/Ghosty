@@ -67,7 +67,7 @@ class Game:
         self.draw_map()
         self.deal_with_particles()
         for bullet in self.bullets:
-            bullet.move_and_collide(dt)
+            bullet.move_and_collide(self.moving_character, dt)
         for person in self.enemies:
             person.move(dt)
         self.player.move(self.get_input_for_movement(dt), self.characters_class[self.moving_character], dt, self.camera_pos)
