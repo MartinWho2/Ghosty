@@ -31,10 +31,11 @@ def main():
                 game.keys[e.key] = True
                 if e.key == pygame.K_q:
                     # Change Character
+                    game.characters_class[game.moving_character].image = game.characters_class[game.moving_character].image_copy
                     game.moving_character = game.characters[-1 * game.characters.index(game.moving_character) + 1]
                     game.player.fantom.speed = pygame.Vector2(0, 0)
                     game.player.image_copy = game.player.image.copy()
-                    game.change_character(1)
+                    game.change_character(dt)
                     game.can_push_button = False
                     for button in game.object_sprites:
                         button.change_image(game.moving_character)

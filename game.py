@@ -9,6 +9,7 @@ from enemy import Enemy
 from button import Button
 from door import Door
 
+
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
         self.window = window
@@ -27,7 +28,8 @@ class Game:
         self.bullets = pygame.sprite.Group()
         self.player_sprite = pygame.sprite.Group()
 
-        self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite], [self.doors_sprites])
+        self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite],
+                                     [self.doors_sprites], [self.enemies])
         self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
 
         self.can_push_button = False
@@ -49,7 +51,7 @@ class Game:
                        }
         }
         self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
-        self.a_img = pygame.transform.scale(pygame.image.load("key_a.png").convert(),(16,16))
+        self.a_img = pygame.transform.scale(pygame.image.load("key_a.png").convert(), (16, 16))
         self.spawn_objects(1)
 
     def update(self, dt: float) -> None:
@@ -70,11 +72,19 @@ class Game:
             bullet.move_and_collide(self.moving_character, dt)
         for person in self.enemies:
             person.move(dt)
-        self.player.move(self.get_input_for_movement(dt), self.characters_class[self.moving_character], dt, self.camera_pos)
+        self.player.move(self.get_input_for_movement(dt), self.characters_class[self.moving_character], dt,
+                         self.camera_pos)
+        if self.player.pos.y > 2000:
+            self.player.die()
+            scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
+                                    self.player.pos.y + self.player.rect.h / 2 - self.h / 2 - self.camera_pos.y)
+            self.camera_pos += scroll
+            self.change_character(dt)
         if self.moving_character == "fantom":
             self.player.move(pygame.Vector2(0, 0), self.characters_class["player"], dt, self.camera_pos)
             for button in self.object_sprites:
-                ray = pygame.Vector2(self.player.fantom.rect.centerx-button.rect.centerx,self.player.fantom.rect.centery-button.rect.centery)
+                ray = pygame.Vector2(self.player.fantom.rect.centerx - button.rect.centerx,
+                                     self.player.fantom.rect.centery - button.rect.centery)
                 if ray.length() < self.size_world * 0.7:
                     self.can_push_button = button
                 else:
@@ -85,7 +95,7 @@ class Game:
             self.change_character(dt)
         self.blit_everything()
 
-    def blit_sprite(self,sprite: pygame.sprite.Sprite):
+    def blit_sprite(self, sprite: pygame.sprite.Sprite):
         self.surface.blit(sprite.image,
                           (sprite.rect.x - round(self.camera_pos.x), sprite.rect.y - round(self.camera_pos.y)))
 
@@ -94,14 +104,16 @@ class Game:
 
         # mask_sprite = self.player.mask.to_surface()
         # self.surface.blit(mask_sprite,
-        #(self.player.rect.x - round(self.camera_pos.x), self.player.rect.y - round(self.camera_pos.y)))
+        # (self.player.rect.x - round(self.camera_pos.x), self.player.rect.y - round(self.camera_pos.y)))
         for group in groups:
             for sprite in group:
                 self.blit_sprite(sprite)
 
         if self.can_push_button:
-            self.surface.blit(self.a_img,(self.player.fantom.rect.centerx - self.a_img.get_width()/2 -
-        round(self.camera_pos.x), self.player.fantom.rect.y - 5 - self.a_img.get_height()-round(self.camera_pos.y)))
+            self.surface.blit(self.a_img, (self.player.fantom.rect.centerx - self.a_img.get_width() / 2 -
+                                           round(self.camera_pos.x),
+                                           self.player.fantom.rect.y - 5 - self.a_img.get_height() - round(
+                                               self.camera_pos.y)))
         self.window.blit(self.surface, (0, 0))
 
     def change_character(self, dt: float) -> None:

@@ -28,21 +28,24 @@ class Moving_sprite(pygame.sprite.Sprite):
     def collide_with_mask(self, mask, pos_mask):
         return self.mask.overlap_mask(mask, (pos_mask[0]-self.rect. x, pos_mask[1]-self.rect.y))
 
-    def check_collision(self) -> list[pygame.mask.Mask]:
+    def check_collision(self, tiles=True, sprite_groups="normal") -> list[pygame.mask.Mask]:
+        if sprite_groups == "normal":
+            sprite_groups = self.sprite_elements
         get_hits = []
         # Collision with tiles
-        for row in range(len(self.tiles)):
-            for column in range(len(self.tiles[row])):
-                if self.tiles[row][column] != '0':
-                    # rect = (column*self.tile_factor, row*self.tile_factor, self.tile_factor, self.tile_factor)
-                    # player_rect = (self.pos.x, self.pos.y, self.rect.w, self.rect.h)
-                    # if collide_with_rects(rect, player_rect):
-                    mask = self.collide_with_mask(self.tile, (column * self.tile_factor, row * self.tile_factor))
-                    if mask.count():
+        if tiles:
+            for row in range(len(self.tiles)):
+                for column in range(len(self.tiles[row])):
+                    if self.tiles[row][column] != '0':
                         # rect = (column*self.tile_factor, row*self.tile_factor, self.tile_factor, self.tile_factor)
-                        get_hits.append(mask)
+                        # player_rect = (self.pos.x, self.pos.y, self.rect.w, self.rect.h)
+                        # if collide_with_rects(rect, player_rect):
+                        mask = self.collide_with_mask(self.tile, (column * self.tile_factor, row * self.tile_factor))
+                        if mask.count():
+                            # rect = (column*self.tile_factor, row*self.tile_factor, self.tile_factor, self.tile_factor)
+                            get_hits.append(mask)
         # Collision with elements
-        for group in self.sprite_elements:
+        for group in sprite_groups:
             for element in group:
                 mask = self.collide_with_mask(element.mask, (element.rect.x, element.rect.y))
                 if mask.count():

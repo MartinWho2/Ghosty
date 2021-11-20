@@ -42,3 +42,5 @@ class Enemy(Moving_sprite):
         self.pos.x += self.speed.x * dt
         self.rect.x = round(self.pos.x)
         self.fall(pygame.Vector2(0, 0), dt)
+        if self.pos.y > 2000:
+            self.kill()

@@ -27,10 +27,10 @@ class Fantom(pygame.sprite.Sprite):
 
 class Player(Moving_sprite):
     def __init__(self, tiles: list, tile_factor: int, surface: pygame.Surface, groups: list[pygame.sprite.Group],
-                 elements) -> None:
+                 elements: list[pygame.sprite.Group], enemies: list[pygame.sprite.Group]) -> None:
         super().__init__(pygame.Vector2(0, 0), pygame.image.load('chevalier.png').convert_alpha(), tile_factor, tiles,
                          tile_factor, elements, groups)
-        self.surface = surface
+        self.surface = surface  # A surface to draw the circle appearing when the ghost tries to run away
         self.surface_above = pygame.Surface((surface.get_width(), surface.get_height()), pygame.SRCALPHA)
         self.image_copy = self.image.copy()
         self.empty_image = self.image.copy()
@@ -47,6 +47,7 @@ class Player(Moving_sprite):
         self.dist_max = 200
         self.max_speed = 10
         self.is_jumping = False
+        self.enemies = enemies
 
     def move(self, acceleration: pygame.Vector2, moving_object: Moving_sprite, dt: float,
              camera_pos: pygame.Vector2) -> None:
@@ -81,6 +82,8 @@ class Player(Moving_sprite):
                 if not self.flip_mask:
                     self.flip_mask = 1
                 self.heading_right = False
+            if self.check_collision(tiles=False,sprite_groups=self.enemies):
+                self.pos.y = 3000
             hits = self.check_collision()
             self.collide(hits, False)
             self.fall(acceleration, dt)
@@ -95,6 +98,14 @@ class Player(Moving_sprite):
             moving_object.pos.y += moving_object.speed.y * dt
             moving_object.rect.y = round(moving_object.pos.y)
             self.calculate_distance(dt, camera_pos)
+
+    def die(self):
+        self.pos.x, self.pos.y = 0, 0
+        self.speed.x, self.speed.y = 0, 0
+        self.rect.topleft = self.pos
+        self.fantom.pos.x -= self.fantom.rect.right - self.rect.x
+        self.fantom.pos.y -= self.fantom.rect.centery - self.rect.y
+        self.fantom.rect.topleft = self.fantom.pos
 
     def calculate_distance(self, dt: float, camera_pos: pygame.Vector2) -> None:
         """
@@ -138,13 +149,13 @@ class Player(Moving_sprite):
         x, y = self.fantom.rect.right - self.rect.x, self.fantom.rect.centery - self.rect.y
         self.fantom.pos.x -= 0.2 * x
         self.fantom.pos.y -= 0.2 * y
-        self.fantom.rect.x = int(self.fantom.pos.x)
-        self.fantom.rect.y = int(self.fantom.pos.y)
+        self.fantom.rect.x = round(self.fantom.pos.x)
+        self.fantom.rect.y = round(self.fantom.pos.y)
         self.fantom.particle_counter += dt
         if self.fantom.particle_counter > 10:
             self.fantom.particles.append(Particle(self.fantom.particle_image, 5, (
-            random.randint(self.fantom.rect.x, self.fantom.rect.right) - camera_pos.x,
-            self.fantom.rect.bottom - camera_pos.y), pygame.Vector2(0, 0.5)))
+                random.randint(self.fantom.rect.x, self.fantom.rect.right) - camera_pos.x,
+                self.fantom.rect.bottom - camera_pos.y), pygame.Vector2(0, 0.5)))
             self.fantom.particle_counter = 0
 
     def jump(self):
@@ -152,7 +163,7 @@ class Player(Moving_sprite):
             self.is_jumping = True
             self.speed.y = -12
 
-    def shoot(self, sprite_groups: list[pygame.sprite.Group], group_collisions:list[pygame.sprite.Group]) -> None:
+    def shoot(self, sprite_groups: list[pygame.sprite.Group], group_collisions: list[pygame.sprite.Group]) -> None:
         """
 
         :param sprite_groups: Groups to include the bullet
@@ -160,7 +171,7 @@ class Player(Moving_sprite):
         :return:
         """
         speed = pygame.Vector2(-10, 0)
-        x_pos = self.rect.left -10
+        x_pos = self.rect.left - 10
         if self.heading_right:
             speed.x = 10
             x_pos = self.rect.right
