@@ -1,4 +1,5 @@
 import pygame
+# import pygame.camera
 import json
 import math
 from typing import Union
@@ -13,6 +14,7 @@ from text_sprites import Text_sprite
 
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
+        # pygame.camera.init()
         self.window = window
         with open("level_objects.json", "r") as f:
             self.level_objects = json.load(f)
@@ -31,10 +33,16 @@ class Game:
         self.texts = pygame.sprite.Group()
 
         self.press_w_text = Text_sprite("pixel-font.ttf", "Press W to shoot a bullet", self.size_world * 4, (0, 0, 0),
-                                        (600, 50))
+                                         (0, 550))
         self.press_q_text = Text_sprite("pixel-font.ttf", "Press Q to switch between the player and the ghost",
-                                    self.size_world * 10, (0, 0, 0), (-150, -100))
-        self.texts.add(self.press_w_text,self.press_q_text)
+                                    self.size_world * 10, (0, 0, 0), (600, 50))
+        self.use_arrows_text = Text_sprite("pixel-font.ttf", "Use the arrows left-right to move",
+                                    self.size_world * 5, (0, 0, 0), (-150, -100))
+        self.use_space_text = Text_sprite("pixel-font.ttf", "Use the space bar to jump",
+                                           self.size_world * 5, (0, 0, 0), (-150, 0))
+        self.open_doors_text = Text_sprite("pixel-font.ttf", "Use buttons to open or close doors",
+                                           self.size_world * 5, (0, 0, 0), (500, 600))
+        self.texts.add(self.press_w_text, self.press_q_text, self.use_arrows_text, self.use_space_text, self.open_doors_text)
 
         self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite],
                                      [self.doors_sprites], [self.enemies])
@@ -61,6 +69,8 @@ class Game:
         self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
         self.a_img = pygame.transform.scale(pygame.image.load("key_a.png").convert(), (16, 16))
         self.spawn_objects(1)
+        # self.camera = pygame.camera.Camera(pygame.camera.list_cameras()[0])
+        # self.camera.start()
 
     def update(self, dt: float) -> None:
         """
@@ -83,6 +93,7 @@ class Game:
         self.player.move(self.get_input_for_movement(dt), self.characters_class[self.moving_character], dt,
                          self.camera_pos)
         if self.player.pos.y > 2000:
+            # pygame.image.save(self.camera.get_image(), "ITS_YOU.png")
             self.player.die()
             scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
                                     self.player.pos.y + self.player.rect.h / 2 - self.h / 2 - self.camera_pos.y)
@@ -102,6 +113,7 @@ class Game:
         if self.timer_characters:
             self.change_character(dt)
         self.blit_everything()
+
 
     def blit_sprite(self, sprite: pygame.sprite.Sprite):
         self.surface.blit(sprite.image,

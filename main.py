@@ -10,7 +10,6 @@ window = pygame.display.set_mode((w, h), pygame.SRCALPHA)
 clock = pygame.time.Clock()
 font = pygame.font.Font("pixel-font.ttf", 15)
 
-
 def main():
     playing = True
     fps = 60
@@ -19,7 +18,7 @@ def main():
     while playing:
         clock.tick(60)
         ips = str(clock.get_fps())
-        text = font.render(ips, False, (0, 0, 0))
+        text = font.render("", False, (0, 0, 0))
         dt = (time.time() - before) * fps
         while dt == 0.0:
             dt = (time.time() - before) * fps
