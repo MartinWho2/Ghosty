@@ -10,6 +10,7 @@ window = pygame.display.set_mode((w, h), pygame.SRCALPHA)
 clock = pygame.time.Clock()
 font = pygame.font.Font("pixel-font.ttf", 15)
 
+
 def main():
     playing = True
     fps = 60
