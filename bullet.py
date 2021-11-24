@@ -2,13 +2,15 @@ import pygame
 from map_functions import collide_with_rects
 from button import Button
 from enemy import Enemy
+
+
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, pos: pygame.Vector2, speed: pygame.Vector2, collision_objects: list[pygame.sprite.Group],
-                 size_world: int, map: list[list[str]]) -> None:
+                 size_world: int, map: list[list[str]], image="bullet.png") -> None:
         super().__init__()
         self.map = map
         self.size_world = size_world
-        self.image = pygame.image.load("bullet.png").convert_alpha()
+        self.image = pygame.image.load(image).convert_alpha()
         if speed.x < 0:
             self.image = pygame.transform.flip(self.image, True, False)
         self.image = pygame.transform.scale(self.image, (15, 15))

@@ -10,7 +10,7 @@ from enemy import Enemy
 from button import Button
 from door import Door
 from text_sprites import Text_sprite
-
+from auto_tower import Auto_Tower
 
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
@@ -29,6 +29,7 @@ class Game:
         self.doors_sprites = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
+        self.towers = pygame.sprite.Group()
         self.player_sprite = pygame.sprite.Group()
         self.texts = pygame.sprite.Group()
 
@@ -45,7 +46,7 @@ class Game:
         self.texts.add(self.press_w_text, self.press_q_text, self.use_arrows_text, self.use_space_text, self.open_doors_text)
 
         self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite],
-                                     [self.doors_sprites], [self.enemies])
+                                     [self.doors_sprites, self.towers], [self.enemies])
         self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
 
         self.can_push_button = False
@@ -90,6 +91,8 @@ class Game:
             bullet.move_and_collide(self.moving_character, dt)
         for person in self.enemies:
             person.move(dt)
+        for tower in self.towers:
+            tower.waiting(dt)
         self.player.move(self.get_input_for_movement(dt), self.characters_class[self.moving_character], dt,
                          self.camera_pos)
         if self.player.pos.y > 2000:
@@ -120,7 +123,7 @@ class Game:
                           (sprite.rect.x - round(self.camera_pos.x), sprite.rect.y - round(self.camera_pos.y)))
 
     def blit_everything(self):
-        groups = [self.object_sprites, self.doors_sprites, self.enemies, self.bullets,self.texts, self.player_sprite]
+        groups = [self.object_sprites, self.doors_sprites,self.towers, self.enemies, self.bullets, self.texts, self.player_sprite]
 
         # mask_sprite = self.player.mask.to_surface()
         # self.surface.blit(mask_sprite,
@@ -206,6 +209,11 @@ class Game:
         door.add(self.doors_sprites)
         return door
 
+    def spawn_tower(self, pos, orientation):
+        pos = [round((pos[0] + 0.5) * self.size_world), (pos[1] + 1) * self.size_world]
+        tower = Auto_Tower(pos, self.size_world, self.map, "fantome.png", [64, 64], 10, 0.5, [self.player_sprite, self.enemies], self.bullets, orientation)
+        tower.add(self.towers)
+
     def spawn_objects(self, level: int) -> None:
         objects = self.level_objects[str(level)]
         for pos in objects["Enemies"]:
@@ -217,3 +225,7 @@ class Game:
             for door in doors:
                 doors_class.append(self.spawn_door(door))
             self.spawn_button(button_pos, doors_class)
+        for tower in objects["Towers"]:
+            pos = tower[0]
+            orientation = tower[1]
+            self.spawn_tower(pos, orientation)
