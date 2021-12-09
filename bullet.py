@@ -3,7 +3,6 @@ from map_functions import collide_with_rects
 from button import Button
 from enemy import Enemy
 
-
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, pos: pygame.Vector2, speed: pygame.Vector2, collision_objects: list[pygame.sprite.Group],
                  size_world: int, map: list[list[str]], image="bullet.png") -> None:
@@ -30,7 +29,6 @@ class Bullet(pygame.sprite.Sprite):
 
     def collide(self, sprite: pygame.sprite.Sprite):
         if pygame.sprite.collide_mask(self, sprite):
-            self.kill()
             return True
         return False
 
@@ -41,8 +39,15 @@ class Bullet(pygame.sprite.Sprite):
                 if self.collide(object):
                     if object.__class__ == Button:
                         object.activate(moving_character)
+                        self.kill()
                     elif object.__class__ == Enemy:
                         object.kill()
+                        self.kill()
+                    else:
+                        try:
+                            object.die()
+                        except:
+                            pass
 
         for row in range(len(self.map)):
             for column in range(len(self.map[row])):
