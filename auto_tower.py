@@ -23,7 +23,6 @@ class Auto_Tower(pygame.sprite.Sprite):
     def waiting(self, dt):
         self.now += dt
         if self.now > self.period:
-            print("shoot")
             self.shoot()
             self.now = 0
 

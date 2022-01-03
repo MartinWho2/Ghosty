@@ -83,9 +83,6 @@ class Moving_sprite(pygame.sprite.Sprite):
                 self.rect.x = round(self.pos.x)
 
     def find_bits_from_mask(self, mask: pygame.mask.Mask, direction: str) -> int:
-        if direction != "down":
-            pass
-            # print(f"Collision {direction}")
         size = mask.get_size()
         found = False
         for column in range(size[0]):

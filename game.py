@@ -5,7 +5,7 @@ import math
 from typing import Union
 
 from player import Player
-from map_functions import create_map, collide_with_rects
+from map_functions import create_map, collide_with_rects, load_tile_set
 from enemy import Enemy
 from button import Button
 from door import Door
@@ -67,6 +67,7 @@ class Game:
                                                    (self.size_world, self.size_world)),
                        }
         }
+        self.tiles = {"fantom":load_tile_set("grass-tileset.png",64),"player":load_tile_set("grass-tileset.png",64)}
         self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
         self.a_img = pygame.transform.scale(pygame.image.load("key_a.png").convert(), (16, 16))
         self.spawn_objects(1)

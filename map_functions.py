@@ -1,4 +1,4 @@
-import pygame
+import pygame, math
 
 
 def create_map(level: int) -> list:
@@ -51,5 +51,20 @@ def show_mask(mask:pygame.mask.Mask):
         list = []
         for column in range(size[1]):
             list.append(mask.get_at((column,row)))
-        print(list)
 
+def load_tile_set(filename,final_size,size=16):
+    tile_set = pygame.image.load(filename).convert_alpha()
+    tile_size = tile_set.get_width()/5
+    if tile_set.get_width()/5 == tile_set.get_height()/3 == size:
+        tiles = {}
+        char_to_hex = {10:"a",11:"b",12:"c",13:"d"}
+        for i in range(1,14):
+            tile = pygame.surface.Surface((size,size),pygame.SRCALPHA)
+            x,y = (i-1)%5*size, math.floor((i-1)/5)*size
+            tile.blit(tile_set,(-x,-y))
+            tile = pygame.transform.scale(tile,(final_size,final_size))
+            if i < 10:
+                tiles[str(i)] = tile
+            else:
+                tiles[char_to_hex[i]] = tile
+    return tiles
