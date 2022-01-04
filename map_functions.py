@@ -1,4 +1,4 @@
-import pygame, math
+import pygame, math, numpy as np
 
 
 def create_map(level: int) -> list:
@@ -8,6 +8,17 @@ def create_map(level: int) -> list:
     :return carte: map
     """
     filename = f"levels/level{level}.txt"
+    # Order is up first and then clockwise
+    tile_neigbour = {(0, 0, 1, 1, 1, 0, 0, 0): "1", (0, 0, 1, 1, 1, 1, 1, 0): "2", (0, 0, 0, 0, 1, 1, 1, 0): "3",
+                     (1, 1, 1, 0, 1, 1, 1, 1): "4", (1, 1, 1, 1, 1, 0, 1, 1): "5", (1, 1, 1, 1, 1, 0, 0, 0): "6",
+                     (1, 1, 1, 1, 1, 1, 1, 1): "7", (1, 0, 0, 0, 1, 1, 1, 1): "8", (1, 0, 1, 1, 1, 1, 1, 1): "9",
+                     (1, 1, 1, 1, 1, 1, 1, 0): "a", (1, 1, 1, 0, 0, 0, 0, 0): "b", (1, 1, 1, 0, 0, 0, 1, 1): "c",
+                     (1, 0, 0, 0, 0, 0, 1, 1): "d"}
+    tile_neigbour_possibilities = [(0, 2, 1, 1, 1, 2, 0, 2),(0, 2, 1, 1, 1, 1, 1, 2),(0, 0, 0, 0, 1, 1, 1, 0),
+                                   (1, 1, 1, 0, 1, 1, 1, 1),(1, 1, 1, 1, 1, 0, 1, 1),(1, 1, 1, 1, 1, 2, 0, 2),
+                                   (1, 1, 1, 1, 1, 1, 1, 1),(1, 2, 0, 2, 1, 1, 1, 1),(1, 0, 1, 1, 1, 1, 1, 1),
+                                   (1, 1, 1, 1, 1, 1, 1, 0),(1, 1, 1, 2, 0, 2, 0, 2),(1, 1, 1, 2, 0, 2, 1, 1),
+                                   (1, 2, 0, 2, 0, 2, 1, 1)]
     with open(filename, "r") as file:
         text = file.read()
         carte = []
@@ -21,9 +32,24 @@ def create_map(level: int) -> list:
         if temporary_list:
             carte.append(temporary_list)
         file.close()
+    new_map = []
+    for row in range(len(carte)):
+        temporary_list = []
+        for column in range(len(carte[row])):
+            if carte[row][column] == "1":
+                print(row, column)
+                temporary_list.append(tile_neigbour[get_neighbour_tiles(carte,(row,column))])
+            else:
+                temporary_list.append("0")
+        new_map.append(temporary_list)
+    return new_map
 
-    return carte
-
+def get_neighbour_tiles(map:list,index_tile:tuple):
+    padded_map = np.pad(map,1,constant_values=0)
+    return (int(padded_map[index_tile[0]][index_tile[1]+1]), int(padded_map[index_tile[0]][index_tile[1]+2]),
+            int(padded_map[index_tile[0]+1][index_tile[1]+2]), int(padded_map[index_tile[0]+2][index_tile[1]+2]),
+            int(padded_map[index_tile[0]+2][index_tile[1]+1]), int(padded_map[index_tile[0]+2][index_tile[1]]),
+            int(padded_map[index_tile[0]+1][index_tile[1]]), int(padded_map[index_tile[0]][index_tile[1]]))
 
 def create_rect_map(tiles: list, factor: int) -> list:
     """
@@ -51,6 +77,7 @@ def show_mask(mask:pygame.mask.Mask):
         list = []
         for column in range(size[1]):
             list.append(mask.get_at((column,row)))
+
 
 def load_tile_set(filename,final_size,size=16):
     tile_set = pygame.image.load(filename).convert_alpha()
