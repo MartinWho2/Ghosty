@@ -37,7 +37,7 @@ class Player(Moving_sprite):
         self.heading_right = True
         self.empty_image.set_alpha(0)
         self.rect = self.image.get_rect()
-        self.rect.center = (0, 0)
+        self.rect.center = (200, 160)
         self.facing_right = True
         self.pos = pygame.Vector2(self.rect.x, self.rect.y)
         self.fantom = Fantom()

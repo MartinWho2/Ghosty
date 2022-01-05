@@ -35,15 +35,18 @@ class Game:
 
         self.press_w_text = Text_sprite("pixel-font.ttf", "Press W to shoot a bullet", self.size_world * 4, (0, 0, 0),
                                          (0, 550))
-        self.press_q_text = Text_sprite("pixel-font.ttf", "Press Q to switch between the player and the ghost",
-                                    self.size_world * 10, (0, 0, 0), (600, 50))
+        self.press_q_text = Text_sprite("pixel-font.ttf", "Press Q to switch between",
+                                    self.size_world * 7, (0, 0, 0), (500, 150))
+        self.press_q_text_2 = Text_sprite("pixel-font.ttf", "the player and the ghost",
+                                        self.size_world * 5, (0, 0, 0), (510, 180))
+
         self.use_arrows_text = Text_sprite("pixel-font.ttf", "Use the arrows left-right to move",
-                                    self.size_world * 5, (0, 0, 0), (-150, -100))
+                                    self.size_world * 5, (0, 0, 0), (150, 0))
         self.use_space_text = Text_sprite("pixel-font.ttf", "Use the space bar to jump",
-                                           self.size_world * 5, (0, 0, 0), (-150, 0))
+                                           self.size_world * 5, (0, 0, 0), (150, 50))
         self.open_doors_text = Text_sprite("pixel-font.ttf", "Use buttons to open or close doors",
                                            self.size_world * 5, (0, 0, 0), (500, 600))
-        self.texts.add(self.press_w_text, self.press_q_text, self.use_arrows_text, self.use_space_text, self.open_doors_text)
+        self.texts.add(self.press_w_text, self.press_q_text,self.press_q_text_2, self.use_arrows_text, self.use_space_text, self.open_doors_text)
 
         self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite],
                                      [self.doors_sprites, self.towers], [self.enemies])
@@ -67,7 +70,9 @@ class Game:
                                                    (self.size_world, self.size_world)),
                        }
         }
-        self.tiles = {"fantom":load_tile_set("grass-tileset.png",64),"player":load_tile_set("grass-tileset.png",64)}
+        tiles_file = "grass-tileset.png"
+        tiles_file = "dirt-tileset.png"
+        self.tiles = {"fantom":load_tile_set(tiles_file,64),"player":load_tile_set(tiles_file,64)}
         self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
         self.a_img = pygame.transform.scale(pygame.image.load("key_a.png").convert(), (16, 16))
         self.spawn_objects(1)
