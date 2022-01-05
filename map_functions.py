@@ -14,11 +14,8 @@ def create_map(level: int) -> list:
                      (1, 1, 1, 1, 1, 1, 1, 1): "7", (1, 0, 0, 0, 1, 1, 1, 1): "8", (1, 0, 1, 1, 1, 1, 1, 1): "9",
                      (1, 1, 1, 1, 1, 1, 1, 0): "a", (1, 1, 1, 0, 0, 0, 0, 0): "b", (1, 1, 1, 0, 0, 0, 1, 1): "c",
                      (1, 0, 0, 0, 0, 0, 1, 1): "d"}
-    tile_neigbour_possibilities = [(0, 2, 1, 1, 1, 2, 0, 2),(0, 2, 1, 1, 1, 1, 1, 2),(0, 0, 0, 0, 1, 1, 1, 0),
-                                   (1, 1, 1, 0, 1, 1, 1, 1),(1, 1, 1, 1, 1, 0, 1, 1),(1, 1, 1, 1, 1, 2, 0, 2),
-                                   (1, 1, 1, 1, 1, 1, 1, 1),(1, 2, 0, 2, 1, 1, 1, 1),(1, 0, 1, 1, 1, 1, 1, 1),
-                                   (1, 1, 1, 1, 1, 1, 1, 0),(1, 1, 1, 2, 0, 2, 0, 2),(1, 1, 1, 2, 0, 2, 1, 1),
-                                   (1, 2, 0, 2, 0, 2, 1, 1)]
+
+
     with open(filename, "r") as file:
         text = file.read()
         carte = []
@@ -38,11 +35,38 @@ def create_map(level: int) -> list:
         for column in range(len(carte[row])):
             if carte[row][column] == "1":
                 print(row, column)
-                temporary_list.append(tile_neigbour[get_neighbour_tiles(carte,(row,column))])
+                neighbours = get_neighbour_tiles(carte,(row,column))
+
+                temporary_list.append(get_same_neighbours_with_possibilities(neighbours))
             else:
                 temporary_list.append("0")
         new_map.append(temporary_list)
     return new_map
+
+def get_same_neighbours_with_possibilities(neighbours):
+    tile_neigbour_possibilities = [(0, 2, 1, 1, 1, 2, 0, 2), (0, 2, 1, 1, 1, 1, 1, 2), (0, 2, 0, 2, 1, 1, 1, 2),
+                                   (1, 1, 1, 0, 1, 1, 1, 1), (1, 1, 1, 1, 1, 0, 1, 1), (1, 1, 1, 1, 1, 2, 0, 2),
+                                   (1, 1, 1, 1, 1, 1, 1, 1), (1, 2, 0, 2, 1, 1, 1, 1), (1, 0, 1, 1, 1, 1, 1, 1),
+                                   (1, 1, 1, 1, 1, 1, 1, 0), (1, 1, 1, 2, 0, 2, 0, 2), (1, 1, 1, 2, 0, 2, 1, 1),
+                                   (1, 2, 0, 2, 0, 2, 1, 1)]
+    dec_to_hex = {10: "a", 11: "b", 12: "c", 13: "d"}
+    for index in range(len(tile_neigbour_possibilities)):
+        correct = index+1
+        possibility = tile_neigbour_possibilities[index]
+        for i in range(len(possibility)):
+            if possibility[i] != 2 and possibility[i] != neighbours[i]:
+                correct = False
+                break
+        if type(correct) == int:
+            if correct > 9:
+                correct = dec_to_hex[correct]
+            else:
+                correct = str(correct)
+            return correct
+    print(neighbours)
+    raise ZeroDivisionError
+
+
 
 def get_neighbour_tiles(map:list,index_tile:tuple):
     padded_map = np.pad(map,1,constant_values=0)
