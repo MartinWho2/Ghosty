@@ -9,12 +9,6 @@ def create_map(level: int) -> list:
     """
     filename = f"levels/level{level}.txt"
     # Order is up first and then clockwise
-    tile_neigbour = {(0, 0, 1, 1, 1, 0, 0, 0): "1", (0, 0, 1, 1, 1, 1, 1, 0): "2", (0, 0, 0, 0, 1, 1, 1, 0): "3",
-                     (1, 1, 1, 0, 1, 1, 1, 1): "4", (1, 1, 1, 1, 1, 0, 1, 1): "5", (1, 1, 1, 1, 1, 0, 0, 0): "6",
-                     (1, 1, 1, 1, 1, 1, 1, 1): "7", (1, 0, 0, 0, 1, 1, 1, 1): "8", (1, 0, 1, 1, 1, 1, 1, 1): "9",
-                     (1, 1, 1, 1, 1, 1, 1, 0): "a", (1, 1, 1, 0, 0, 0, 0, 0): "b", (1, 1, 1, 0, 0, 0, 1, 1): "c",
-                     (1, 0, 0, 0, 0, 0, 1, 1): "d"}
-
     with open(filename, "r") as file:
         text = file.read()
         carte = []
@@ -43,6 +37,9 @@ def create_map(level: int) -> list:
 
 
 def get_same_neighbours_with_possibilities(neighbours):
+    """
+    Guess what the tile should be (like corner topleft, center, ...)
+    """
     tile_neigbour_possibilities = [(0, 2, 1, 1, 1, 2, 0, 2), (0, 2, 1, 1, 1, 1, 1, 2), (0, 2, 0, 2, 1, 1, 1, 2),
                                    (1, 1, 1, 0, 1, 1, 1, 1), (1, 1, 1, 1, 1, 0, 1, 1), (1, 1, 1, 1, 1, 2, 0, 2),
                                    (1, 1, 1, 1, 1, 1, 1, 1), (1, 2, 0, 2, 1, 1, 1, 1), (1, 0, 1, 1, 1, 1, 1, 1),
@@ -67,6 +64,9 @@ def get_same_neighbours_with_possibilities(neighbours):
 
 
 def get_neighbour_tiles(map: list, index_tile: tuple):
+    """
+    Gets the neighbours of an element in a matrix
+    """
     padded_map = np.pad(map, 1, constant_values=0)
     return (int(padded_map[index_tile[0]][index_tile[1] + 1]), int(padded_map[index_tile[0]][index_tile[1] + 2]),
             int(padded_map[index_tile[0] + 1][index_tile[1] + 2]),
@@ -92,8 +92,7 @@ def create_rect_map(tiles: list, factor: int) -> list:
 
 def collide_with_rects(rect_style_tuple: tuple, rect2: tuple) -> bool:
     if rect2[0] + rect2[2] > rect_style_tuple[0] > rect2[0] - rect_style_tuple[2] and rect2[1] + rect2[3] > \
-            rect_style_tuple[
-                1] > rect2[1] - rect_style_tuple[3]:
+            rect_style_tuple[1] > rect2[1] - rect_style_tuple[3]:
         return True
     return False
 
@@ -105,15 +104,29 @@ def show_mask(mask: pygame.mask.Mask):
         for column in range(size[1]):
             list.append(mask.get_at((column, row)))
 
+
 def create_darker_image(image:pygame.Surface):
+    """
+    Creates a new image for the ghosty world
+    :param image: Image to change
+    :return:
+    """
     new_surface = pygame.Surface(image.get_size(),pygame.SRCALPHA)
-    darker = (20,20,50,100)
+    darker = (20,25,60,100)
     new_surface.fill(darker)
     image.blit(new_surface,(0,0))
     image.set_colorkey(darker)
 
 
 def load_tile_set(filename, final_size, size=16, dark=False):
+    """
+    Loads a tileset and creates a list of tiles
+    :param filename:
+    :param final_size:
+    :param size:
+    :param dark:
+    :return:
+    """
     tile_set = pygame.image.load(filename).convert_alpha()
     if dark:
         create_darker_image(tile_set)

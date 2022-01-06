@@ -3,11 +3,11 @@ from typing import Union
 
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, pos: Union[tuple, list, pygame.Vector2], door: list, size_world: int):
+    def __init__(self, pos: Union[tuple, list, pygame.Vector2], related: list, size_world: int):
         """
         Inits a button
         :param pos: Position of the button with left and bottom coordinates
-        :param door: Position of the door relative to the button
+        :param related: Position of the objects related to the button (platform or door)
         :param size_world: Scale of things (should be 64)
         """
         super().__init__()
@@ -23,12 +23,12 @@ class Button(pygame.sprite.Sprite):
             self.rect.centerx, self.rect.bottom = pos[0] , pos[1]
         else:
             self.rect.centerx, self.rect.bottom = pos.x, pos.y
-        self.door = door
+        self.related = related
         self.mask = pygame.mask.from_surface(self.image)
 
     def change_image(self, key: str) -> None:
         self.image = self.images[key]
 
     def activate(self, moving_character) -> None:
-        for door in self.door:
-            door.activate(moving_character)
+        for related in self.related:
+            related.activate(moving_character)

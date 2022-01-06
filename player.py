@@ -9,7 +9,7 @@ from bullet import Bullet
 class Fantom(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load('fantome.png').convert_alpha(), (40, 64))
+        self.image = pygame.transform.scale(pygame.image.load('media/fantome.png').convert_alpha(), (40, 64))
         self.image.set_alpha(100)
         self.image_copy = self.image.copy()
         self.empty_image = self.image.copy()
@@ -22,13 +22,13 @@ class Fantom(pygame.sprite.Sprite):
         self.particles = []
         self.max_speed = 5
         self.friction = -0.1
-        self.particle_image = pygame.image.load("particle.png")
+        self.particle_image = pygame.image.load("media/particle.png")
 
 
 class Player(Moving_sprite):
     def __init__(self, tiles: list, tile_factor: int, surface: pygame.Surface, groups: list[pygame.sprite.Group],
                  elements: list[pygame.sprite.Group], enemies: list[pygame.sprite.Group], spawn:list) -> None:
-        super().__init__(pygame.Vector2(0, 0), pygame.image.load('chevalier.png').convert_alpha(), tile_factor, tiles,
+        super().__init__(pygame.Vector2(0, 0), pygame.image.load('media/chevalier.png').convert_alpha(), tile_factor, tiles,
                          tile_factor, elements, groups)
         self.surface = surface  # A surface to draw the circle appearing when the ghost tries to run away
         self.surface_above = pygame.Surface((surface.get_width(), surface.get_height()), pygame.SRCALPHA)

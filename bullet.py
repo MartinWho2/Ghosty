@@ -5,7 +5,7 @@ from enemy import Enemy
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, pos: pygame.Vector2, speed: pygame.Vector2, collision_objects: list[pygame.sprite.Group],
-                 size_world: int, map: list[list[str]], image="bullet.png") -> None:
+                 size_world: int, map: list[list[str]], image="media/bullet.png") -> None:
         super().__init__()
         self.map = map
         self.size_world = size_world

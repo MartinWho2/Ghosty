@@ -8,9 +8,11 @@ pygame.init()
 w, h = 576, 576
 window = pygame.display.set_mode((w, h), pygame.SRCALPHA)
 clock = pygame.time.Clock()
-font = pygame.font.Font("pixel-font.ttf", 15)
+font = pygame.font.Font("media/pixel-font.ttf", 15)
 
-
+def display_fps(fps):
+    fps_text = font.render(fps,False,(0,0,0))
+    window.blit(fps_text,(0,0))
 def main():
     playing = True
     fps = 60
@@ -18,14 +20,12 @@ def main():
     before = time.time()
     while playing:
         clock.tick(60)
-        ips = str(clock.get_fps())
-        text = font.render("", False, (0, 0, 0))
         dt = (time.time() - before) * fps
         while dt == 0.0:
             dt = (time.time() - before) * fps
         game.update(dt)
         before = time.time()
-        window.blit(text, (0, 0))
+        display_fps(str(round(clock.get_fps(),3)))
         pygame.display.flip()
         for e in pygame.event.get():
             if e.type == pygame.KEYDOWN:
@@ -37,13 +37,13 @@ def main():
                     game.player.fantom.speed = pygame.Vector2(0, 0)
                     game.player.image_copy = game.player.image.copy()
                     game.change_character(dt)
-                    game.can_push_button = False
+                    game.buttons_pushable = dict.fromkeys(game.buttons_pushable.keys(),False)
                     for button in game.object_sprites:
                         button.change_image(game.moving_character)
                     for door in game.doors_sprites:
                         door.change_image(game.moving_character)
                 if e.key == pygame.K_a:
-                    if game.moving_character == "fantom" and game.can_push_button:
+                    if game.moving_character == "fantom" and game.can_push_button and game.buttons_pushable[game.can_push_button]:
                         game.can_push_button.activate(game.moving_character)
                 elif e.key == pygame.K_SPACE and game.moving_character == "player":
                     # Jump

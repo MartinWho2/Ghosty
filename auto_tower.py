@@ -34,6 +34,6 @@ class Auto_Tower(pygame.sprite.Sprite):
             x_pos = self.rect.left - 10
 
         bullet = Bullet(
-            pygame.Vector2(x_pos, self.rect.y+self.shoot_height-5), speed, self.collisions, self.size_world, self.map, image="bullet.png"
+            pygame.Vector2(x_pos, self.rect.y+self.shoot_height-5), speed, self.collisions, self.size_world, self.map, image="media/bullet.png"
         )
         self.bullets.add(bullet)

@@ -5,12 +5,13 @@ import math
 from typing import Union
 
 from player import Player
-from map_functions import create_map, collide_with_rects, load_tile_set, create_darker_image
+from map_functions import create_map, collide_with_rects, load_tile_set
 from enemy import Enemy
 from button import Button
 from door import Door
 from text_sprites import Text_sprite
 from auto_tower import Auto_Tower
+from moving_platform import Moving_platform
 
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
@@ -27,33 +28,35 @@ class Game:
         self.map = create_map(self.level)
         self.object_sprites = pygame.sprite.Group()
         self.doors_sprites = pygame.sprite.Group()
+        self.platform_sprites = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.bullets = pygame.sprite.Group()
         self.towers = pygame.sprite.Group()
         self.player_sprite = pygame.sprite.Group()
         self.texts = pygame.sprite.Group()
 
-        self.press_w_text = Text_sprite("pixel-font.ttf", "Press W to shoot a bullet", self.size_world * 4, (0, 0, 0),
+        self.press_w_text = Text_sprite("media/pixel-font.ttf", "Press W to shoot a bullet", self.size_world * 4, (0, 0, 0),
                                          (0, 550))
-        self.press_q_text = Text_sprite("pixel-font.ttf", "Press Q to switch between",
+        self.press_q_text = Text_sprite("media/pixel-font.ttf", "Press Q to switch between",
                                     self.size_world * 7, (0, 0, 0), (500, 150))
-        self.press_q_text_2 = Text_sprite("pixel-font.ttf", "the player and the ghost",
+        self.press_q_text_2 = Text_sprite("media/pixel-font.ttf", "the player and the ghost",
                                         self.size_world * 5, (0, 0, 0), (510, 180))
 
-        self.use_arrows_text = Text_sprite("pixel-font.ttf", "Use the arrows left-right to move",
+        self.use_arrows_text = Text_sprite("media/pixel-font.ttf", "Use the arrows left-right to move",
                                     self.size_world * 5, (0, 0, 0), (150, 0))
-        self.use_space_text = Text_sprite("pixel-font.ttf", "Use the space bar to jump",
+        self.use_space_text = Text_sprite("media/pixel-font.ttf", "Use the space bar to jump",
                                            self.size_world * 5, (0, 0, 0), (150, 50))
-        self.open_doors_text = Text_sprite("pixel-font.ttf", "Use buttons to open or close doors",
+        self.open_doors_text = Text_sprite("media/pixel-font.ttf", "Use buttons to open or close doors",
                                            self.size_world * 5, (0, 0, 0), (500, 600))
         self.texts.add(self.press_w_text, self.press_q_text,self.press_q_text_2, self.use_arrows_text, self.use_space_text, self.open_doors_text)
 
         self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite],
-                                     [self.doors_sprites, self.towers], [self.enemies],
+                                     [self.doors_sprites,self.platform_sprites, self.towers], [self.enemies],
                                      self.level_objects[str(self.level)]["Spawn"])
         self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
 
         self.can_push_button = False
+        self.buttons_pushable = {}
         self.keys: dict = {}
         self.characters = ["player", "fantom"]
         self.characters_class: dict = {"player": self.player, "fantom": self.player.fantom}
@@ -71,11 +74,11 @@ class Game:
                                                    (self.size_world, self.size_world)),
                        }
         }
-        tiles_file = "grass-tileset.png"
-        tiles_file = "dirt-tileset.png"
+        tiles_file = "media/grass-tileset.png"
+        tiles_file = "media/dirt-tileset.png"
         self.tiles = {"fantom":load_tile_set(tiles_file,64,dark=True),"player":load_tile_set(tiles_file,64)}
         self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
-        self.a_img = pygame.transform.scale(pygame.image.load("key_a.png").convert(), (16, 16))
+        self.a_img = pygame.transform.scale(pygame.image.load("media/key_a.png").convert(), (16, 16))
         self.spawn_objects(self.level)
         # self.camera = pygame.camera.Camera(pygame.camera.list_cameras()[0])
         # self.camera.start()
@@ -115,22 +118,23 @@ class Game:
                 ray = pygame.Vector2(self.player.fantom.rect.centerx - button.rect.centerx,
                                      self.player.fantom.rect.centery - button.rect.centery)
                 if ray.length() < self.size_world * 0.7:
+                    self.buttons_pushable[button] = True
                     self.can_push_button = button
                 else:
-                    self.can_push_button = False
+                    self.buttons_pushable[button] = False
         else:
             self.player.fantom_replace(dt, self.camera_pos)
         if self.timer_characters:
             self.change_character(dt)
         self.blit_everything()
 
-
     def blit_sprite(self, sprite: pygame.sprite.Sprite):
         self.surface.blit(sprite.image,
                           (sprite.rect.x - round(self.camera_pos.x), sprite.rect.y - round(self.camera_pos.y)))
 
     def blit_everything(self):
-        groups = [self.object_sprites, self.doors_sprites,self.towers, self.enemies, self.bullets, self.texts, self.player_sprite]
+        groups = [self.object_sprites, self.platform_sprites, self.doors_sprites, self.towers, self.enemies,
+                  self.bullets, self.texts, self.player_sprite]
 
         # mask_sprite = self.player.mask.to_surface()
         # self.surface.blit(mask_sprite,
@@ -138,9 +142,9 @@ class Game:
         for group in groups:
             for sprite in group:
                 self.blit_sprite(sprite)
-
-        if self.can_push_button:
-            self.surface.blit(self.a_img, (self.player.fantom.rect.centerx - self.a_img.get_width() / 2 -
+        for item in self.buttons_pushable.items():
+            if item[1]:
+                self.surface.blit(self.a_img, (self.player.fantom.rect.centerx - self.a_img.get_width() / 2 -
                                            round(self.camera_pos.x),
                                            self.player.fantom.rect.y - 5 - self.a_img.get_height() - round(
                                                self.camera_pos.y)))
@@ -200,11 +204,11 @@ class Game:
         Spawns an enemy
         :param pos: Given position of spawn
         """
-        Enemy(pygame.image.load("enemy.png").convert_alpha(),
+        Enemy(pygame.image.load("media/enemy.png").convert_alpha(),
               pygame.Vector2(pos[0] * self.size_world, pos[1] * self.size_world),
               True, 100, self.map, self.size_world, [self.enemies], [self.doors_sprites, self.object_sprites])
 
-    def spawn_button(self, button_pos: Union[list, tuple], doors: list[Union[tuple, list]]) -> pygame.sprite:
+    def spawn_button(self, button_pos: Union[list, tuple], doors: list[Union[Door, Moving_platform]]) -> pygame.sprite:
         pos = [round((button_pos[0] + 0.5) * self.size_world), (button_pos[1] + 1) * self.size_world]
         button = Button(pos, doors, self.size_world)
         button.add(self.object_sprites)
@@ -218,15 +222,26 @@ class Game:
 
     def spawn_tower(self, pos, orientation):
         pos = [round((pos[0] + 0.5) * self.size_world), (pos[1] + 1) * self.size_world]
-        tower = Auto_Tower(pos, self.size_world, self.map, "turret.png", [64, 64], 20, 0.5, [self.player_sprite, self.enemies], self.bullets, orientation)
+        tower = Auto_Tower(pos, self.size_world, self.map, "media/turret.png", [64, 64], 20, 0.5, [self.player_sprite, self.enemies], self.bullets, orientation)
         tower.add(self.towers)
+
+    def spawn_platforms(self, platform):
+        always_moving = True
+        if platform[0] == "lever":
+            always_moving = False
+        button_pos = platform[1]
+        start_pos = ((int(platform[2][0])+1)*self.size_world,(int(platform[2][1])+1)*self.size_world)
+        end_pos = ((int(platform[3][0])+1)*self.size_world,(int(platform[3][1])+1)*self.size_world)
+        platform = Moving_platform(start_pos,end_pos,self.size_world, always_moving=always_moving)
+        self.platform_sprites.add(platform)
+        self.spawn_button(button_pos, [platform])
 
     def spawn_objects(self, level: int) -> None:
         objects = self.level_objects[str(level)]
         self.player.SPAWN_POS = [round(objects["Spawn"][0]+self.player.rect.w/2),round(objects["Spawn"][1]+self.player.rect.h/2)]
         for pos in objects["Enemies"]:
             self.spawn_enemy(pos)
-        for pos in objects["Buttons"]:
+        for pos in objects["Doors"]:
             button_pos = pos[0]
             doors = pos[1]
             doors_class = []
@@ -237,3 +252,10 @@ class Game:
             pos = tower[0]
             orientation = tower[1]
             self.spawn_tower(pos, orientation)
+        for platform in objects["Platforms"]:
+            self.spawn_platforms(platform)
+        for button in self.object_sprites:
+            self.buttons_pushable[button] = False
+
+
+
