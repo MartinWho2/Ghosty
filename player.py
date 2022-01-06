@@ -65,7 +65,7 @@ class Player(Moving_sprite):
             if self.flip_mask > 15:
                 self.mask = self.masks[self.heading_right]
                 self.flip_mask = 0
-
+        self.fall(acceleration, dt)
         acceleration.x += moving_object.speed.x * self.friction
         moving_object.speed.x += acceleration.x * dt
         moving_object.speed.x = limit_speed(moving_object.speed.x, 3.5)
@@ -83,11 +83,12 @@ class Player(Moving_sprite):
                 if not self.flip_mask:
                     self.flip_mask = 1
                 self.heading_right = False
+
             if self.check_collision(tiles=False,sprite_groups=self.enemies):
                 self.pos.y = 3000
             hits = self.check_collision()
             self.collide(hits, False)
-            self.fall(acceleration, dt)
+
             # !!!! THIS IS REALLY BAD BUT I DON'T KNOW HOW ELSE I COULD DO IT
             if self.speed.y > 1.5:
                 self.is_jumping = True

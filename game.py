@@ -97,12 +97,15 @@ class Game:
         self.camera_pos += scroll
         self.draw_map()
         self.deal_with_particles()
+        for platform in self.platform_sprites:
+            platform.move()
         for bullet in self.bullets:
             bullet.move_and_collide(self.moving_character, dt)
         for person in self.enemies:
             person.move(dt)
         for tower in self.towers:
             tower.waiting(dt)
+
         self.player.move(self.get_input_for_movement(dt), self.characters_class[self.moving_character], dt,
                          self.camera_pos)
         if self.player.pos.y > 2000:
@@ -133,8 +136,8 @@ class Game:
                           (sprite.rect.x - round(self.camera_pos.x), sprite.rect.y - round(self.camera_pos.y)))
 
     def blit_everything(self):
-        groups = [self.object_sprites, self.platform_sprites, self.doors_sprites, self.towers, self.enemies,
-                  self.bullets, self.texts, self.player_sprite]
+        groups = [self.object_sprites,  self.doors_sprites, self.towers, self.enemies,
+                  self.bullets, self.texts, self.platform_sprites, self.player_sprite]
 
         # mask_sprite = self.player.mask.to_surface()
         # self.surface.blit(mask_sprite,
@@ -234,6 +237,7 @@ class Game:
         end_pos = ((int(platform[3][0])+1)*self.size_world,(int(platform[3][1])+1)*self.size_world)
         platform = Moving_platform(start_pos,end_pos,self.size_world, always_moving=always_moving)
         self.platform_sprites.add(platform)
+        print(button_pos)
         self.spawn_button(button_pos, [platform])
 
     def spawn_objects(self, level: int) -> None:

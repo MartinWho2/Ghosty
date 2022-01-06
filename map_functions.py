@@ -116,7 +116,7 @@ def create_darker_image(image:pygame.Surface):
     new_surface.fill(darker)
     image.blit(new_surface,(0,0))
     image.set_colorkey(darker)
-
+    return image
 
 def load_tile_set(filename, final_size, size=16, dark=False):
     """

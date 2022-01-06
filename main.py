@@ -42,6 +42,8 @@ def main():
                         button.change_image(game.moving_character)
                     for door in game.doors_sprites:
                         door.change_image(game.moving_character)
+                    for platform in game.platform_sprites:
+                        platform.change_image(game.moving_character)
                 if e.key == pygame.K_a:
                     if game.moving_character == "fantom" and game.can_push_button and game.buttons_pushable[game.can_push_button]:
                         game.can_push_button.activate(game.moving_character)
