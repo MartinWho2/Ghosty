@@ -33,7 +33,6 @@ def create_map(level: int) -> list:
         temporary_list = []
         for column in range(len(carte[row])):
             if carte[row][column] == "1":
-                print(row, column)
                 neighbours = get_neighbour_tiles(carte, (row, column))
 
                 temporary_list.append(get_same_neighbours_with_possibilities(neighbours))

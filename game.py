@@ -20,11 +20,11 @@ class Game:
             self.level_objects = json.load(f)
             f.close()
         self.w, self.h = self.window.get_width(), self.window.get_height()
-
+        self.level = 1
         self.size_world = 64
         self.surface = pygame.Surface((self.w, self.h))
 
-        self.map = create_map(1)
+        self.map = create_map(self.level)
         self.object_sprites = pygame.sprite.Group()
         self.doors_sprites = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
@@ -49,7 +49,8 @@ class Game:
         self.texts.add(self.press_w_text, self.press_q_text,self.press_q_text_2, self.use_arrows_text, self.use_space_text, self.open_doors_text)
 
         self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite],
-                                     [self.doors_sprites, self.towers], [self.enemies])
+                                     [self.doors_sprites, self.towers], [self.enemies],
+                                     self.level_objects[str(self.level)]["Spawn"])
         self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
 
         self.can_push_button = False
@@ -75,7 +76,7 @@ class Game:
         self.tiles = {"fantom":load_tile_set(tiles_file,64,dark=True),"player":load_tile_set(tiles_file,64)}
         self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
         self.a_img = pygame.transform.scale(pygame.image.load("key_a.png").convert(), (16, 16))
-        self.spawn_objects(1)
+        self.spawn_objects(self.level)
         # self.camera = pygame.camera.Camera(pygame.camera.list_cameras()[0])
         # self.camera.start()
 
@@ -222,6 +223,7 @@ class Game:
 
     def spawn_objects(self, level: int) -> None:
         objects = self.level_objects[str(level)]
+        self.player.SPAWN_POS = [round(objects["Spawn"][0]+self.player.rect.w/2),round(objects["Spawn"][1]+self.player.rect.h/2)]
         for pos in objects["Enemies"]:
             self.spawn_enemy(pos)
         for pos in objects["Buttons"]:

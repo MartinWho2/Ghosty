@@ -27,7 +27,7 @@ class Fantom(pygame.sprite.Sprite):
 
 class Player(Moving_sprite):
     def __init__(self, tiles: list, tile_factor: int, surface: pygame.Surface, groups: list[pygame.sprite.Group],
-                 elements: list[pygame.sprite.Group], enemies: list[pygame.sprite.Group]) -> None:
+                 elements: list[pygame.sprite.Group], enemies: list[pygame.sprite.Group], spawn:list) -> None:
         super().__init__(pygame.Vector2(0, 0), pygame.image.load('chevalier.png').convert_alpha(), tile_factor, tiles,
                          tile_factor, elements, groups)
         self.surface = surface  # A surface to draw the circle appearing when the ghost tries to run away
@@ -37,7 +37,7 @@ class Player(Moving_sprite):
         self.heading_right = True
         self.empty_image.set_alpha(0)
         self.rect = self.image.get_rect()
-        self.SPAWN_POS = (200, 140)
+        self.SPAWN_POS = (round(spawn[0]*self.tile_factor+self.rect.w/2),round(spawn[1]*self.tile_factor+self.rect.h/2))
         self.rect.center = self.SPAWN_POS
         self.facing_right = True
         self.pos = pygame.Vector2(self.rect.x, self.rect.y)
@@ -101,9 +101,9 @@ class Player(Moving_sprite):
             self.calculate_distance(dt, camera_pos)
 
     def die(self):
-        self.pos.x, self.pos.y = self.SPAWN_POS[0],self.SPAWN_POS[1]
+        self.rect.center = self.SPAWN_POS
+        self.pos.x, self.pos.y = self.rect.x,self.rect.y
         self.speed.x, self.speed.y = 0, 0
-        self.rect.topleft = self.pos
         self.fantom.pos.x -= self.fantom.rect.right - self.rect.x
         self.fantom.pos.y -= self.fantom.rect.centery - self.rect.y
         self.fantom.rect.topleft = self.fantom.pos
