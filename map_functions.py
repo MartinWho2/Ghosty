@@ -106,9 +106,18 @@ def show_mask(mask: pygame.mask.Mask):
         for column in range(size[1]):
             list.append(mask.get_at((column, row)))
 
+def create_darker_image(image:pygame.Surface):
+    new_surface = pygame.Surface(image.get_size(),pygame.SRCALPHA)
+    darker = (20,20,50,100)
+    new_surface.fill(darker)
+    image.blit(new_surface,(0,0))
+    image.set_colorkey(darker)
 
-def load_tile_set(filename, final_size, size=16):
+
+def load_tile_set(filename, final_size, size=16, dark=False):
     tile_set = pygame.image.load(filename).convert_alpha()
+    if dark:
+        create_darker_image(tile_set)
     if tile_set.get_width() / 5 == tile_set.get_height() / 3 == size:
         tiles = {}
         char_to_hex = {10: "a", 11: "b", 12: "c", 13: "d"}

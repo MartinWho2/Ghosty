@@ -37,7 +37,8 @@ class Player(Moving_sprite):
         self.heading_right = True
         self.empty_image.set_alpha(0)
         self.rect = self.image.get_rect()
-        self.rect.center = (200, 160)
+        self.SPAWN_POS = (200, 140)
+        self.rect.center = self.SPAWN_POS
         self.facing_right = True
         self.pos = pygame.Vector2(self.rect.x, self.rect.y)
         self.fantom = Fantom()
@@ -100,7 +101,7 @@ class Player(Moving_sprite):
             self.calculate_distance(dt, camera_pos)
 
     def die(self):
-        self.pos.x, self.pos.y = 0, 0
+        self.pos.x, self.pos.y = self.SPAWN_POS[0],self.SPAWN_POS[1]
         self.speed.x, self.speed.y = 0, 0
         self.rect.topleft = self.pos
         self.fantom.pos.x -= self.fantom.rect.right - self.rect.x

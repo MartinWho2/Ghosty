@@ -1,8 +1,6 @@
 HERE IS A LIST OF SOME IMPLEMENTATIONS I'M THINKING OF FOR THIS GAME
 - BASICS I WILL DO FIRST:
     - Add a menu
-    - Make the button also reactivate doors
-    - Add collision with enemies
 
 - ADVANCED STUFF:
     - Add an automated tower which can be switched on/off like a door

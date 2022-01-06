@@ -5,7 +5,7 @@ import math
 from typing import Union
 
 from player import Player
-from map_functions import create_map, collide_with_rects, load_tile_set
+from map_functions import create_map, collide_with_rects, load_tile_set, create_darker_image
 from enemy import Enemy
 from button import Button
 from door import Door
@@ -72,7 +72,7 @@ class Game:
         }
         tiles_file = "grass-tileset.png"
         tiles_file = "dirt-tileset.png"
-        self.tiles = {"fantom":load_tile_set(tiles_file,64),"player":load_tile_set(tiles_file,64)}
+        self.tiles = {"fantom":load_tile_set(tiles_file,64,dark=True),"player":load_tile_set(tiles_file,64)}
         self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
         self.a_img = pygame.transform.scale(pygame.image.load("key_a.png").convert(), (16, 16))
         self.spawn_objects(1)
@@ -217,7 +217,7 @@ class Game:
 
     def spawn_tower(self, pos, orientation):
         pos = [round((pos[0] + 0.5) * self.size_world), (pos[1] + 1) * self.size_world]
-        tower = Auto_Tower(pos, self.size_world, self.map, "fantome.png", [64, 64], 20, 0.5, [self.player_sprite, self.enemies], self.bullets, orientation)
+        tower = Auto_Tower(pos, self.size_world, self.map, "turret.png", [64, 64], 20, 0.5, [self.player_sprite, self.enemies], self.bullets, orientation)
         tower.add(self.towers)
 
     def spawn_objects(self, level: int) -> None:

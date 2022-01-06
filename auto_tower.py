@@ -6,10 +6,10 @@ class Auto_Tower(pygame.sprite.Sprite):
     def __init__(self, pos, size_world, map, image: str, size: tuple[int, int], period: int, shoot_height: float,
                  collision_groups:list[pygame.sprite.Group], bullets:pygame.sprite.Group, direction="left"):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load(image), (size[0], size[1]))
+        self.image = pygame.transform.scale(pygame.image.load(image).convert_alpha(), (size[0], size[1]))
         self.direction = direction
         if self.direction == "left":
-            pygame.transform.flip(self.image, True, False)
+            self.image = pygame.transform.flip(self.image, True, False)
         self.period = period
         self.now = 0
         self.rect = self.image.get_rect(topleft=pos)
