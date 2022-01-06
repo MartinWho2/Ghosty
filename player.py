@@ -23,6 +23,9 @@ class Fantom(pygame.sprite.Sprite):
         self.max_speed = 5
         self.friction = -0.1
         self.particle_image = pygame.image.load("media/particle.png")
+    def die(self):
+        # He obviously can't die
+        pass
 
 
 class Player(Moving_sprite):
@@ -68,8 +71,7 @@ class Player(Moving_sprite):
         self.fall(acceleration, dt)
         acceleration.x += moving_object.speed.x * self.friction
         moving_object.speed.x += acceleration.x * dt
-        moving_object.speed.x = limit_speed(moving_object.speed.x, 3.5)
-        moving_object.pos.x += moving_object.speed.x * dt
+        moving_object.pos.x += moving_object.speed.x
         moving_object.rect.x = round(moving_object.pos.x)
 
         if moving_object.__class__ == Player:
@@ -85,7 +87,8 @@ class Player(Moving_sprite):
                 self.heading_right = False
 
             if self.check_collision(tiles=False,sprite_groups=self.enemies):
-                self.pos.y = 3000
+                self.die()
+
             hits = self.check_collision()
             self.collide(hits, False)
 
@@ -108,6 +111,7 @@ class Player(Moving_sprite):
         self.fantom.pos.x -= self.fantom.rect.right - self.rect.x
         self.fantom.pos.y -= self.fantom.rect.centery - self.rect.y
         self.fantom.rect.topleft = self.fantom.pos
+        print(self.rect.topleft, self.SPAWN_POS)
 
     def calculate_distance(self, dt: float, camera_pos: pygame.Vector2) -> None:
         """

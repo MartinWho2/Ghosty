@@ -18,9 +18,12 @@ def main():
     fps = 60
     game = Game(window)
     before = time.time()
+    time.sleep(0.02)
     while playing:
         clock.tick(60)
         dt = (time.time() - before) * fps
+        if dt == 0:
+            print("WTF DUDE")
         while dt == 0.0:
             dt = (time.time() - before) * fps
         game.update(dt)

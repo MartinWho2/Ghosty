@@ -27,6 +27,7 @@ class Bullet(pygame.sprite.Sprite):
         if abs(self.pos.x) > 1000:
             self.kill()
 
+
     def collide(self, sprite: pygame.sprite.Sprite):
         if pygame.sprite.collide_mask(self, sprite):
             return True
@@ -47,7 +48,8 @@ class Bullet(pygame.sprite.Sprite):
                         try:
                             object.die()
                         except:
-                            pass
+                            print("the bullet collided with something not repertoried")
+                            raise WindowsError
 
         for row in range(len(self.map)):
             for column in range(len(self.map[row])):

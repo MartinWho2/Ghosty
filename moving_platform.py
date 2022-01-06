@@ -3,7 +3,7 @@ from map_functions import create_darker_image
 
 
 class Moving_platform(pygame.sprite.Sprite):
-    def __init__(self, start_pos: tuple, end_pos: tuple,size_world:int, always_moving=False):
+    def __init__(self, start_pos: tuple, end_pos: tuple, size_world: int, always_moving=False):
         """
         :param start_pos: Position of start given bottomleft
         :param end_pos: Position of end given bottomleft
@@ -13,9 +13,8 @@ class Moving_platform(pygame.sprite.Sprite):
         super().__init__()
         self.tile_size = size_world
         image = pygame.image.load("media/platform.png").convert_alpha()
-        image = pygame.transform.scale(image,(size_world,round(size_world/image.get_width()*image.get_height())))
+        image = pygame.transform.scale(image, (size_world, round(size_world/image.get_width()*image.get_height())))
         self.images = {"fantom": create_darker_image(image.copy()), "player": image}
-        print(self.images)
         self.image = self.images["player"]
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
@@ -44,7 +43,7 @@ class Moving_platform(pygame.sprite.Sprite):
                 self.rect.x += self.moving.x
                 self.rect.y += self.moving.y
 
-    def activate(self,moving_player):
+    def activate(self, moving_player):
         self.change_image(moving_player)
         if not self.activated:
             self.activated = True
@@ -52,4 +51,3 @@ class Moving_platform(pygame.sprite.Sprite):
     def change_image(self, moving_character):
         self.image = self.images[moving_character]
         self.mask = pygame.mask.from_surface(self.image)
-

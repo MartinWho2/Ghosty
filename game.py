@@ -237,12 +237,10 @@ class Game:
         end_pos = ((int(platform[3][0])+1)*self.size_world,(int(platform[3][1])+1)*self.size_world)
         platform = Moving_platform(start_pos,end_pos,self.size_world, always_moving=always_moving)
         self.platform_sprites.add(platform)
-        print(button_pos)
         self.spawn_button(button_pos, [platform])
 
     def spawn_objects(self, level: int) -> None:
         objects = self.level_objects[str(level)]
-        self.player.SPAWN_POS = [round(objects["Spawn"][0]+self.player.rect.w/2),round(objects["Spawn"][1]+self.player.rect.h/2)]
         for pos in objects["Enemies"]:
             self.spawn_enemy(pos)
         for pos in objects["Doors"]:
@@ -260,6 +258,3 @@ class Game:
             self.spawn_platforms(platform)
         for button in self.object_sprites:
             self.buttons_pushable[button] = False
-
-
-
