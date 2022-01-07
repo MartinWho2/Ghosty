@@ -94,7 +94,7 @@ class Game:
                        }
         }
         tiles_file = "media/grass-tileset.png"
-        # tiles_file = "media/dirt-tileset.png"
+        tiles_file = "media/dirt-tileset.png"
         self.tiles = {"fantom": load_tile_set(tiles_file, 64, dark=True), "player": load_tile_set(tiles_file, 64)}
         self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
         self.a_img = pygame.transform.scale(pygame.image.load("media/key_a.png").convert(), (16, 16))

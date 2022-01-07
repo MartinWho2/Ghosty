@@ -113,7 +113,7 @@ def create_darker_image(image:pygame.Surface):
     :return:
     """
     new_surface = pygame.Surface(image.get_size(),pygame.SRCALPHA)
-    darker = (20,25,60,100)
+    darker = (20,25,60,130)
     new_surface.fill(darker)
     image.blit(new_surface,(0,0))
     image.set_colorkey(darker)
