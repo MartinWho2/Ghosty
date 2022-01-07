@@ -24,7 +24,7 @@ class Bullet(pygame.sprite.Sprite):
         self.pos.x += self.speed.x * dt
         self.pos.y += self.speed.y * dt
         self.rect.x, self.rect.y = self.pos.x, self.pos.y
-        if abs(self.pos.x) > 1000:
+        if self.pos.x < -1000 or self.pos.x > 5000:
             self.kill()
 
 
