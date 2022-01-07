@@ -22,9 +22,8 @@ def main():
     while playing:
         clock.tick(60)
         dt = (time.time() - before) * fps
-        if dt == 0:
+        while dt == 0:
             print("WTF DUDE")
-        while dt == 0.0:
             dt = (time.time() - before) * fps
         game.update(dt)
         before = time.time()

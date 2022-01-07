@@ -27,21 +27,27 @@ class Moving_platform(pygame.sprite.Sprite):
         self.heading_to_end = True
         self.moving = pygame.Vector2(0, 0)
 
-    def move(self):
+    def move(self,get_move=False):
         if self.activated:
             toward = self.end_pos
             if not self.heading_to_end:
                 toward = self.start_pos
             self.moving.x, self.moving.y = toward[0] - self.rect.x, toward[1] - self.rect.bottom
-            if self.moving.length() < self.velocity:
-                self.rect.bottomleft = toward
-                if not self.always_moving:
-                    self.activated = False
-                self.heading_to_end = not self.heading_to_end
+            if self.moving.length() <= self.velocity:
+                if not get_move:
+                    self.rect.bottomleft = toward
+                    if not self.always_moving:
+                        self.activated = False
+                    self.heading_to_end = not self.heading_to_end
             else:
                 self.moving.scale_to_length(self.velocity)
-                self.rect.x += self.moving.x
-                self.rect.y += self.moving.y
+                if not get_move:
+                    self.rect.x += self.moving.x
+                    self.rect.y += self.moving.y
+        else:
+            self.moving.x,self.moving.y = 0,0
+        if get_move:
+            return self.moving
 
     def activate(self, moving_player):
         self.change_image(moving_player)

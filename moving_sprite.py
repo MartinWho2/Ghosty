@@ -1,7 +1,5 @@
 import pygame
-from map_functions import collide_with_rects, show_mask
-from math_functions import limit_speed
-
+from moving_platform import Moving_platform
 
 class Moving_sprite(pygame.sprite.Sprite):
     def __init__(self, pos: pygame.Vector2, image: pygame.Surface, resize: int, tiles: list, tile_factor: int,
@@ -24,6 +22,8 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.flip_mask = 0
         self.masks = {True: self.mask, False: pygame.mask.from_surface(pygame.transform.flip(self.image, True, False))}
         self.tile = pygame.mask.Mask((tile_factor, tile_factor), fill=True)
+        self.on_platform = False
+        self.was_on_platform = 0
 
     def collide_with_mask(self, mask, pos_mask):
         return self.mask.overlap_mask(mask, (pos_mask[0]-self.rect. x, pos_mask[1]-self.rect.y))
@@ -50,6 +50,12 @@ class Moving_sprite(pygame.sprite.Sprite):
                 mask = self.collide_with_mask(element.mask, (element.rect.x, element.rect.y))
                 if mask.count():
                     get_hits.append(mask)
+                    if element.__class__ == Moving_platform:
+                        self.on_platform = element
+                        self.was_on_platform = 0
+        self.was_on_platform += 1
+        if self.was_on_platform > 10:
+            self.on_platform = False
         return get_hits
 
     def collide(self, hits: list, axis: bool) -> None:

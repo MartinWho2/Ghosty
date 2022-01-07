@@ -232,12 +232,13 @@ class Game:
         always_moving = True
         if platform[0] == "lever":
             always_moving = False
-        button_pos = platform[1]
-        start_pos = ((int(platform[2][0])+1)*self.size_world,(int(platform[2][1])+1)*self.size_world)
-        end_pos = ((int(platform[3][0])+1)*self.size_world,(int(platform[3][1])+1)*self.size_world)
+            button_pos = platform[3]
+        start_pos = ((int(platform[1][0])+1)*self.size_world,(int(platform[1][1])+1)*self.size_world)
+        end_pos = ((int(platform[2][0])+1)*self.size_world,(int(platform[2][1])+1)*self.size_world)
         platform = Moving_platform(start_pos,end_pos,self.size_world, always_moving=always_moving)
         self.platform_sprites.add(platform)
-        self.spawn_button(button_pos, [platform])
+        if not always_moving:
+            self.spawn_button(button_pos, [platform])
 
     def spawn_objects(self, level: int) -> None:
         objects = self.level_objects[str(level)]

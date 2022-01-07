@@ -68,6 +68,9 @@ class Player(Moving_sprite):
             if self.flip_mask > 15:
                 self.mask = self.masks[self.heading_right]
                 self.flip_mask = 0
+        if self.on_platform:
+            self.pos += self.on_platform.move(get_move=True)
+            self.rect.x,self.rect.y = round(self.pos.x),round(self.pos.y)
         self.fall(acceleration, dt)
         acceleration.x += moving_object.speed.x * self.friction
         moving_object.speed.x += acceleration.x * dt
@@ -111,7 +114,6 @@ class Player(Moving_sprite):
         self.fantom.pos.x -= self.fantom.rect.right - self.rect.x
         self.fantom.pos.y -= self.fantom.rect.centery - self.rect.y
         self.fantom.rect.topleft = self.fantom.pos
-        print(self.rect.topleft, self.SPAWN_POS)
 
     def calculate_distance(self, dt: float, camera_pos: pygame.Vector2) -> None:
         """
