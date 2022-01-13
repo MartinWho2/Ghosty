@@ -49,16 +49,21 @@ def main():
                 if e.key == pygame.K_a:
                     if game.moving_character == "fantom" and game.can_push_button and game.buttons_pushable[game.can_push_button]:
                         game.can_push_button.activate(game.moving_character)
-                elif e.key == pygame.K_SPACE and game.moving_character == "player":
+                elif e.key == pygame.K_w and game.moving_character == "player":
                     # Jump
                     game.player.jump()
+
             elif e.type == pygame.KEYUP:
                 game.keys[e.key] = False
-                if e.key == pygame.K_SPACE:
+                if e.key == pygame.K_w and game.moving_character == "player":
                     if game.player.is_jumping and game.player.speed.y < 0:
                         game.player.speed.y *= 0.5
-                elif e.key == pygame.K_w and game.moving_character == "player":
-                    game.player.shoot([game.bullets],[game.doors_sprites,game.object_sprites,game.enemies])
+                elif e.key == pygame.K_SPACE :
+                    if game.moving_character == "player":
+                        game.player.shoot([game.bullets],[game.doors_sprites,game.object_sprites,game.enemies])
+                    if game.moving_character == "fantom" and game.can_push_button and game.buttons_pushable[game.can_push_button]:
+                        game.can_push_button.activate(game.moving_character)
+
             elif e.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()

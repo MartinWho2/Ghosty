@@ -37,7 +37,7 @@ class Game:
         self.player_sprite = pygame.sprite.Group()
         self.texts = pygame.sprite.Group()
 
-        press_w_text = Text_sprite("media/pixel-font.ttf", "Press W to shoot a bullet", self.size_world * 4,
+        press_w_text = Text_sprite("media/pixel-font.ttf", "Press SPACE to shoot a bullet", self.size_world * 4,
                                         (0, 0, 0),
                                         (256, 550))
         press_q_text = Text_sprite("media/pixel-font.ttf", "Press Q to switch between",
@@ -45,9 +45,9 @@ class Game:
         press_q_text_2 = Text_sprite("media/pixel-font.ttf", "the player and the ghost",
                                           self.size_world * 5, (0, 0, 0), (766, 130))
 
-        use_arrows_text = Text_sprite("media/pixel-font.ttf", "Use the arrows left-right to move",
+        use_arrows_text = Text_sprite("media/pixel-font.ttf", "Use the keys A-D to move left-right",
                                            self.size_world * 5, (0, 0, 0), (406, 0))
-        use_space_text = Text_sprite("media/pixel-font.ttf", "Use the space bar to jump",
+        use_space_text = Text_sprite("media/pixel-font.ttf", "Use the key W to jump",
                                           self.size_world * 5, (0, 0, 0), (406, 50))
         open_doors_text = Text_sprite("media/pixel-font.ttf", "Use levers to open or close doors",
                                            self.size_world * 5, (0, 0, 0), (771, 650))
@@ -97,7 +97,7 @@ class Game:
         tiles_file = "media/dirt-tileset.png"
         self.tiles = {"fantom": load_tile_set(tiles_file, 64, dark=True), "player": load_tile_set(tiles_file, 64)}
         self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
-        self.a_img = pygame.transform.scale(pygame.image.load("media/key_a.png").convert(), (16, 16))
+        self.a_img = pygame.transform.scale(pygame.image.load("media/key_space.png").convert(), (16, 16))
         self.spawn_objects(self.level)
         # self.camera = pygame.camera.Camera(pygame.camera.list_cameras()[0])
         # self.camera.start()
@@ -210,14 +210,14 @@ class Game:
     def get_input_for_movement(self, dt: float) -> pygame.Vector2:
         value = 0.8
         movement = pygame.Vector2(0, 0)
-        if self.keys.get(pygame.K_LEFT):
+        if self.keys.get(pygame.K_a):
             movement.x -= value
-        if self.keys.get(pygame.K_RIGHT):
+        if self.keys.get(pygame.K_d):
             movement.x += value
         if self.moving_character == "fantom":
-            if self.keys.get(pygame.K_UP):
+            if self.keys.get(pygame.K_w):
                 movement.y -= value
-            if self.keys.get(pygame.K_DOWN):
+            if self.keys.get(pygame.K_s):
                 movement.y += value
         return movement
 
@@ -231,7 +231,7 @@ class Game:
             move=False
         Enemy(pygame.image.load("media/enemy.png").convert_alpha(),
               pygame.Vector2(pos[0] * self.size_world, pos[1] * self.size_world),
-              move, 100, self.map, self.size_world, [self.enemies], [self.doors_sprites, self.object_sprites])
+              move, 100, self.map, self.size_world, [self.enemies], [self.doors_sprites, self.object_sprites, self.platform_sprites])
 
     def spawn_button(self, button_pos: Union[list, tuple], doors: list[Union[Door, Moving_platform, Auto_Tower]],
                      lever=False) -> pygame.sprite:

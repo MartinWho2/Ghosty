@@ -2,6 +2,7 @@ import pygame
 from map_functions import collide_with_rects
 from button import Button
 from enemy import Enemy
+from door import Door
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, pos: pygame.Vector2, speed: pygame.Vector2, collision_objects: list[pygame.sprite.Group],
@@ -43,6 +44,8 @@ class Bullet(pygame.sprite.Sprite):
                         self.kill()
                     elif object.__class__ == Enemy:
                         object.kill()
+                        self.kill()
+                    elif object.__class__ == Door:
                         self.kill()
                     else:
                         try:
