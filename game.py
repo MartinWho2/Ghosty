@@ -135,7 +135,7 @@ class Game:
             self.camera_pos += scroll
             self.change_character(dt)
         if self.moving_character == "fantom":
-            self.player.move(pygame.Vector2(0, 0), self.characters_class["player"], dt, self.camera_pos)
+            self.player.move(pygame.Vector2(0, 0), self.characters_class["player"], dt, self.camera_pos,fall=False)
             for button in self.object_sprites:
                 ray = pygame.Vector2(self.player.fantom.rect.centerx - button.rect.centerx,
                                      self.player.fantom.rect.centery - button.rect.centery)

@@ -54,15 +54,17 @@ class Player(Moving_sprite):
         self.enemies = enemies
 
     def move(self, acceleration: pygame.Vector2, moving_object: Moving_sprite, dt: float,
-             camera_pos: pygame.Vector2) -> None:
+             camera_pos: pygame.Vector2, fall=True) -> None:
         """
         Moves the player or the fantom with a given acceleration
         :param acceleration: Acceleration of the moving object
         :param moving_object: Player or Fantom
         :param dt: Value to compensate a hypothetical FPS loss
         :param camera_pos: position of the camera
+        :param fall: Does the player fall
         :return: None
         """
+        print(self.pos.y,end=", ")
         if self.flip_mask:
             self.flip_mask += dt
             if self.flip_mask > 15:
@@ -71,12 +73,13 @@ class Player(Moving_sprite):
         if self.on_platform:
             self.pos += self.on_platform.move(get_move=True)
             self.rect.x,self.rect.y = round(self.pos.x),round(self.pos.y)
-        self.fall(acceleration, dt)
+        if fall:
+            self.fall(acceleration, dt)
         acceleration.x += moving_object.speed.x * self.friction
         moving_object.pos.x += 0.5*acceleration.x * (dt**2) + moving_object.speed.x * dt
         moving_object.speed.x += acceleration.x * dt
         moving_object.rect.x = round(moving_object.pos.x)
-
+        print(self.pos.y)
         if moving_object.__class__ == Player:
             if self.speed.x > 0:
                 self.image = self.images[True]
