@@ -112,9 +112,9 @@ class Moving_sprite(pygame.sprite.Sprite):
         return size[1]-found
 
     def fall(self, acceleration, dt):
+        self.pos.y += 0.5 * (acceleration.y + self.gravity) * (dt ** 2) + self.speed.y * dt
         self.speed.y += (acceleration.y + self.gravity) * dt
         # self.speed.y = limit_speed(self.speed.y, self.max_speed)
-        self.pos.y += self.speed.y * dt
         self.rect.y = round(self.pos.y)
         hits = self.check_collision()
         self.collide(hits, True)

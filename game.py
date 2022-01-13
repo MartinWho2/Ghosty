@@ -208,7 +208,7 @@ class Game:
                 self.surface.blit(particle.image, particle.pos)
 
     def get_input_for_movement(self, dt: float) -> pygame.Vector2:
-        value = 0.8 * dt
+        value = 0.8
         movement = pygame.Vector2(0, 0)
         if self.keys.get(pygame.K_LEFT):
             movement.x -= value

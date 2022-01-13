@@ -73,8 +73,8 @@ class Player(Moving_sprite):
             self.rect.x,self.rect.y = round(self.pos.x),round(self.pos.y)
         self.fall(acceleration, dt)
         acceleration.x += moving_object.speed.x * self.friction
+        moving_object.pos.x += 0.5*acceleration.x * (dt**2) + moving_object.speed.x * dt
         moving_object.speed.x += acceleration.x * dt
-        moving_object.pos.x += moving_object.speed.x
         moving_object.rect.x = round(moving_object.pos.x)
 
         if moving_object.__class__ == Player:
