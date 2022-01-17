@@ -124,9 +124,11 @@ class Game:
             person.move(dt)
         for tower in self.towers:
             tower.waiting(dt)
-
+        fall = True
+        if self.moving_character == "fantom":
+            fall = False
         self.player.move(self.get_input_for_movement(dt), self.characters_class[self.moving_character], dt,
-                         self.camera_pos)
+                         self.camera_pos,fall=fall)
         if self.player.pos.y > 2000:
             # pygame.image.save(self.camera.get_image(), "ITS_YOU.png")
             self.player.die()
@@ -135,7 +137,7 @@ class Game:
             self.camera_pos += scroll
             self.change_character(dt)
         if self.moving_character == "fantom":
-            self.player.move(pygame.Vector2(0, 0), self.characters_class["player"], dt, self.camera_pos,fall=False)
+            self.player.move(pygame.Vector2(0, 0), self.characters_class["player"], dt, self.camera_pos)
             for button in self.object_sprites:
                 ray = pygame.Vector2(self.player.fantom.rect.centerx - button.rect.centerx,
                                      self.player.fantom.rect.centery - button.rect.centery)
