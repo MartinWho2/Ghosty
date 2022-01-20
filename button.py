@@ -13,16 +13,17 @@ class Button(pygame.sprite.Sprite):
         """
         super().__init__()
         img_size = round(size_world * 3 / 4)
-        self.lever = [lever,0]
+        self.lever = [lever, 0]
         self.images = {}
         if lever:
             image = pygame.image.load("media/lever.png").convert_alpha()
-            self.images["player"] = {0:pygame.transform.scale(image.copy(),
-                                                             (img_size, img_size)),
-                                      1:pygame.transform.flip(pygame.transform.scale(image.copy(),
-                                                             (img_size, img_size)),True,False)}
-            self.images["fantom"]= {0:create_darker_image(self.images["player"][0].copy()),
-                                                          1:create_darker_image(self.images["player"][1].copy())}
+            self.images["player"] = {0: pygame.transform.scale(image.copy(),
+                                                               (img_size, img_size)),
+                                     1: pygame.transform.flip(pygame.transform.scale(image.copy(),
+                                                                                     (img_size, img_size)), True,
+                                                              False)}
+            self.images["fantom"] = {0: create_darker_image(self.images["player"][0].copy()),
+                                     1: create_darker_image(self.images["player"][1].copy())}
             self.image = self.images["player"][0]
         else:
             self.images = {
@@ -48,7 +49,7 @@ class Button(pygame.sprite.Sprite):
 
     def activate(self, moving_character) -> None:
         if self.lever[0]:
-            self.lever[1] = (self.lever[1]+1)%2
+            self.lever[1] = (self.lever[1] + 1) % 2
         self.change_image(moving_character)
         for related in self.related:
             related.activate(moving_character)

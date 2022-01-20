@@ -64,7 +64,6 @@ class Player(Moving_sprite):
         :param fall: Does the player fall
         :return: None
         """
-        print(self.pos.y,end=", ")
         if self.flip_mask:
             self.flip_mask += dt
             if self.flip_mask > 15:
@@ -79,7 +78,6 @@ class Player(Moving_sprite):
         moving_object.pos.x += 0.5*acceleration.x * (dt**2) + moving_object.speed.x * dt
         moving_object.speed.x += acceleration.x * dt
         moving_object.rect.x = round(moving_object.pos.x)
-        print(self.pos.y)
         if moving_object.__class__ == Player:
             if self.speed.x > 0:
                 self.image = self.images[True]
