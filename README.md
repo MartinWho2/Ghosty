@@ -8,7 +8,6 @@ abilities. They will need to cooperate to free a person who was captured by the 
 ## What I still want to implement
 - BASICS I WILL DO FIRST:
     - Add a menu
-    - Make the button also reactivate doors
     - Add collision with enemies
 
 - ADVANCED STUFF:

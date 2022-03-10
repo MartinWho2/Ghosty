@@ -16,6 +16,15 @@ from moving_platform import Moving_platform
 
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
+        self.game_not_started = True
+        self.pause_menu = False
+
+        # Variables liées au menu
+        self.timer = 0
+        self.title_font = pygame.font.Font("media/fonts/title.TTF",30)
+        self.text_white = self.title_font.render("Press space to start",True,"white")
+        self.text_dark = self.title_font.render("Press space to start",True,"black")
+
         # pygame.camera.init()
         self.window = window
         with open("level_objects.json", "r") as f:
@@ -38,33 +47,32 @@ class Game:
         self.texts = pygame.sprite.Group()
 
         press_w_text = Text_sprite("media/pixel-font.ttf", "Press SPACE to shoot a bullet", self.size_world * 4,
-                                        (0, 0, 0),
-                                        (256, 550))
+                                   (255,255,255), (256, 550))
         press_q_text = Text_sprite("media/pixel-font.ttf", "Press Q to switch between",
-                                        self.size_world * 7, (0, 0, 0), (756, 100))
+                                        self.size_world * 7, (255,255,255), (756, 100))
         press_q_text_2 = Text_sprite("media/pixel-font.ttf", "the player and the ghost",
-                                          self.size_world * 5, (0, 0, 0), (766, 130))
+                                          self.size_world * 5, (255,255,255), (766, 130))
 
         use_arrows_text = Text_sprite("media/pixel-font.ttf", "Use the keys A-D to move left-right",
-                                           self.size_world * 5, (0, 0, 0), (406, 0))
+                                           self.size_world * 5, (255,255,255), (406, 0))
         use_space_text = Text_sprite("media/pixel-font.ttf", "Use the key W to jump",
-                                          self.size_world * 5, (0, 0, 0), (406, 50))
+                                          self.size_world * 5, (255,255,255), (406, 50))
         open_doors_text = Text_sprite("media/pixel-font.ttf", "Use levers to open or close doors",
-                                           self.size_world * 5, (0, 0, 0), (771, 650))
+                                           self.size_world * 5, (255,255,255), (771, 650))
         use_bullets_text = Text_sprite("media/pixel-font.ttf", "Bullets can also activate levers",
-                                           self.size_world * 5, (0, 0, 0), (240, 600))
+                                           self.size_world * 5, (255,255,255), (240, 600))
         use_platforms_text = Text_sprite("media/pixel-font.ttf", "Flying platforms are great",
-                                           self.size_world * 6, (0, 0, 0), (650, 1050))
+                                           self.size_world * 6, (255,255,255), (650, 1050))
         lever_platforms_text = Text_sprite("media/pixel-font.ttf", "Use buttons to activate some platforms",
-                                            self.size_world * 7, (0, 0, 0), (1150, 1050))
+                                            self.size_world * 7, (255,255,255), (1150, 1050))
         be_careful_text = Text_sprite("media/pixel-font.ttf", "Be careful against enemies",
-                                            self.size_world * 7, (0, 0, 0), (1500, 100))
+                                            self.size_world * 7, (255,255,255), (1500, 100))
         turrets_text = Text_sprite("media/pixel-font.ttf", "Use levers to deactivate turrets",
-                                            self.size_world * 7, (0, 0, 0), (1840, 250))
+                                            self.size_world * 7, (255,255,255), (1840, 250))
         won_text = Text_sprite("media/pixel-font.ttf", "WELL",
-                                            self.size_world *3, (0, 0, 0), (2350, 350))
+                                            self.size_world *3, (255,255,255), (2350, 350))
         won_text_2 = Text_sprite("media/pixel-font.ttf", "DONE",
-                               self.size_world * 3, (0, 0, 0), (2350, 440))
+                               self.size_world * 3, (255,255,255), (2350, 440))
         self.texts.add(press_w_text, press_q_text, press_q_text_2, use_arrows_text,
                        use_space_text, open_doors_text, use_bullets_text,use_platforms_text,
                        lever_platforms_text, be_careful_text, turrets_text,won_text,won_text_2)
@@ -101,6 +109,28 @@ class Game:
         self.spawn_objects(self.level)
         # self.camera = pygame.camera.Camera(pygame.camera.list_cameras()[0])
         # self.camera.start()
+
+    def menu(self,dt: float) -> None:
+        self.timer += dt
+        self.timer %= 60
+        self.window.fill("dark green")
+        self.window.blit(pygame.transform.scale(self.player.image,(256,256)),(130,130))
+        if self.timer < 40:
+            self.window.blit(self.text_dark,(85,195))
+            self.window.blit(self.text_white,(80,190))
+
+    def change_dt(self, dt:float) -> float:
+        """
+        Reajusts the value of dt if the game needs to be slowed or accelerated
+        :param dt:
+        :return:
+        """
+        if self.shot:
+            dt /= 3
+            self.shot += dt
+            if self.shot > 10:
+                self.shot = 0
+        return dt
 
     def update(self, dt: float) -> None:
         """
