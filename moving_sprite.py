@@ -1,3 +1,5 @@
+import math
+
 import pygame
 from moving_platform import Moving_platform
 
@@ -14,6 +16,7 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.images = {True: self.image, False: pygame.transform.flip(self.image, True, False)}
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = pos.x, pos.y
+        self.approximate_size = [round(self.rect.w/self.tile_factor)+2,round(self.rect.h/self.tile_factor)+2]
         self.speed = pygame.Vector2(0, 0)
         self.gravity, self.friction = 0.5, -0.18
         self.is_jumping = False
@@ -26,7 +29,7 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.was_on_platform = 0
 
     def collide_with_mask(self, mask, pos_mask):
-        return self.mask.overlap_mask(mask, (pos_mask[0]-self.rect. x, pos_mask[1]-self.rect.y))
+        return self.mask.overlap_mask(mask, (pos_mask[0]-self.rect.x, pos_mask[1]-self.rect.y))
 
     def check_collision(self, tiles=True, sprite_groups="normal") -> list[pygame.mask.Mask]:
         if sprite_groups == "normal":
@@ -34,16 +37,33 @@ class Moving_sprite(pygame.sprite.Sprite):
         get_hits = []
         # Collision with tiles
         if tiles:
-            for row in range(len(self.tiles)):
-                for column in range(len(self.tiles[row])):
+            # Only verifies tiles around the sprite
+            sprite_approximate_pos = [round(self.rect.x/self.tile_factor),round(self.rect.y/self.tile_factor)]
+            columns = [sprite_approximate_pos[0] - self.approximate_size[0],
+                       sprite_approximate_pos[0] + self.approximate_size[0]]
+            if columns[0] < 0:
+                columns[0] = 0  # If too left
+            if columns[1] >= len(self.tiles[0]):
+                columns[1] = len(self.tiles[0])-1  # If too right
+            if columns[1] < self.approximate_size[1]:
+                columns[1] = self.approximate_size[1] # If far too left
+            rows = [sprite_approximate_pos[1] - self.approximate_size[1],
+                    sprite_approximate_pos[1] + self.approximate_size[1]]
+            if rows[0] < 0:
+                rows[0] = 0  # If too up
+            if rows[1] >= len(self.tiles):
+                rows[1] = len(self.tiles) - 1  # If too down
+            if rows[1] < self.approximate_size[1]:
+                rows[1] = self.approximate_size[1]  # If far too up
+            # Checks for collisions with tiles near the sprite
+            print(rows,columns)
+            for row in range(rows[0], rows[1]):
+                for column in range(columns[0],columns[1]):
                     if self.tiles[row][column] != '0':
-                        # rect = (column*self.tile_factor, row*self.tile_factor, self.tile_factor, self.tile_factor)
-                        # player_rect = (self.pos.x, self.pos.y, self.rect.w, self.rect.h)
-                        # if collide_with_rects(rect, player_rect):
                         mask = self.collide_with_mask(self.tile, (column * self.tile_factor, row * self.tile_factor))
                         if mask.count():
-                            # rect = (column*self.tile_factor, row*self.tile_factor, self.tile_factor, self.tile_factor)
                             get_hits.append(mask)
+
         # Collision with elements
         for group in sprite_groups:
             for element in group:

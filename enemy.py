@@ -27,7 +27,7 @@ class Enemy(Moving_sprite):
         if self.move_bool:
             if self.flip_mask:
                 self.flip_mask += dt
-                if self.flip_mask > 10:
+                if self.flip_mask > 3:
                     self.mask = self.masks[self.heading_right]
                     self.flip_mask = 0
             self.counter += round(abs(self.speed.x * dt), 5)

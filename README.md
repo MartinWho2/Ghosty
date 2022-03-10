@@ -11,8 +11,6 @@ abilities. They will need to cooperate to free a person who was captured by the 
     - Add collision with enemies
 
 - ADVANCED STUFF:
-    - Add an automated tower which can be switched on/off like a door
-    - Add some moving platforms
     - When an enemy dies, its fantom could be used in some way (haven't figured out what yet)
     - Add some secret doors to enter into secret levels
     - Write the story and make some animations

@@ -68,7 +68,7 @@ class Game:
         be_careful_text = Text_sprite("media/pixel-font.ttf", "Be careful against enemies",
                                             self.size_world * 7, (255,255,255), (1500, 100))
         turrets_text = Text_sprite("media/pixel-font.ttf", "Use levers to deactivate turrets",
-                                            self.size_world * 7, (255,255,255), (1840, 250))
+                                            self.size_world * 7, (255,255,255), (1700, 200))
         won_text = Text_sprite("media/pixel-font.ttf", "WELL",
                                             self.size_world *3, (255,255,255), (2350, 350))
         won_text_2 = Text_sprite("media/pixel-font.ttf", "DONE",
