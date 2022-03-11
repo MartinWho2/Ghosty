@@ -181,7 +181,7 @@ class Player(Moving_sprite):
         :param group_collisions: Groups colliding with the bullet
         :return:
         """
-        speed = pygame.Vector2(-10, 0)
+        speed = pygame.Vector2(-1, 0)
         x_pos = self.rect.left - 10
         if self.heading_right:
             speed.x = 10

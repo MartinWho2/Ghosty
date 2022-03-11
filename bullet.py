@@ -1,5 +1,5 @@
 import pygame
-from map_functions import collide_with_rects
+from map_functions import collide_with_rects, check_area_around
 from button import Button
 from enemy import Enemy
 from door import Door
@@ -20,6 +20,7 @@ class Bullet(pygame.sprite.Sprite):
         self.speed = speed
         self.mask = pygame.mask.from_surface(self.image)
         self.colisions_objects = collision_objects
+        self.approximate_size = [round(self.rect.w/self.size_world)+2, round(self.rect.h/self.size_world)+2]
 
     def move(self, dt):
         self.pos.x += self.speed.x * dt
@@ -34,7 +35,7 @@ class Bullet(pygame.sprite.Sprite):
             return True
         return False
 
-    def move_and_collide(self, moving_character, dt):
+    def move_and_collide(self, moving_character, dt,opti):
         self.move(dt)
         for group in self.colisions_objects:
             for object in group:
@@ -53,11 +54,14 @@ class Bullet(pygame.sprite.Sprite):
                         except:
                             print("the bullet collided with something not repertoried")
                             raise WindowsError
-
-        for row in range(len(self.map)):
-            for column in range(len(self.map[row])):
-                tile = self.map[row][column]
-                if tile != "0":
+        sprite_pos = [round(self.rect.x/self.size_world),round(self.rect.y/self.size_world)]
+        rows,columns = check_area_around(sprite_pos,self.approximate_size,self.map)
+        if not opti:
+            rows = [0,len(self.map)]
+            columns = [0,len(self.map[0])]
+        for row in range(rows[0],rows[1]):
+            for column in range(columns[0], columns[1]):
+                if self.map[row][column] != "0":
                     if collide_with_rects((self.rect.x, self.rect.y, self.rect.w, self.rect.h),
                                           (column * self.size_world, row * self.size_world, self.size_world,
                                            self.size_world)):

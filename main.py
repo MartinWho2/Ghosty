@@ -58,7 +58,9 @@ def main():
                     if e.key == pygame.K_w and game.moving_character == "player":
                         # Jump
                         game.player.jump()
-
+                    if e.key == pygame.K_i:
+                        game.opti = not game.opti
+                        print(f"The game is now {game.opti}ly optimized. ^_^")
                 elif e.type == pygame.KEYUP:
                     game.keys[e.key] = False
                     if e.key == pygame.K_w and game.moving_character == "player":

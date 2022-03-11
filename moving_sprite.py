@@ -2,6 +2,7 @@ import math
 
 import pygame
 from moving_platform import Moving_platform
+from map_functions import check_area_around
 
 class Moving_sprite(pygame.sprite.Sprite):
     def __init__(self, pos: pygame.Vector2, image: pygame.Surface, resize: int, tiles: list, tile_factor: int,
@@ -39,24 +40,8 @@ class Moving_sprite(pygame.sprite.Sprite):
         if tiles:
             # Only verifies tiles around the sprite
             sprite_approximate_pos = [round(self.rect.x/self.tile_factor),round(self.rect.y/self.tile_factor)]
-            columns = [sprite_approximate_pos[0] - self.approximate_size[0],
-                       sprite_approximate_pos[0] + self.approximate_size[0]]
-            if columns[0] < 0:
-                columns[0] = 0  # If too left
-            if columns[1] >= len(self.tiles[0]):
-                columns[1] = len(self.tiles[0])-1  # If too right
-            if columns[1] < self.approximate_size[1]:
-                columns[1] = self.approximate_size[1] # If far too left
-            rows = [sprite_approximate_pos[1] - self.approximate_size[1],
-                    sprite_approximate_pos[1] + self.approximate_size[1]]
-            if rows[0] < 0:
-                rows[0] = 0  # If too up
-            if rows[1] >= len(self.tiles):
-                rows[1] = len(self.tiles) - 1  # If too down
-            if rows[1] < self.approximate_size[1]:
-                rows[1] = self.approximate_size[1]  # If far too up
+            rows,columns = check_area_around(sprite_approximate_pos,self.approximate_size,self.tiles)
             # Checks for collisions with tiles near the sprite
-            print(rows,columns)
             for row in range(rows[0], rows[1]):
                 for column in range(columns[0],columns[1]):
                     if self.tiles[row][column] != '0':

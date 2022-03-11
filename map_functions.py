@@ -106,6 +106,32 @@ def show_mask(mask: pygame.mask.Mask):
             list.append(mask.get_at((column, row)))
 
 
+def check_area_around(pos: [int, int], size: [int, int], tiles: list[list]) -> [[int, int], [int, int]]:
+    """
+    Gets the area around the position of an object with a given size
+    :param pos: Position of object (approximate)
+    :param size: Size of object (approximate)
+    :param tiles: Matrix of "0" and "1"
+    :return: rows and columns
+    """
+    columns = [pos[0] - size[0],
+               pos[0] + size[0]]
+    if columns[0] < 0:
+        columns[0] = 0  # If too left
+    if columns[1] >= len(tiles[0]):
+        columns[1] = len(tiles[0]) - 1  # If too right
+    if columns[1] < size[1]:
+        columns[1] = size[1]  # If far too left
+    rows = [pos[1] - size[1], pos[1] + size[1]]
+    if rows[0] < 0:
+        rows[0] = 0  # If too up
+    if rows[1] >= len(tiles):
+        rows[1] = len(tiles) - 1  # If too down
+    if rows[1] < size[1]:
+        rows[1] = size[1]  # If far too up
+    return rows, columns
+
+
 def create_darker_image(image:pygame.Surface):
     """
     Creates a new image for the ghosty world
