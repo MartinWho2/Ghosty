@@ -129,7 +129,6 @@ def check_area_around(pos: [int, int], size: [int, int], tiles: list[list]) -> [
         rows[1] = len(tiles)  # If too down
     if rows[1] < size[1]:
         rows[1] = size[1]  # If far too up
-    print(rows,columns)
     return rows, columns
 
 
