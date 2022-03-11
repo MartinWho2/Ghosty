@@ -18,7 +18,6 @@ class Game:
     def __init__(self, window: pygame.Surface) -> None:
         self.game_not_started = True
         self.pause_menu = False
-        self.opti = True
 
         # Variables liées au menu
         self.timer = 0
@@ -150,7 +149,7 @@ class Game:
         for platform in self.platform_sprites:
             platform.move()
         for bullet in self.bullets:
-            bullet.move_and_collide(self.moving_character, dt,self.opti)
+            bullet.move_and_collide(self.moving_character, dt)
         for person in self.enemies:
             person.move(dt)
         for tower in self.towers:

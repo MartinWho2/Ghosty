@@ -10,8 +10,8 @@ window = pygame.display.set_mode((w, h), pygame.SRCALPHA)
 clock = pygame.time.Clock()
 font = pygame.font.Font("media/pixel-font.ttf", 15)
 
-def display_fps():
-    fps_text = font.render(str(round(clock.get_fps(),3)),False,(0,0,0))
+def display_fps(dt):
+    fps_text = font.render(str(round(60/dt,3)),False,(0,0,0))
     window.blit(fps_text,(0,0))
 def main():
     playing = True
@@ -25,17 +25,19 @@ def main():
         while dt == 0:
             print("WTF DUDE")
             dt = (time.time() - before) * fps
+        before = time.time()
+        dt = round(dt, 4)
         if not game.game_not_started:
             if not game.pause_menu:
                 game.update(dt)
             else:
-                #pause menu
+                # pause menu
                 pass
         else:
             game.menu(dt)
 
-        before = time.time()
-        display_fps()
+
+        display_fps(dt)
         pygame.display.flip()
         for e in pygame.event.get():
             if not game.game_not_started and not game.pause_menu:
@@ -58,9 +60,6 @@ def main():
                     if e.key == pygame.K_w and game.moving_character == "player":
                         # Jump
                         game.player.jump()
-                    if e.key == pygame.K_i:
-                        game.opti = not game.opti
-                        print(f"The game is now {game.opti}ly optimized. ^_^")
                 elif e.type == pygame.KEYUP:
                     game.keys[e.key] = False
                     if e.key == pygame.K_w and game.moving_character == "player":

@@ -181,10 +181,10 @@ class Player(Moving_sprite):
         :param group_collisions: Groups colliding with the bullet
         :return:
         """
-        speed = pygame.Vector2(-1, 0)
+        speed = pygame.Vector2(-5, 0)
         x_pos = self.rect.left - 10
         if self.heading_right:
-            speed.x = 10
+            speed.x = 5
             x_pos = self.rect.right
         pos = pygame.Vector2(x_pos, self.rect.centery)
         bullet = Bullet(pos, pygame.Vector2(speed.x, speed.y), group_collisions, self.tile_factor, self.tiles)

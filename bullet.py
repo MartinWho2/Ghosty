@@ -35,7 +35,7 @@ class Bullet(pygame.sprite.Sprite):
             return True
         return False
 
-    def move_and_collide(self, moving_character, dt,opti):
+    def move_and_collide(self, moving_character, dt):
         self.move(dt)
         for group in self.colisions_objects:
             for object in group:
@@ -56,9 +56,6 @@ class Bullet(pygame.sprite.Sprite):
                             raise WindowsError
         sprite_pos = [round(self.rect.x/self.size_world),round(self.rect.y/self.size_world)]
         rows,columns = check_area_around(sprite_pos,self.approximate_size,self.map)
-        if not opti:
-            rows = [0,len(self.map)]
-            columns = [0,len(self.map[0])]
         for row in range(rows[0],rows[1]):
             for column in range(columns[0], columns[1]):
                 if self.map[row][column] != "0":
