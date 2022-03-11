@@ -10,9 +10,12 @@ window = pygame.display.set_mode((w, h), pygame.SRCALPHA)
 clock = pygame.time.Clock()
 font = pygame.font.Font("media/pixel-font.ttf", 15)
 
+
 def display_fps(dt):
-    fps_text = font.render(str(round(60/dt,3)),False,(0,0,0))
-    window.blit(fps_text,(0,0))
+    fps_text = font.render(str(round(60 / dt, 3)), False, (0, 0, 0))
+    window.blit(fps_text, (0, 0))
+
+
 def main():
     playing = True
     fps = 60
@@ -36,7 +39,6 @@ def main():
         else:
             game.menu(dt)
 
-
         display_fps(dt)
         pygame.display.flip()
         for e in pygame.event.get():
@@ -45,12 +47,13 @@ def main():
                     game.keys[e.key] = True
                     if e.key == pygame.K_q:
                         # Change Character
-                        game.characters_class[game.moving_character].image = game.characters_class[game.moving_character].image_copy
+                        game.characters_class[game.moving_character].image = game.characters_class[
+                            game.moving_character].image_copy
                         game.moving_character = game.characters[-1 * game.characters.index(game.moving_character) + 1]
                         game.player.fantom.speed = pygame.Vector2(0, 0)
                         game.player.image_copy = game.player.image.copy()
                         game.change_character(dt)
-                        game.buttons_pushable = dict.fromkeys(game.buttons_pushable.keys(),False)
+                        game.buttons_pushable = dict.fromkeys(game.buttons_pushable.keys(), False)
                         for button in game.object_sprites:
                             button.change_image(game.moving_character)
                         for door in game.doors_sprites:
@@ -67,8 +70,10 @@ def main():
                             game.player.speed.y *= 0.5
                     elif e.key == pygame.K_SPACE:
                         if game.moving_character == "player":
-                            game.player.shoot([game.bullets],[game.doors_sprites,game.object_sprites,game.enemies])
-                        if game.moving_character == "fantom" and game.can_push_button and game.buttons_pushable[game.can_push_button]:
+                            game.player.shoot([game.bullets], [game.doors_sprites, game.object_sprites, game.enemies])
+                            game.shot = 1
+                        if game.moving_character == "fantom" and game.can_push_button and \
+                                game.buttons_pushable[game.can_push_button]:
                             game.can_push_button.activate(game.moving_character)
             elif game.game_not_started:
                 if e.type == pygame.KEYUP:

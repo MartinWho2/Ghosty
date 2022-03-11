@@ -3,12 +3,14 @@ from map_functions import collide_with_rects, check_area_around
 from button import Button
 from enemy import Enemy
 from door import Door
+import player
+
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, pos: pygame.Vector2, speed: pygame.Vector2, collision_objects: list[pygame.sprite.Group],
-                 size_world: int, map: list[list[str]], image="media/bullet.png") -> None:
+                 size_world: int, plan: list[list[str]], image="media/bullet.png") -> None:
         super().__init__()
-        self.map = map
+        self.map = plan
         self.size_world = size_world
         self.image = pygame.image.load(image).convert_alpha()
         if speed.x < 0:
@@ -19,8 +21,8 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = pos.x, pos.y
         self.speed = speed
         self.mask = pygame.mask.from_surface(self.image)
-        self.colisions_objects = collision_objects
-        self.approximate_size = [round(self.rect.w/self.size_world)+2, round(self.rect.h/self.size_world)+2]
+        self.collisions_objects = collision_objects
+        self.approximate_size = [round(self.rect.w / self.size_world) + 2, round(self.rect.h / self.size_world) + 2]
 
     def move(self, dt):
         self.pos.x += self.speed.x * dt
@@ -29,7 +31,6 @@ class Bullet(pygame.sprite.Sprite):
         if self.pos.x < -1000 or self.pos.x > 5000:
             self.kill()
 
-
     def collide(self, sprite: pygame.sprite.Sprite):
         if pygame.sprite.collide_mask(self, sprite):
             return True
@@ -37,26 +38,30 @@ class Bullet(pygame.sprite.Sprite):
 
     def move_and_collide(self, moving_character, dt):
         self.move(dt)
-        for group in self.colisions_objects:
-            for object in group:
-                if self.collide(object):
-                    if object.__class__ == Button:
-                        object.activate(moving_character)
+        for group in self.collisions_objects:
+            for sprite in group:
+                if self.collide(sprite):
+                    if sprite.__class__ == Button:
+                        sprite: Button
+                        sprite.activate(moving_character)
                         self.kill()
-                    elif object.__class__ == Enemy:
-                        object.kill()
+                    elif sprite.__class__ == Enemy:
+                        sprite: Enemy
+                        sprite.kill()
                         self.kill()
-                    elif object.__class__ == Door:
+                    elif sprite.__class__ == Door:
+                        sprite: Door
                         self.kill()
                     else:
                         try:
-                            object.die()
+                            sprite: player.Player
+                            sprite.die()
                         except:
-                            print("the bullet collided with something not repertoried")
+                            print("The bullet collided with something unknown...")
                             raise WindowsError
-        sprite_pos = [round(self.rect.x/self.size_world),round(self.rect.y/self.size_world)]
-        rows,columns = check_area_around(sprite_pos,self.approximate_size,self.map)
-        for row in range(rows[0],rows[1]):
+        sprite_pos = [round(self.rect.x / self.size_world), round(self.rect.y / self.size_world)]
+        rows, columns = check_area_around(sprite_pos, self.approximate_size, self.map)
+        for row in range(rows[0], rows[1]):
             for column in range(columns[0], columns[1]):
                 if self.map[row][column] != "0":
                     if collide_with_rects((self.rect.x, self.rect.y, self.rect.w, self.rect.h),

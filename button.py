@@ -6,7 +6,7 @@ from map_functions import create_darker_image
 class Button(pygame.sprite.Sprite):
     def __init__(self, pos: Union[tuple, list, pygame.Vector2], related: list, size_world: int, lever=False):
         """
-        Inits a button
+        Initialises a button
         :param pos: Position of the button with left and bottom coordinates
         :param related: Position of the objects related to the button (platform or door)
         :param size_world: Scale of things (should be 64)
@@ -28,9 +28,9 @@ class Button(pygame.sprite.Sprite):
         else:
             self.images = {
                 "player": pygame.transform.scale(pygame.image.load("tiles/player/button.png").convert_alpha(),
-                                                 (img_size, img_size))
-                , "fantom": pygame.transform.scale(pygame.image.load("tiles/fantom/button.png").convert_alpha(),
-                                                   (img_size, img_size))}
+                                                 (img_size, img_size)),
+                "fantom": pygame.transform.scale(pygame.image.load("tiles/fantom/button.png").convert_alpha(),
+                                                 (img_size, img_size))}
             self.image = self.images["player"]
 
         self.rect = self.image.get_rect()

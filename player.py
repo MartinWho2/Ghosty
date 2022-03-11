@@ -23,6 +23,7 @@ class Fantom(pygame.sprite.Sprite):
         self.max_speed = 5
         self.friction = -0.1
         self.particle_image = pygame.image.load("media/particle.png")
+
     def die(self):
         # He obviously can't die
         pass
@@ -30,8 +31,9 @@ class Fantom(pygame.sprite.Sprite):
 
 class Player(Moving_sprite):
     def __init__(self, tiles: list, tile_factor: int, surface: pygame.Surface, groups: list[pygame.sprite.Group],
-                 elements: list[pygame.sprite.Group], enemies: list[pygame.sprite.Group], spawn:list) -> None:
-        super().__init__(pygame.Vector2(0, 0), pygame.image.load('media/chevalier.png').convert_alpha(), tile_factor, tiles,
+                 elements: list[pygame.sprite.Group], enemies: list[pygame.sprite.Group], spawn: list) -> None:
+        super().__init__(pygame.Vector2(0, 0), pygame.image.load('media/chevalier.png').convert_alpha(), tile_factor,
+                         tiles,
                          tile_factor, elements, groups)
         self.surface = surface  # A surface to draw the circle appearing when the ghost tries to run away
         self.surface_above = pygame.Surface((surface.get_width(), surface.get_height()), pygame.SRCALPHA)
@@ -40,7 +42,8 @@ class Player(Moving_sprite):
         self.heading_right = True
         self.empty_image.set_alpha(0)
         self.rect = self.image.get_rect()
-        self.SPAWN_POS = (round(spawn[0]*self.tile_factor+self.rect.w/2),round(spawn[1]*self.tile_factor+self.rect.h/2))
+        self.SPAWN_POS = (round(spawn[0] * self.tile_factor + self.rect.w / 2),
+                          round(spawn[1] * self.tile_factor + self.rect.h / 2))
         self.rect.center = self.SPAWN_POS
         self.facing_right = True
         self.pos = pygame.Vector2(self.rect.x, self.rect.y)
@@ -72,10 +75,10 @@ class Player(Moving_sprite):
         if fall:
             if self.on_platform:
                 self.pos += self.on_platform.move(get_move=True)
-                self.rect.x,self.rect.y = round(self.pos.x),round(self.pos.y)
+                self.rect.x, self.rect.y = round(self.pos.x), round(self.pos.y)
             self.fall(acceleration, dt)
         acceleration.x += moving_object.speed.x * self.friction
-        moving_object.pos.x += 0.5*acceleration.x * (dt**2) + moving_object.speed.x * dt
+        moving_object.pos.x += 0.5 * acceleration.x * (dt ** 2) + moving_object.speed.x * dt
         moving_object.pos.x = round(moving_object.pos.x, 5)
         moving_object.speed.x += acceleration.x * dt
         moving_object.speed.x = round(moving_object.speed.x, 8)
@@ -92,7 +95,7 @@ class Player(Moving_sprite):
                     self.flip_mask = 1
                 self.heading_right = False
 
-            if self.check_collision(tiles=False,sprite_groups=self.enemies):
+            if self.check_collision(tiles=False, sprite_groups=self.enemies):
                 self.die()
 
             hits = self.check_collision()
@@ -112,7 +115,7 @@ class Player(Moving_sprite):
 
     def die(self):
         self.rect.center = self.SPAWN_POS
-        self.pos.x, self.pos.y = self.rect.x,self.rect.y
+        self.pos.x, self.pos.y = self.rect.x, self.rect.y
         self.speed.x, self.speed.y = 0, 0
         self.fantom.pos.x -= self.fantom.rect.right - self.rect.x
         self.fantom.pos.y -= self.fantom.rect.centery - self.rect.y
@@ -164,9 +167,10 @@ class Player(Moving_sprite):
         self.fantom.rect.y = round(self.fantom.pos.y)
         self.fantom.particle_counter += dt
         if self.fantom.particle_counter > 10:
-            self.fantom.particles.append(Particle(self.fantom.particle_image, 5, (
-                random.randint(self.fantom.rect.x, self.fantom.rect.right) - camera_pos.x,
-                self.fantom.rect.bottom - camera_pos.y), pygame.Vector2(0, 0.5)))
+            self.fantom.particles.append(Particle(self.fantom.particle_image, 5,
+                                                  (int(random.randint(self.fantom.rect.x, self.fantom.rect.right)
+                                                       - camera_pos.x), self.fantom.rect.bottom - camera_pos.y),
+                                                  pygame.Vector2(0, 0.5)))
             self.fantom.particle_counter = 0
 
     def jump(self):

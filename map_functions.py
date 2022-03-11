@@ -1,4 +1,6 @@
-import pygame, math, numpy as np
+import pygame
+import math
+import numpy as np
 
 
 def create_map(level: int) -> list:
@@ -40,15 +42,15 @@ def get_same_neighbours_with_possibilities(neighbours):
     """
     Guess what the tile should be (like corner topleft, center, ...)
     """
-    tile_neigbour_possibilities = [(0, 2, 1, 1, 1, 2, 0, 2), (0, 2, 1, 1, 1, 1, 1, 2), (0, 2, 0, 2, 1, 1, 1, 2),
+    tile_neighbor_possibilities = [(0, 2, 1, 1, 1, 2, 0, 2), (0, 2, 1, 1, 1, 1, 1, 2), (0, 2, 0, 2, 1, 1, 1, 2),
                                    (1, 1, 1, 0, 1, 1, 1, 1), (1, 1, 1, 1, 1, 0, 1, 1), (1, 1, 1, 1, 1, 2, 0, 2),
                                    (1, 1, 1, 1, 1, 1, 1, 1), (1, 2, 0, 2, 1, 1, 1, 1), (1, 0, 1, 1, 1, 1, 1, 1),
                                    (1, 1, 1, 1, 1, 1, 1, 0), (1, 1, 1, 2, 0, 2, 0, 2), (1, 1, 1, 2, 0, 2, 1, 1),
                                    (1, 2, 0, 2, 0, 2, 1, 1)]
     dec_to_hex = {10: "a", 11: "b", 12: "c", 13: "d"}
-    for index in range(len(tile_neigbour_possibilities)):
+    for index in range(len(tile_neighbor_possibilities)):
         correct = index + 1
-        possibility = tile_neigbour_possibilities[index]
+        possibility = tile_neighbor_possibilities[index]
         for i in range(len(possibility)):
             if possibility[i] != 2 and possibility[i] != neighbours[i]:
                 correct = False
@@ -60,15 +62,15 @@ def get_same_neighbours_with_possibilities(neighbours):
                 correct = str(correct)
             return correct
     print(neighbours)
-    #raise WindowsError
+    # raise WindowsError
     return "7"
 
 
-def get_neighbour_tiles(map: list, index_tile: tuple):
+def get_neighbour_tiles(matrix: list, index_tile: tuple):
     """
     Gets the neighbours of an element in a matrix
     """
-    padded_map = np.pad(map, 1, constant_values=0)
+    padded_map = np.pad(matrix, 1, constant_values=0)
     return (int(padded_map[index_tile[0]][index_tile[1] + 1]), int(padded_map[index_tile[0]][index_tile[1] + 2]),
             int(padded_map[index_tile[0] + 1][index_tile[1] + 2]),
             int(padded_map[index_tile[0] + 2][index_tile[1] + 2]),
@@ -101,9 +103,9 @@ def collide_with_rects(rect_style_tuple: tuple, rect2: tuple) -> bool:
 def show_mask(mask: pygame.mask.Mask):
     size = mask.get_size()
     for row in range(size[0]):
-        list = []
+        mask_list = []
         for column in range(size[1]):
-            list.append(mask.get_at((column, row)))
+            mask_list.append(mask.get_at((column, row)))
 
 
 def check_area_around(pos: [int, int], size: [int, int], tiles: list[list]) -> [[int, int], [int, int]]:
@@ -132,18 +134,19 @@ def check_area_around(pos: [int, int], size: [int, int], tiles: list[list]) -> [
     return rows, columns
 
 
-def create_darker_image(image:pygame.Surface):
+def create_darker_image(image: pygame.Surface):
     """
     Creates a new image for the ghosty world
     :param image: Image to change
     :return:
     """
-    new_surface = pygame.Surface(image.get_size(),pygame.SRCALPHA)
-    darker = (20,25,60,130)
+    new_surface = pygame.Surface(image.get_size(), pygame.SRCALPHA)
+    darker = (20, 25, 60, 130)
     new_surface.fill(darker)
-    image.blit(new_surface,(0,0))
+    image.blit(new_surface, (0, 0))
     image.set_colorkey(darker)
     return image
+
 
 def load_tile_set(filename, final_size, size=16, dark=False):
     """
@@ -169,4 +172,7 @@ def load_tile_set(filename, final_size, size=16, dark=False):
                 tiles[str(i)] = tile
             else:
                 tiles[char_to_hex[i]] = tile
-    return tiles
+        return tiles
+    else:
+        print("The tileset is not the correct format")
+        raise FileNotFoundError

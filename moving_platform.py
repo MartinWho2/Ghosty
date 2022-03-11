@@ -13,7 +13,7 @@ class Moving_platform(pygame.sprite.Sprite):
         super().__init__()
         self.tile_size = size_world
         image = pygame.image.load("media/platform.png").convert_alpha()
-        image = pygame.transform.scale(image, (size_world, round(size_world/image.get_width()*image.get_height())))
+        image = pygame.transform.scale(image, (size_world, round(size_world / image.get_width() * image.get_height())))
         self.images = {"fantom": create_darker_image(image.copy()), "player": image}
         self.image = self.images["player"]
         self.mask = pygame.mask.from_surface(self.image)
@@ -27,7 +27,7 @@ class Moving_platform(pygame.sprite.Sprite):
         self.heading_to_end = True
         self.moving = pygame.Vector2(0, 0)
 
-    def move(self,get_move=False):
+    def move(self, get_move=False):
         if self.activated:
             toward = self.end_pos
             if not self.heading_to_end:
@@ -45,7 +45,7 @@ class Moving_platform(pygame.sprite.Sprite):
                     self.rect.x += self.moving.x
                     self.rect.y += self.moving.y
         else:
-            self.moving.x,self.moving.y = 0,0
+            self.moving.x, self.moving.y = 0, 0
         if get_move:
             return self.moving
 

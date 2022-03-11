@@ -19,11 +19,11 @@ class Game:
         self.game_not_started = True
         self.pause_menu = False
 
-        # Variables liées au menu
+        # Variables related to the menu
         self.timer = 0
-        self.title_font = pygame.font.Font("media/fonts/title.TTF",30)
-        self.text_white = self.title_font.render("Press space to start",True,"white")
-        self.text_dark = self.title_font.render("Press space to start",True,"black")
+        self.title_font = pygame.font.Font("media/fonts/title.TTF", 30)
+        self.text_white = self.title_font.render("Press space to start", True, "white")
+        self.text_dark = self.title_font.render("Press space to start", True, "black")
 
         # pygame.camera.init()
         self.window = window
@@ -47,35 +47,35 @@ class Game:
         self.texts = pygame.sprite.Group()
 
         press_w_text = Text_sprite("media/pixel-font.ttf", "Press SPACE to shoot a bullet", self.size_world * 4,
-                                   (255,255,255), (256, 550))
+                                   (255, 255, 255), (256, 550))
         press_q_text = Text_sprite("media/pixel-font.ttf", "Press Q to switch between",
-                                        self.size_world * 7, (255,255,255), (756, 100))
+                                   self.size_world * 7, (255, 255, 255), (756, 100))
         press_q_text_2 = Text_sprite("media/pixel-font.ttf", "the player and the ghost",
-                                          self.size_world * 5, (255,255,255), (766, 130))
+                                     self.size_world * 5, (255, 255, 255), (766, 130))
 
         use_arrows_text = Text_sprite("media/pixel-font.ttf", "Use the keys A-D to move left-right",
-                                           self.size_world * 5, (255,255,255), (406, 0))
+                                      self.size_world * 5, (255, 255, 255), (406, 0))
         use_space_text = Text_sprite("media/pixel-font.ttf", "Use the key W to jump",
-                                          self.size_world * 5, (255,255,255), (406, 50))
+                                     self.size_world * 5, (255, 255, 255), (406, 50))
         open_doors_text = Text_sprite("media/pixel-font.ttf", "Use levers to open or close doors",
-                                           self.size_world * 5, (255,255,255), (771, 650))
+                                      self.size_world * 5, (255, 255, 255), (771, 650))
         use_bullets_text = Text_sprite("media/pixel-font.ttf", "Bullets can also activate levers",
-                                           self.size_world * 5, (255,255,255), (240, 600))
+                                       self.size_world * 5, (255, 255, 255), (240, 600))
         use_platforms_text = Text_sprite("media/pixel-font.ttf", "Flying platforms are great",
-                                           self.size_world * 6, (255,255,255), (650, 1050))
+                                         self.size_world * 6, (255, 255, 255), (650, 1050))
         lever_platforms_text = Text_sprite("media/pixel-font.ttf", "Use buttons to activate some platforms",
-                                            self.size_world * 7, (255,255,255), (1150, 1050))
+                                           self.size_world * 7, (255, 255, 255), (1150, 1050))
         be_careful_text = Text_sprite("media/pixel-font.ttf", "Be careful against enemies",
-                                            self.size_world * 7, (255,255,255), (1500, 100))
+                                      self.size_world * 7, (255, 255, 255), (1500, 100))
         turrets_text = Text_sprite("media/pixel-font.ttf", "Use levers to deactivate turrets",
-                                            self.size_world * 7, (255,255,255), (1700, 200))
+                                   self.size_world * 7, (255, 255, 255), (1700, 200))
         won_text = Text_sprite("media/pixel-font.ttf", "WELL",
-                                            self.size_world *3, (255,255,255), (2350, 350))
+                               self.size_world * 3, (255, 255, 255), (2350, 350))
         won_text_2 = Text_sprite("media/pixel-font.ttf", "DONE",
-                               self.size_world * 3, (255,255,255), (2350, 440))
+                                 self.size_world * 3, (255, 255, 255), (2350, 440))
         self.texts.add(press_w_text, press_q_text, press_q_text_2, use_arrows_text,
-                       use_space_text, open_doors_text, use_bullets_text,use_platforms_text,
-                       lever_platforms_text, be_careful_text, turrets_text,won_text,won_text_2)
+                       use_space_text, open_doors_text, use_bullets_text, use_platforms_text,
+                       lever_platforms_text, be_careful_text, turrets_text, won_text, won_text_2)
 
         self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite],
                                      [self.doors_sprites, self.platform_sprites, self.towers], [self.enemies],
@@ -109,19 +109,20 @@ class Game:
         self.spawn_objects(self.level)
         # self.camera = pygame.camera.Camera(pygame.camera.list_cameras()[0])
         # self.camera.start()
+        self.shot = 0
 
-    def menu(self,dt: float) -> None:
+    def menu(self, dt: float) -> None:
         self.timer += dt
         self.timer %= 60
         self.window.fill("dark green")
-        self.window.blit(pygame.transform.scale(self.player.image,(256,256)),(130,130))
+        self.window.blit(pygame.transform.scale(self.player.image, (256, 256)), (130, 130))
         if self.timer < 40:
-            self.window.blit(self.text_dark,(85,195))
-            self.window.blit(self.text_white,(80,190))
+            self.window.blit(self.text_dark, (85, 195))
+            self.window.blit(self.text_white, (80, 190))
 
-    def change_dt(self, dt:float) -> float:
+    def change_dt(self, dt: float) -> float:
         """
-        Reajusts the value of dt if the game needs to be slowed or accelerated
+        Readjusts the value of dt if the game needs to be slowed or accelerated
         :param dt:
         :return:
         """
@@ -157,8 +158,8 @@ class Game:
         fall = True
         if self.moving_character == "fantom":
             fall = False
-        self.player.move(self.get_input_for_movement(dt), self.characters_class[self.moving_character], dt,
-                         self.camera_pos,fall=fall)
+        self.player.move(self.get_input_for_movement(), self.characters_class[self.moving_character], dt,
+                         self.camera_pos, fall=fall)
         if self.player.pos.y > 2000:
             # pygame.image.save(self.camera.get_image(), "ITS_YOU.png")
             self.player.die()
@@ -188,7 +189,7 @@ class Game:
 
     def blit_everything(self):
         groups = [self.object_sprites, self.doors_sprites, self.towers, self.enemies,
-                  self.bullets, self.texts, self.platform_sprites, self.player_sprite,self.cups]
+                  self.bullets, self.texts, self.platform_sprites, self.player_sprite, self.cups]
 
         # mask_sprite = self.player.mask.to_surface()
         # self.surface.blit(mask_sprite,
@@ -239,7 +240,7 @@ class Game:
                 particle.image = pygame.transform.scale(particle.image_copy, (size, size))
                 self.surface.blit(particle.image, particle.pos)
 
-    def get_input_for_movement(self, dt: float) -> pygame.Vector2:
+    def get_input_for_movement(self) -> pygame.Vector2:
         value = 0.8
         movement = pygame.Vector2(0, 0)
         if self.keys.get(pygame.K_a):
@@ -259,11 +260,12 @@ class Game:
         :param pos: Given position of spawn
         """
         move = True
-        if pos[-1]=="stay":
-            move=False
+        if pos[-1] == "stay":
+            move = False
         Enemy(pygame.image.load("media/enemy.png").convert_alpha(),
               pygame.Vector2(pos[0] * self.size_world, pos[1] * self.size_world),
-              move, 100, self.map, self.size_world, [self.enemies], [self.doors_sprites, self.object_sprites, self.platform_sprites])
+              move, 100, self.map, self.size_world, [self.enemies],
+              [self.doors_sprites, self.object_sprites, self.platform_sprites])
 
     def spawn_button(self, button_pos: Union[list, tuple], doors: list[Union[Door, Moving_platform, Auto_Tower]],
                      lever=False) -> pygame.sprite:
@@ -283,25 +285,24 @@ class Game:
         tower = Auto_Tower(pos, self.size_world, self.map, "media/turret.png", (64, 64), 20, 0.5,
                            [self.player_sprite, self.enemies], self.bullets, orientation)
         tower.add(self.towers)
-        self.spawn_button(lever,[tower],lever=True)
+        self.spawn_button(lever, [tower], lever=True)
 
     def spawn_platforms(self, platform):
-        always_moving = True
-        if platform[-1] == "lever":
-            always_moving = False
-            button_pos = platform[-2]
         start_pos = ((int(platform[0][0]) + 1) * self.size_world, (int(platform[0][1]) + 1) * self.size_world)
         end_pos = ((int(platform[1][0]) + 1) * self.size_world, (int(platform[1][1]) + 1) * self.size_world)
-        platform = Moving_platform(start_pos, end_pos, self.size_world, always_moving=always_moving)
-        self.platform_sprites.add(platform)
-        if not always_moving:
-            self.spawn_button(button_pos, [platform])
+        platform_sprite = Moving_platform(start_pos, end_pos, self.size_world,
+                                          always_moving=True if platform[-1] == "lever" else False)
+        self.platform_sprites.add(platform_sprite)
+        if platform[-1] == "lever":
+            self.spawn_button(platform[-2], [platform_sprite])
+
     def spawn_cup(self, pos):
         cup = pygame.sprite.Sprite(self.cups)
-        size = round(self.size_world/2)
-        cup.image = pygame.transform.scale(pygame.image.load("media/cup.png").convert_alpha(),(size,size))
+        size = round(self.size_world / 2)
+        cup.image = pygame.transform.scale(pygame.image.load("media/cup.png").convert_alpha(), (size, size))
         cup.rect = cup.image.get_rect()
-        cup.rect.topleft = (int(pos[0])*self.size_world,int(pos[1])*self.size_world)
+        cup.rect.topleft = (int(pos[0]) * self.size_world, int(pos[1]) * self.size_world)
+
     def spawn_objects(self, level: int) -> None:
         objects = self.level_objects[str(level)]
         for pos in objects["Enemies"]:
@@ -325,4 +326,3 @@ class Game:
         self.spawn_cup(objects["Cup"])
         for button in self.object_sprites:
             self.buttons_pushable[button] = False
-

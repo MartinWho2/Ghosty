@@ -4,7 +4,7 @@ from moving_sprite import Moving_sprite
 
 class Enemy(Moving_sprite):
     def __init__(self, image: pygame.Surface, pos: pygame.Vector2, move_bool: bool, limit: int, tiles: list,
-                 tile_factor: int, groups: list[pygame.sprite.Group],elements) -> None:
+                 tile_factor: int, groups: list[pygame.sprite.Group], elements) -> None:
         """
         Init the class
         :param image: Image of the enemy

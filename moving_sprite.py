@@ -4,6 +4,7 @@ import pygame
 from moving_platform import Moving_platform
 from map_functions import check_area_around
 
+
 class Moving_sprite(pygame.sprite.Sprite):
     def __init__(self, pos: pygame.Vector2, image: pygame.Surface, resize: int, tiles: list, tile_factor: int,
                  sprite_elements: list[pygame.sprite.Group], sprite_groups: list[pygame.sprite.Group]) -> None:
@@ -17,7 +18,7 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.images = {True: self.image, False: pygame.transform.flip(self.image, True, False)}
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = pos.x, pos.y
-        self.approximate_size = [round(self.rect.w/self.tile_factor)+2,round(self.rect.h/self.tile_factor)+2]
+        self.approximate_size = [round(self.rect.w / self.tile_factor) + 2, round(self.rect.h / self.tile_factor) + 2]
         self.speed = pygame.Vector2(0, 0)
         self.gravity, self.friction = 0.5, -0.18
         self.is_jumping = False
@@ -30,7 +31,7 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.was_on_platform = 0
 
     def collide_with_mask(self, mask, pos_mask):
-        return self.mask.overlap_mask(mask, (pos_mask[0]-self.rect.x, pos_mask[1]-self.rect.y))
+        return self.mask.overlap_mask(mask, (pos_mask[0] - self.rect.x, pos_mask[1] - self.rect.y))
 
     def check_collision(self, tiles=True, sprite_groups="normal") -> list[pygame.mask.Mask]:
         if sprite_groups == "normal":
@@ -39,11 +40,11 @@ class Moving_sprite(pygame.sprite.Sprite):
         # Collision with tiles
         if tiles:
             # Only verifies tiles around the sprite
-            sprite_approximate_pos = [round(self.rect.x/self.tile_factor),round(self.rect.y/self.tile_factor)]
-            rows,columns = check_area_around(sprite_approximate_pos,self.approximate_size,self.tiles)
+            sprite_approximate_pos = [round(self.rect.x / self.tile_factor), round(self.rect.y / self.tile_factor)]
+            rows, columns = check_area_around(sprite_approximate_pos, self.approximate_size, self.tiles)
             # Checks for collisions with tiles near the sprite
             for row in range(rows[0], rows[1]):
-                for column in range(columns[0],columns[1]):
+                for column in range(columns[0], columns[1]):
                     if self.tiles[row][column] != '0':
                         mask = self.collide_with_mask(self.tile, (column * self.tile_factor, row * self.tile_factor))
                         if mask.count():
@@ -93,7 +94,8 @@ class Moving_sprite(pygame.sprite.Sprite):
                 self.speed.x = 0
                 self.rect.x = round(self.pos.x)
 
-    def find_bits_from_mask(self, mask: pygame.mask.Mask, direction: str) -> int:
+    @staticmethod
+    def find_bits_from_mask(mask: pygame.mask.Mask, direction: str) -> int:
         size = mask.get_size()
         found = False
         for column in range(size[0]):
@@ -101,20 +103,20 @@ class Moving_sprite(pygame.sprite.Sprite):
             for row in range(size[1]):
                 coordinate = (column, row)
                 if direction == "left":
-                    coordinate = (size[0]-1-column, row)
+                    coordinate = (size[0] - 1 - column, row)
                 elif direction == "down":
                     coordinate = (row, column)
                 elif direction == "up":
-                    coordinate = (row, size[1]-1-column)
+                    coordinate = (row, size[1] - 1 - column)
                 if mask.get_at(coordinate) == 1:
                     if not found:
                         found = column
                     continue_finding = True
             if found and not continue_finding:
-                return column-found
+                return column - found
         if direction in {"right", "left"}:
-            return size[0]-found
-        return size[1]-found
+            return size[0] - found
+        return size[1] - found
 
     def fall(self, acceleration, dt):
         self.pos.y += 0.5 * (acceleration.y + self.gravity) * (dt ** 2) + self.speed.y * dt

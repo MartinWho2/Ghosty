@@ -2,9 +2,10 @@ import pygame
 from bullet import Bullet
 from map_functions import create_darker_image
 
+
 class Auto_Tower(pygame.sprite.Sprite):
-    def __init__(self, pos, size_world, map, image: str, size: tuple[int, int], period: int, shoot_height: float,
-                 collision_groups:list[pygame.sprite.Group], bullets:pygame.sprite.Group, direction="left"):
+    def __init__(self, pos, size_world, plan, image: str, size: tuple[int, int], period: int, shoot_height: float,
+                 collision_groups: list[pygame.sprite.Group], bullets: pygame.sprite.Group, direction="left"):
         super().__init__()
         self.image = pygame.transform.scale(pygame.image.load(image).convert_alpha(), (size[0], size[1]))
         self.direction = direction
@@ -19,7 +20,7 @@ class Auto_Tower(pygame.sprite.Sprite):
         self.shoot_height = self.rect.h * shoot_height
         self.collisions = collision_groups
         self.size_world = size_world
-        self.map = map
+        self.map = plan
         self.bullets = bullets
         self.activated = True
 
@@ -38,7 +39,8 @@ class Auto_Tower(pygame.sprite.Sprite):
             x_pos = self.rect.left - 10
 
         bullet = Bullet(
-            pygame.Vector2(x_pos, self.rect.y+self.shoot_height-5), speed, self.collisions, self.size_world, self.map, image="media/bullet.png"
+            pygame.Vector2(x_pos, self.rect.y + self.shoot_height - 5), speed, self.collisions, self.size_world,
+            self.map, image="media/bullet.png"
         )
         self.bullets.add(bullet)
 
@@ -48,4 +50,3 @@ class Auto_Tower(pygame.sprite.Sprite):
     def change_image(self, moving_character):
         self.image = self.images[moving_character]
         self.mask = pygame.mask.from_surface(self.image)
-
