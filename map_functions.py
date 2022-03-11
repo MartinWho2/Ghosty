@@ -118,17 +118,18 @@ def check_area_around(pos: [int, int], size: [int, int], tiles: list[list]) -> [
                pos[0] + size[0]]
     if columns[0] < 0:
         columns[0] = 0  # If too left
-    if columns[1] >= len(tiles[0]):
-        columns[1] = len(tiles[0]) - 1  # If too right
+    if columns[1] > len(tiles[0]):
+        columns[1] = len(tiles[0])  # If too right
     if columns[1] < size[1]:
         columns[1] = size[1]  # If far too left
     rows = [pos[1] - size[1], pos[1] + size[1]]
     if rows[0] < 0:
         rows[0] = 0  # If too up
-    if rows[1] >= len(tiles):
-        rows[1] = len(tiles) - 1  # If too down
+    if rows[1] > len(tiles):
+        rows[1] = len(tiles)  # If too down
     if rows[1] < size[1]:
         rows[1] = size[1]  # If far too up
+    print(rows,columns)
     return rows, columns
 
 
