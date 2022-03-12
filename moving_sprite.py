@@ -20,7 +20,7 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = pos.x, pos.y
         self.approximate_size = [round(self.rect.w / self.tile_factor) + 2, round(self.rect.h / self.tile_factor) + 2]
         self.speed = pygame.Vector2(0, 0)
-        self.gravity, self.friction = 0.5, -0.18
+        self.gravity, self.friction = 0.5, -0.2
         self.is_jumping = False
         self.max_speed = 10
         self.mask = pygame.mask.from_surface(self.image)
@@ -57,10 +57,11 @@ class Moving_sprite(pygame.sprite.Sprite):
                 if mask.count():
                     get_hits.append(mask)
                     if element.__class__ == Moving_platform:
+                        element: Moving_platform
                         self.on_platform = element
                         self.was_on_platform = 0
         self.was_on_platform += 1
-        if self.was_on_platform > 10:
+        if self.was_on_platform > 5:
             self.on_platform = False
         return get_hits
 

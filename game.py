@@ -143,12 +143,12 @@ class Game:
         # self.window.fill((0, 0, 0, 0))
         scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
                                 self.player.pos.y + self.player.rect.h / 2 - self.h / 2 - self.camera_pos.y)
-        scroll /= 10
+        scroll /= 8
         self.camera_pos += scroll
         self.draw_map()
         self.deal_with_particles()
         for platform in self.platform_sprites:
-            platform.move()
+            platform.move(dt)
         for bullet in self.bullets:
             bullet.move_and_collide(self.moving_character, dt)
         for person in self.enemies:
@@ -291,7 +291,7 @@ class Game:
         start_pos = ((int(platform[0][0]) + 1) * self.size_world, (int(platform[0][1]) + 1) * self.size_world)
         end_pos = ((int(platform[1][0]) + 1) * self.size_world, (int(platform[1][1]) + 1) * self.size_world)
         platform_sprite = Moving_platform(start_pos, end_pos, self.size_world,
-                                          always_moving=True if platform[-1] == "lever" else False)
+                                          always_moving=False if platform[-1] == "lever" else True)
         self.platform_sprites.add(platform_sprite)
         if platform[-1] == "lever":
             self.spawn_button(platform[-2], [platform_sprite])

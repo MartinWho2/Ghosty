@@ -17,6 +17,7 @@ class Moving_platform(pygame.sprite.Sprite):
         self.images = {"fantom": create_darker_image(image.copy()), "player": image}
         self.image = self.images["player"]
         self.mask = pygame.mask.from_surface(self.image)
+        self.pos = pygame.Vector2(start_pos[0], start_pos[1])
         self.rect = self.image.get_rect()
         self.rect.bottomleft = start_pos
         self.start_pos = start_pos
@@ -27,23 +28,24 @@ class Moving_platform(pygame.sprite.Sprite):
         self.heading_to_end = True
         self.moving = pygame.Vector2(0, 0)
 
-    def move(self, get_move=False):
+    def move(self, dt, get_move=False):
         if self.activated:
             toward = self.end_pos
             if not self.heading_to_end:
                 toward = self.start_pos
             self.moving.x, self.moving.y = toward[0] - self.rect.x, toward[1] - self.rect.bottom
-            if self.moving.length() <= self.velocity:
+            if self.moving.length() <= self.velocity*dt:
                 if not get_move:
                     self.rect.bottomleft = toward
                     if not self.always_moving:
                         self.activated = False
                     self.heading_to_end = not self.heading_to_end
             else:
-                self.moving.scale_to_length(self.velocity)
+                self.moving.scale_to_length(self.velocity*dt)
                 if not get_move:
-                    self.rect.x += self.moving.x
-                    self.rect.y += self.moving.y
+                    self.pos.x += self.moving.x
+                    self.pos.y += self.moving.y
+                    self.rect.x, self.rect.bottom = round(self.pos.x), round(self.pos.y)
         else:
             self.moving.x, self.moving.y = 0, 0
         if get_move:
