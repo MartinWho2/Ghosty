@@ -61,7 +61,7 @@ class Moving_sprite(pygame.sprite.Sprite):
                         self.on_platform = element
                         self.was_on_platform = 0
         self.was_on_platform += 1
-        if self.was_on_platform > 5:
+        if self.was_on_platform > 15:
             self.on_platform = False
         return get_hits
 
