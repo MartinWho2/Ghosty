@@ -124,30 +124,41 @@ class Player(Moving_sprite):
     def calculate_distance(self, dt: float, camera_pos: pygame.Vector2) -> None:
         """
         Calculates if the ghost is too far away from the player and replaces it
+        Also draws a circle if the ghost is at the limit
+        Also calls spawn_particles
         :param dt: Value to compensate
         :param camera_pos: Position of the camera
         :return:
         """
-        vector = pygame.Vector2(self.fantom.pos.x + self.fantom.rect.w / 2 - self.pos.x - self.rect.w / 2,
-                                self.fantom.pos.y + self.fantom.rect.h / 2 - self.pos.y - self.rect.h / 2)
+        distance_fantom_player = pygame.Vector2(self.fantom.pos.x + self.fantom.rect.w / 2 - self.pos.x - self.rect.w / 2,
+                                                self.fantom.pos.y + self.fantom.rect.h / 2 - self.pos.y - self.rect.h / 2)
 
-        particles_value = vector.length()
+        particles_value = distance_fantom_player.length()
         if particles_value > self.dist_max:
-            vector.scale_to_length(self.dist_max)
+            distance_fantom_player.scale_to_length(self.dist_max)
             particles_value = self.dist_max
         alpha = positive(particles_value - 150)
         self.surface_above.fill((0, 0, 0, 0))
         pygame.draw.circle(self.surface_above, (120, 120, 120, alpha), pygame.Vector2(self.rect.center) - camera_pos,
-                           self.dist_max, 10)
+                           self.dist_max, 5)
         self.surface.blit(self.surface_above, (0, 0))
-        self.spawn_particles(vector, particles_value, dt, camera_pos)
-        self.fantom.pos.x = self.pos.x + self.rect.w / 2 + vector.x - self.fantom.rect.w / 2
-        self.fantom.pos.y = self.pos.y + self.rect.h / 2 + vector.y - self.fantom.rect.h / 2
+        self.spawn_particles(distance_fantom_player, particles_value, dt, camera_pos)
+        self.fantom.pos.x = self.pos.x + self.rect.w / 2 + distance_fantom_player.x - self.fantom.rect.w / 2
+        self.fantom.pos.y = self.pos.y + self.rect.h / 2 + distance_fantom_player.y - self.fantom.rect.h / 2
         self.fantom.rect.x = round(self.fantom.pos.x)
         self.fantom.rect.y = round(self.fantom.pos.y)
 
     def spawn_particles(self, vector: pygame.Vector2, particles_value: float, dt: float, camera_pos):
-        vector_fantom_player = pygame.Vector2(vector.x * -1, vector.y * -1)
+        """
+        Adds a value to the counter to spawn a particle
+        If a certain threshold is got, spawn a particle
+        :param vector: Vector fantom-player
+        :param particles_value: vector length
+        :param dt: delta time
+        :param camera_pos: position of camera
+        :return: None
+        """
+        vector_fantom_player = vector * -1
         if self.fantom.particle_counter >= 200:
             self.fantom.particles.append(
                 Particle(self.fantom.particle_image, random.randint(round(particles_value / 17),
@@ -157,7 +168,7 @@ class Player(Moving_sprite):
                          vector_fantom_player.normalize()))
             self.fantom.particle_counter = 0
         else:
-            self.fantom.particle_counter += particles_value / dt
+            self.fantom.particle_counter += particles_value * dt
 
     def fantom_replace(self, dt: float, camera_pos: pygame.Vector2):
         x, y = self.fantom.rect.right - self.rect.x, self.fantom.rect.centery - self.rect.y
