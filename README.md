@@ -32,7 +32,7 @@ abilities. They will need to cooperate to free a person who was captured by the 
 
 - SEARCH FOR MORE IDEAS
 
-IF YOU HAVE A SUGGESTION OF WHAT I COULD ADD, I WOULD REALLY BE GLAD IF YOU WERE TO TELL ME ABOUT ^_^
+IF YOU HAVE A SUGGESTION OF WHAT I COULD ADD, I WOULD REALLY BE GLAD IF YOU WERE TO TELL ME ABOUT IT ^_^
 
 How can I center this image ?![image](https://user-images.githubusercontent.com/72351629/139261718-a36a3f47-e6ad-48eb-8a52-d0aaba448ee5.png) 
 

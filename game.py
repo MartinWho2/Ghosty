@@ -46,32 +46,32 @@ class Game:
         self.player_sprite = pygame.sprite.Group()
         self.texts = pygame.sprite.Group()
 
-        press_w_text = Text_sprite("media/pixel-font.ttf", "Press SPACE to shoot a bullet", self.size_world * 4,
+        press_w_text = Text_sprite("media/fonts/pixel-font.ttf", "Press SPACE to shoot a bullet", self.size_world * 4,
                                    (255, 255, 255), (256, 550))
-        press_q_text = Text_sprite("media/pixel-font.ttf", "Press Q to switch between",
+        press_q_text = Text_sprite("media/fonts/pixel-font.ttf", "Press Q to switch between",
                                    self.size_world * 7, (255, 255, 255), (756, 100))
-        press_q_text_2 = Text_sprite("media/pixel-font.ttf", "the player and the ghost",
+        press_q_text_2 = Text_sprite("media/fonts/pixel-font.ttf", "the player and the ghost",
                                      self.size_world * 5, (255, 255, 255), (766, 130))
 
-        use_arrows_text = Text_sprite("media/pixel-font.ttf", "Use the keys A-D to move left-right",
+        use_arrows_text = Text_sprite("media/fonts/pixel-font.ttf", "Use the keys A-D to move left-right",
                                       self.size_world * 5, (255, 255, 255), (406, 0))
-        use_space_text = Text_sprite("media/pixel-font.ttf", "Use the key W to jump",
+        use_space_text = Text_sprite("media/fonts/pixel-font.ttf", "Use the key W to jump",
                                      self.size_world * 5, (255, 255, 255), (406, 50))
-        open_doors_text = Text_sprite("media/pixel-font.ttf", "Use levers to open or close doors",
+        open_doors_text = Text_sprite("media/fonts/pixel-font.ttf", "Use levers to open or close doors",
                                       self.size_world * 5, (255, 255, 255), (771, 650))
-        use_bullets_text = Text_sprite("media/pixel-font.ttf", "Bullets can also activate levers",
+        use_bullets_text = Text_sprite("media/fonts/pixel-font.ttf", "Bullets can also activate levers",
                                        self.size_world * 5, (255, 255, 255), (240, 600))
-        use_platforms_text = Text_sprite("media/pixel-font.ttf", "Flying platforms are great",
+        use_platforms_text = Text_sprite("media/fonts/pixel-font.ttf", "Flying platforms are great",
                                          self.size_world * 6, (255, 255, 255), (650, 1050))
-        lever_platforms_text = Text_sprite("media/pixel-font.ttf", "Use buttons to activate some platforms",
+        lever_platforms_text = Text_sprite("media/fonts/pixel-font.ttf", "Use buttons to activate some platforms",
                                            self.size_world * 7, (255, 255, 255), (1150, 1050))
-        be_careful_text = Text_sprite("media/pixel-font.ttf", "Be careful against enemies",
+        be_careful_text = Text_sprite("media/fonts/pixel-font.ttf", "Be careful against enemies",
                                       self.size_world * 7, (255, 255, 255), (1500, 100))
-        turrets_text = Text_sprite("media/pixel-font.ttf", "Use levers to deactivate turrets",
+        turrets_text = Text_sprite("media/fonts/pixel-font.ttf", "Use levers to deactivate turrets",
                                    self.size_world * 7, (255, 255, 255), (1700, 200))
-        won_text = Text_sprite("media/pixel-font.ttf", "WELL",
+        won_text = Text_sprite("media/fonts/pixel-font.ttf", "WELL",
                                self.size_world * 3, (255, 255, 255), (2350, 350))
-        won_text_2 = Text_sprite("media/pixel-font.ttf", "DONE",
+        won_text_2 = Text_sprite("media/fonts/pixel-font.ttf", "DONE",
                                  self.size_world * 3, (255, 255, 255), (2350, 440))
         self.texts.add(press_w_text, press_q_text, press_q_text_2, use_arrows_text,
                        use_space_text, open_doors_text, use_bullets_text, use_platforms_text,

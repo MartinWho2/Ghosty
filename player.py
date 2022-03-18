@@ -53,7 +53,6 @@ class Player(Moving_sprite):
         self.fantom.pos.x, self.fantom.pos.y = self.fantom.rect.x, self.fantom.rect.y
         self.dist_max = 200
         self.max_speed = 10
-        self.is_jumping = False
         self.enemies = enemies
 
     def move(self, acceleration: pygame.Vector2, moving_object: Moving_sprite, dt: float,
@@ -185,6 +184,9 @@ class Player(Moving_sprite):
             self.fantom.particle_counter = 0
 
     def jump(self):
+        """
+        Jump if the player is not already jumping
+        """
         if not self.is_jumping:
             self.is_jumping = True
             self.speed.y = -12

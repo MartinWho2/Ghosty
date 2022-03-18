@@ -22,12 +22,13 @@ class Enemy(Moving_sprite):
         self.counter = 0.0
         self.speeds = {True: 1, False: -1}
         self.heading_right = True
+        self.limit_fall = len(self.tiles)*self.tile_factor+300
 
     def move(self, dt):
         if self.move_bool:
             if self.flip_mask:
                 self.flip_mask += dt
-                if self.flip_mask > 3:
+                if self.flip_mask > 5:
                     self.mask = self.masks[self.heading_right]
                     self.flip_mask = 0
             self.counter += round(abs(self.speed.x * dt), 5)
@@ -43,5 +44,5 @@ class Enemy(Moving_sprite):
             self.pos.x += self.speed.x * dt
             self.rect.x = round(self.pos.x)
         self.fall(pygame.Vector2(0, 0), dt)
-        if self.pos.y > 2000:
+        if self.pos.y > self.limit_fall:
             self.kill()
