@@ -30,6 +30,9 @@ def main():
             dt = (time.time() - before) * fps
         before = time.time()
         dt = round(dt, 4)
+        # Compensate not to skip too much frames
+        if dt > 5:
+            dt = 5
         if not game.game_not_started:
             if not game.pause_menu:
                 game.update(dt)

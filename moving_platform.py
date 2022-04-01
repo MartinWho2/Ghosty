@@ -55,6 +55,8 @@ class Moving_platform(pygame.sprite.Sprite):
         self.change_image(moving_player)
         if not self.activated:
             self.activated = True
+        else:
+            self.heading_to_end = not self.heading_to_end
 
     def change_image(self, moving_character):
         self.image = self.images[moving_character]

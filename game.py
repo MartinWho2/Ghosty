@@ -294,7 +294,7 @@ class Game:
                                           always_moving=False if platform[-1] == "lever" else True)
         self.platform_sprites.add(platform_sprite)
         if platform[-1] == "lever":
-            self.spawn_button(platform[-2], [platform_sprite])
+            self.spawn_button(platform[-2], [platform_sprite],lever=True)
 
     def spawn_cup(self, pos):
         cup = pygame.sprite.Sprite(self.cups)
