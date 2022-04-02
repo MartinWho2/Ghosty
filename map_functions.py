@@ -84,7 +84,7 @@ def create_rect_map(tiles: list, factor: int) -> list:
     rects = []
     for row in range(len(tiles)):
         for column in range(len(tiles[row])):
-            if tiles[row][column] != "0":
+            if tiles[row][column] != 0:
                 rects.append(pygame.rect.Rect(column * factor, row * factor, factor, factor))
     return rects
 
