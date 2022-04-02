@@ -45,7 +45,7 @@ class Moving_sprite(pygame.sprite.Sprite):
             # Checks for collisions with tiles near the sprite
             for row in range(rows[0], rows[1]):
                 for column in range(columns[0], columns[1]):
-                    if self.tiles[row][column] != '0':
+                    if self.tiles[row][column] != 0:
                         mask = self.collide_with_mask(self.tile, (column * self.tile_factor, row * self.tile_factor))
                         if mask.count():
                             get_hits.append(mask)

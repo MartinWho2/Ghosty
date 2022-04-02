@@ -1,29 +1,31 @@
+import numpy as np
+import random
 import time
-import pygame
 
-pygame.init()
-w, h = 576, 576
-window = pygame.display.set_mode((w, h), pygame.SRCALPHA)
-clock = pygame.time.Clock()
+matrix = []
 
 
-# measure the smallest time delta by spinning until the time changes
-def main():
-    timers = []
-    for i in range(100):
-        t0 = pygame.time.get_ticks()
-        print(t0)
-        t1 = pygame.time.get_ticks()
-        while t1 == t0:
-            t1 = pygame.time.get_ticks()
-        timers.append(t1 - t0)
-        for e in pygame.event.get():
-            if e.type == pygame.QUIT:
-                pygame.quit()
-                quit(main)
-    return timers
+for row in range(1000):
+    tmp = []
+    for column in range(1000):
+        tmp.append(random.randint(0,13))
+    matrix.append(tmp)
+if tmp:
+    matrix.append(tmp)
 
+array = np.array(matrix)
+matrix_np = np.asmatrix(array)
 
-times = main()
-for s in times:
-    print(f'time delta: {s} seconds')
+initialTime = time.time()
+
+for row in matrix:
+    for column in row:
+        if column != 0:
+            pass
+print(time.time()-initialTime)
+initialTime = time.time()
+for row in array:
+    for tile in row:
+        if tile != 0:
+            2*3
+print(time.time()-initialTime)

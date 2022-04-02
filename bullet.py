@@ -63,7 +63,7 @@ class Bullet(pygame.sprite.Sprite):
         rows, columns = check_area_around(sprite_pos, self.approximate_size, self.map)
         for row in range(rows[0], rows[1]):
             for column in range(columns[0], columns[1]):
-                if self.map[row][column] != "0":
+                if self.map[row][column] != 0:
                     if collide_with_rects((self.rect.x, self.rect.y, self.rect.w, self.rect.h),
                                           (column * self.size_world, row * self.size_world, self.size_world,
                                            self.size_world)):

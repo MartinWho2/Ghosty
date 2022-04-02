@@ -33,7 +33,7 @@ def create_map(level: int) -> list:
 
                 temporary_list.append(get_same_neighbours_with_possibilities(neighbours))
             else:
-                temporary_list.append("0")
+                temporary_list.append(0)
         new_map.append(temporary_list)
     return new_map
 
@@ -56,12 +56,8 @@ def get_same_neighbours_with_possibilities(neighbours):
                 correct = False
                 break
         if type(correct) == int:
-            if correct > 9:
-                correct = dec_to_hex[correct]
-            else:
-                correct = str(correct)
             return correct
-    print(neighbours)
+    print(f"The tile is not correct. Neighbors : {neighbours}")
     # raise WindowsError
     return "7"
 
@@ -110,7 +106,7 @@ def show_mask(mask: pygame.mask.Mask):
 
 def check_area_around(pos: [int, int], size: [int, int], tiles: list[list]) -> [[int, int], [int, int]]:
     """
-    Gets the area around the position of an object with a given size
+    Gets the area around the position of a moving sprite (f.i. the player or an ennemy) with a given size
     :param pos: Position of object (approximate)
     :param size: Size of object (approximate)
     :param tiles: Matrix of "0" and "1"
@@ -168,10 +164,7 @@ def load_tile_set(filename, final_size, size=16, dark=False):
             x, y = (i - 1) % 5 * size, math.floor((i - 1) / 5) * size
             tile.blit(tile_set, (-x, -y))
             tile = pygame.transform.scale(tile, (final_size, final_size))
-            if i < 10:
-                tiles[str(i)] = tile
-            else:
-                tiles[char_to_hex[i]] = tile
+            tiles[i] = tile
         return tiles
     else:
         print("The tileset is not the correct format")

@@ -223,7 +223,7 @@ class Game:
         for row in range(len(self.map)):
             for column in range(len(self.map[row])):
                 tile = self.map[row][column]
-                if tile != "0":
+                if tile != 0:
                     self.surface.blit(tiles[tile], (
                         column * self.size_world - round(self.camera_pos.x), row * self.size_world -
                         round(self.camera_pos.y)))
