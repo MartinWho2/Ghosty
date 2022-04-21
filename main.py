@@ -33,6 +33,7 @@ def main():
         # Compensate not to skip too much frames
         if dt > 5:
             dt = 5
+            # game.update_pressed_keys()
         if not game.game_not_started:
             if not game.pause_menu:
                 game.update(dt)
@@ -65,7 +66,7 @@ def main():
                             platform.change_image(game.moving_character)
                     if e.key == pygame.K_w and game.moving_character == "player":
                         # Jump
-                        game.player.jump()
+                        game.player.jump(dt)
                 elif e.type == pygame.KEYUP:
                     game.keys[e.key] = False
                     if e.key == pygame.K_w and game.moving_character == "player":

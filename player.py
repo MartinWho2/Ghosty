@@ -80,7 +80,7 @@ class Player(Moving_sprite):
         moving_object.pos.x += 0.5 * acceleration.x * (dt ** 2) + moving_object.speed.x * dt
         moving_object.pos.x = round(moving_object.pos.x, 5)
         moving_object.speed.x += acceleration.x * dt
-        moving_object.speed.x = round(moving_object.speed.x, 8)
+        moving_object.speed.x = round(moving_object.speed.x, 5)
         moving_object.rect.x = round(moving_object.pos.x)
         if moving_object.__class__ == Player:
             if self.speed.x > 0:
@@ -101,7 +101,8 @@ class Player(Moving_sprite):
             self.collide(hits, False)
 
             # !!!! THIS IS REALLY BAD BUT I DON'T KNOW HOW ELSE I COULD DO IT
-            if self.speed.y > 1.5:
+            print(self.speed.y)
+            if self.speed.y > 2 or self.speed.y < 0:
                 self.is_jumping = True
 
         elif moving_object.__class__ == Fantom:
@@ -183,13 +184,13 @@ class Player(Moving_sprite):
                                                   pygame.Vector2(0, 0.5)))
             self.fantom.particle_counter = 0
 
-    def jump(self):
+    def jump(self,dt):
         """
         Jump if the player is not already jumping
         """
         if not self.is_jumping:
             self.is_jumping = True
-            self.speed.y = -12
+            self.speed.y = -12 * dt
 
     def shoot(self, sprite_groups: list[pygame.sprite.Group], group_collisions: list[pygame.sprite.Group]) -> None:
         """

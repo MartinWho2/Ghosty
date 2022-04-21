@@ -127,9 +127,9 @@ class Game:
         :return:
         """
         if self.shot:
-            dt /= 3
+            dt /= 2
             self.shot += dt
-            if self.shot > 10:
+            if self.shot > 15:
                 self.shot = 0
         return dt
 
@@ -139,6 +139,7 @@ class Game:
         :param dt: difference of time with last frame
         :return:
         """
+        # dt = self.change_dt(dt)
         self.surface.fill(self.bg[self.moving_character])
         # self.window.fill((0, 0, 0, 0))
         scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
@@ -326,3 +327,14 @@ class Game:
         self.spawn_cup(objects["Cup"])
         for button in self.object_sprites:
             self.buttons_pushable[button] = False
+
+    def update_pressed_keys(self):
+        print("Keys before : ", self.keys)
+        pressed = pygame.key.get_pressed()
+        for i in range(len(pressed)):
+            if pressed[i]:
+                self.keys[i] = True
+        for key in self.keys.keys():
+            print(key,pressed[key])
+            self.keys[key] = pressed[key]
+        print("Keys after : ",self.keys)
