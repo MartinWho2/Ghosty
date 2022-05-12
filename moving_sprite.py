@@ -20,7 +20,7 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = pos.x, pos.y
         self.approximate_size = [round(self.rect.w / self.tile_factor) + 2, round(self.rect.h / self.tile_factor) + 2]
         self.speed = pygame.Vector2(0, 0)
-        self.gravity, self.friction = 0.5, -0.2
+        self.gravity, self.friction = self.tile_factor/128, -0.2
         self.is_jumping = False
         self.max_speed = 10
         self.mask = pygame.mask.from_surface(self.image)

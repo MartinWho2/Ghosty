@@ -15,7 +15,7 @@ class Enemy(Moving_sprite):
         :param tile_factor: The size of the tiles
         :param groups: His sprite group(s)
         """
-        super().__init__(pos, image, 70, tiles, tile_factor, elements, groups)
+        super().__init__(pos, image, round(tile_factor*1.094), tiles, tile_factor, elements, groups)
         self.move_bool = move_bool
         self.speed = pygame.Vector2(1, 0)
         self.limit = limit

@@ -6,7 +6,7 @@ from game import Game
 
 pygame.init()
 w, h = 576, 576
-window = pygame.display.set_mode((w, h), pygame.SRCALPHA)
+window = pygame.display.set_mode((0,0), pygame.SRCALPHA)
 clock = pygame.time.Clock()
 font = pygame.font.Font("media/fonts/pixel-font.ttf", 15)
 

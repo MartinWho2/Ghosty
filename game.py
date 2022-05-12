@@ -32,7 +32,7 @@ class Game:
             f.close()
         self.w, self.h = self.window.get_width(), self.window.get_height()
         self.level = 1
-        self.size_world = 64
+        self.size_world = 128
         self.surface = pygame.Surface((self.w, self.h))
 
         self.map = create_map(self.level)
@@ -46,33 +46,33 @@ class Game:
         self.player_sprite = pygame.sprite.Group()
         self.texts = pygame.sprite.Group()
 
-        press_w_text = Text_sprite("media/fonts/pixel-font.ttf", "Press SPACE to shoot a bullet", self.size_world * 4,
-                                   (255, 255, 255), (256, 550))
+        press_w_text = Text_sprite("media/fonts/pixel-font.ttf", "Press SPACE to shoot a bullet", round(self.size_world /6.4),
+                                   (255, 255, 255), (4*self.size_world, 8.6*self.size_world))
         press_q_text = Text_sprite("media/fonts/pixel-font.ttf", "Press Q to switch between",
-                                   self.size_world * 7, (255, 255, 255), (756, 100))
+                                   round(self.size_world /6.4), (255, 255, 255), (11.8*self.size_world, 1.56*self.size_world))
         press_q_text_2 = Text_sprite("media/fonts/pixel-font.ttf", "the player and the ghost",
-                                     self.size_world * 5, (255, 255, 255), (766, 130))
+                                     round(self.size_world /6.4), (255, 255, 255), (11.9*self.size_world, 2*self.size_world))
 
         use_arrows_text = Text_sprite("media/fonts/pixel-font.ttf", "Use the keys A-D to move left-right",
-                                      self.size_world * 5, (255, 255, 255), (406, 0))
+                                      round(self.size_world /6.4), (255, 255, 255), (6.34*self.size_world, 0))
         use_space_text = Text_sprite("media/fonts/pixel-font.ttf", "Use the key W to jump",
-                                     self.size_world * 5, (255, 255, 255), (406, 50))
+                                     round(self.size_world / 6.4), (255, 255, 255), (6.34*self.size_world, 0.78*self.size_world))
         open_doors_text = Text_sprite("media/fonts/pixel-font.ttf", "Use levers to open or close doors",
-                                      self.size_world * 5, (255, 255, 255), (771, 650))
+                                      round(self.size_world /6.4), (255, 255, 255), (12.05*self.size_world, 10.15*self.size_world))
         use_bullets_text = Text_sprite("media/fonts/pixel-font.ttf", "Bullets can also activate levers",
-                                       self.size_world * 5, (255, 255, 255), (240, 600))
+                                       round(self.size_world /6.4), (255, 255, 255), (3.75*self.size_world, 9.38*self.size_world))
         use_platforms_text = Text_sprite("media/fonts/pixel-font.ttf", "Flying platforms are great",
-                                         self.size_world * 6, (255, 255, 255), (650, 1050))
+                                         round(self.size_world /6.4), (255, 255, 255), (10.16*self.size_world, 16.4*self.size_world))
         lever_platforms_text = Text_sprite("media/fonts/pixel-font.ttf", "Use buttons to activate some platforms",
-                                           self.size_world * 7, (255, 255, 255), (1150, 1050))
+                                           round(self.size_world /6.4), (255, 255, 255), (17.97*self.size_world, 16.4*self.size_world))
         be_careful_text = Text_sprite("media/fonts/pixel-font.ttf", "Be careful against enemies",
-                                      self.size_world * 7, (255, 255, 255), (1500, 100))
+                                      round(self.size_world /6.4), (255, 255, 255), (23.44*self.size_world, 1.56*self.size_world))
         turrets_text = Text_sprite("media/fonts/pixel-font.ttf", "Use levers to deactivate turrets",
-                                   self.size_world * 7, (255, 255, 255), (1700, 200))
+                                   round(self.size_world /6.4), (255, 255, 255), (26.56*self.size_world, 3.13*self.size_world))
         won_text = Text_sprite("media/fonts/pixel-font.ttf", "WELL",
-                               self.size_world * 3, (255, 255, 255), (2350, 350))
+                               round(self.size_world /6.4), (255, 255, 255), (36.7*self.size_world, 5.47*self.size_world))
         won_text_2 = Text_sprite("media/fonts/pixel-font.ttf", "DONE",
-                                 self.size_world * 3, (255, 255, 255), (2350, 440))
+                                 round(self.size_world /6.4), (255, 255, 255), (36.7*self.size_world, 6.88*self.size_world))
         self.texts.add(press_w_text, press_q_text, press_q_text_2, use_arrows_text,
                        use_space_text, open_doors_text, use_bullets_text, use_platforms_text,
                        lever_platforms_text, be_careful_text, turrets_text, won_text, won_text_2)
@@ -103,7 +103,7 @@ class Game:
         }
         tiles_file = "media/grass-tileset.png"
         tiles_file = "media/dirt-tileset.png"
-        self.tiles = {"fantom": load_tile_set(tiles_file, 64, dark=True), "player": load_tile_set(tiles_file, 64)}
+        self.tiles = {"fantom": load_tile_set(tiles_file, self.size_world, dark=True), "player": load_tile_set(tiles_file, self.size_world)}
         self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
         self.a_img = pygame.transform.scale(pygame.image.load("media/key_space.png").convert(), (16, 16))
         self.spawn_objects(self.level)
@@ -242,7 +242,7 @@ class Game:
                 self.surface.blit(particle.image, particle.pos)
 
     def get_input_for_movement(self) -> pygame.Vector2:
-        value = 0.8
+        value = self.size_world/80
         movement = pygame.Vector2(0, 0)
         if self.keys.get(pygame.K_a):
             movement.x -= value

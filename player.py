@@ -1,3 +1,5 @@
+import math
+
 import pygame
 import random
 from particle import Particle
@@ -7,9 +9,10 @@ from bullet import Bullet
 
 
 class Fantom(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self,size_world):
         super().__init__()
-        self.image = pygame.transform.scale(pygame.image.load('media/fantome.png').convert_alpha(), (40, 64))
+        self.size_world = size_world
+        self.image = pygame.transform.scale(pygame.image.load('media/fantome.png').convert_alpha(), (round(size_world*0.625), size_world))
         self.image.set_alpha(100)
         self.image_copy = self.image.copy()
         self.empty_image = self.image.copy()
@@ -20,7 +23,6 @@ class Fantom(pygame.sprite.Sprite):
         self.particle_counter = 0
         # The reached value gets lower if the fantom goes away
         self.particles = []
-        self.max_speed = 5
         self.friction = -0.1
         self.particle_image = pygame.image.load("media/particle.png")
 
@@ -47,12 +49,11 @@ class Player(Moving_sprite):
         self.rect.center = self.SPAWN_POS
         self.facing_right = True
         self.pos = pygame.Vector2(self.rect.x, self.rect.y)
-        self.fantom = Fantom()
+        self.fantom = Fantom(self.tile_factor)
         self.fantom.add(group for group in groups)
         self.fantom.rect.center = (self.rect.x - self.fantom.rect.w / 2, self.rect.y)
         self.fantom.pos.x, self.fantom.pos.y = self.fantom.rect.x, self.fantom.rect.y
-        self.dist_max = 200
-        self.max_speed = 10
+        self.dist_max = round(self.tile_factor*3.125)
         self.enemies = enemies
 
     def move(self, acceleration: pygame.Vector2, moving_object: Moving_sprite, dt: float,
@@ -101,8 +102,7 @@ class Player(Moving_sprite):
             self.collide(hits, False)
 
             # !!!! THIS IS REALLY BAD BUT I DON'T KNOW HOW ELSE I COULD DO IT
-            print(self.speed.y)
-            if self.speed.y > 2 or self.speed.y < 0:
+            if self.speed.y > round(self.tile_factor/32) or self.speed.y < 0:
                 self.is_jumping = True
 
         elif moving_object.__class__ == Fantom:
@@ -140,7 +140,7 @@ class Player(Moving_sprite):
         alpha = positive(particles_value - 150)
         self.surface_above.fill((0, 0, 0, 0))
         pygame.draw.circle(self.surface_above, (120, 120, 120, alpha), pygame.Vector2(self.rect.center) - camera_pos,
-                           self.dist_max, 5)
+                           self.dist_max, round(self.tile_factor/13))
         self.surface.blit(self.surface_above, (0, 0))
         self.spawn_particles(distance_fantom_player, particles_value, dt, camera_pos)
         self.fantom.pos.x = self.pos.x + self.rect.w / 2 + distance_fantom_player.x - self.fantom.rect.w / 2
@@ -184,13 +184,13 @@ class Player(Moving_sprite):
                                                   pygame.Vector2(0, 0.5)))
             self.fantom.particle_counter = 0
 
-    def jump(self,dt):
+    def jump(self, dt):
         """
         Jump if the player is not already jumping
         """
         if not self.is_jumping:
             self.is_jumping = True
-            self.speed.y = -12 * dt
+            self.speed.y = -math.sqrt(4.5*self.tile_factor*self.gravity) * dt
 
     def shoot(self, sprite_groups: list[pygame.sprite.Group], group_collisions: list[pygame.sprite.Group]) -> None:
         """
