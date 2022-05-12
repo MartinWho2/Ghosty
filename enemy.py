@@ -17,10 +17,10 @@ class Enemy(Moving_sprite):
         """
         super().__init__(pos, image, round(tile_factor*1.094), tiles, tile_factor, elements, groups)
         self.move_bool = move_bool
-        self.speed = pygame.Vector2(1, 0)
+        self.speed = pygame.Vector2(tile_factor/64, 0)
         self.limit = limit
         self.counter = 0.0
-        self.speeds = {True: 1, False: -1}
+        self.speeds = {True: tile_factor/64, False: -tile_factor/64}
         self.heading_right = True
         self.limit_fall = len(self.tiles)*self.tile_factor+300
 

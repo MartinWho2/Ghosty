@@ -22,7 +22,7 @@ class Moving_platform(pygame.sprite.Sprite):
         self.rect.bottomleft = start_pos
         self.start_pos = start_pos
         self.end_pos = end_pos
-        self.velocity = 1
+        self.velocity = size_world/64
         self.always_moving = always_moving
         self.activated = always_moving
         self.heading_to_end = True

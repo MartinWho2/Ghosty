@@ -81,7 +81,7 @@ class Player(Moving_sprite):
         moving_object.pos.x += 0.5 * acceleration.x * (dt ** 2) + moving_object.speed.x * dt
         moving_object.pos.x = round(moving_object.pos.x, 5)
         moving_object.speed.x += acceleration.x * dt
-        moving_object.speed.x = round(moving_object.speed.x, 5)
+        moving_object.speed.x = round(moving_object.speed.x, 4)
         moving_object.rect.x = round(moving_object.pos.x)
         if moving_object.__class__ == Player:
             if self.speed.x > 0:
@@ -102,7 +102,7 @@ class Player(Moving_sprite):
             self.collide(hits, False)
 
             # !!!! THIS IS REALLY BAD BUT I DON'T KNOW HOW ELSE I COULD DO IT
-            if self.speed.y > round(self.tile_factor/32) or self.speed.y < 0:
+            if self.speed.y > self.tile_factor/32 or self.speed.y < 0:
                 self.is_jumping = True
 
         elif moving_object.__class__ == Fantom:
@@ -199,10 +199,10 @@ class Player(Moving_sprite):
         :param group_collisions: Groups colliding with the bullet
         :return:
         """
-        speed = pygame.Vector2(-5, 0)
-        x_pos = self.rect.left - 10
+        speed = pygame.Vector2(-self.tile_factor/12.8, 0)
+        x_pos = self.rect.left - self.tile_factor/6.4
         if self.heading_right:
-            speed.x = 5
+            speed.x = -speed.x
             x_pos = self.rect.right
         pos = pygame.Vector2(x_pos, self.rect.centery)
         bullet = Bullet(pos, pygame.Vector2(speed.x, speed.y), group_collisions, self.tile_factor, self.tiles)

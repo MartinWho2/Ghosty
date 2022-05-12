@@ -32,11 +32,11 @@ class Auto_Tower(pygame.sprite.Sprite):
                 self.now = 0
 
     def shoot(self):
-        speed = pygame.Vector2(10, 0)
+        speed = pygame.Vector2(self.size_world/6.4, 0)
         x_pos = self.rect.right
         if self.direction == "left":
-            speed.x = -10
-            x_pos = self.rect.left - 10
+            speed.x = -speed.x
+            x_pos = self.rect.left - self.size_world/6.4
 
         bullet = Bullet(
             pygame.Vector2(x_pos, self.rect.y + self.shoot_height - 5), speed, self.collisions, self.size_world,

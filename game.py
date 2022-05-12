@@ -32,7 +32,7 @@ class Game:
             f.close()
         self.w, self.h = self.window.get_width(), self.window.get_height()
         self.level = 1
-        self.size_world = 128
+        self.size_world = 96
         self.surface = pygame.Surface((self.w, self.h))
 
         self.map = create_map(self.level)
@@ -265,7 +265,7 @@ class Game:
             move = False
         Enemy(pygame.image.load("media/enemy.png").convert_alpha(),
               pygame.Vector2(pos[0] * self.size_world, pos[1] * self.size_world),
-              move, 100, self.map, self.size_world, [self.enemies],
+              move, round(self.size_world*1.56), self.map, self.size_world, [self.enemies],
               [self.doors_sprites, self.object_sprites, self.platform_sprites])
 
     def spawn_button(self, button_pos: Union[list, tuple], doors: list[Union[Door, Moving_platform, Auto_Tower]],
@@ -283,7 +283,7 @@ class Game:
 
     def spawn_tower(self, pos, orientation, lever):
         pos = [round((pos[0] + 0.5) * self.size_world), (pos[1] + 1) * self.size_world]
-        tower = Auto_Tower(pos, self.size_world, self.map, "media/turret.png", (64, 64), 20, 0.5,
+        tower = Auto_Tower(pos, self.size_world, self.map, "media/turret.png", (self.size_world, self.size_world), 20, 0.5,
                            [self.player_sprite, self.enemies], self.bullets, orientation)
         tower.add(self.towers)
         self.spawn_button(lever, [tower], lever=True)

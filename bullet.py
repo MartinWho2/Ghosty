@@ -15,7 +15,7 @@ class Bullet(pygame.sprite.Sprite):
         self.image = pygame.image.load(image).convert_alpha()
         if speed.x < 0:
             self.image = pygame.transform.flip(self.image, True, False)
-        self.image = pygame.transform.scale(self.image, (15, 15))
+        self.image = pygame.transform.scale(self.image, (round(self.size_world/4.27), round(self.size_world/4.27)))
         self.pos = pos
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = pos.x, pos.y
