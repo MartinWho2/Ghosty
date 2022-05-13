@@ -32,7 +32,8 @@ class Game:
             f.close()
         self.w, self.h = self.window.get_width(), self.window.get_height()
         self.level = 1
-        self.size_world = 96
+        self.size_world = 64
+        self.zoom_coeff = 1
         self.surface = pygame.Surface((self.w, self.h))
 
         self.map = create_map(self.level)
@@ -204,7 +205,11 @@ class Game:
                                                round(self.camera_pos.x),
                                                self.player.fantom.rect.y - 5 - self.a_img.get_height() - round(
                                                    self.camera_pos.y)))
-        self.window.blit(self.surface, (0, 0))
+        size_zoomed = [i*self.zoom_coeff for i in self.surface.get_size()]
+        print(size_zoomed)
+        new_surf = pygame.transform.scale(self.surface,size_zoomed)
+        center_screen = [round(i/2) for i in self.surface.get_size()]
+        self.window.blit(new_surf, (-(self.zoom_coeff-1)*center_screen[0], -(self.zoom_coeff-1)*center_screen[1]))
 
     def change_character(self, dt: float) -> None:
         """
