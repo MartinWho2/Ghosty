@@ -9,8 +9,12 @@ class Moving_sprite(pygame.sprite.Sprite):
     def __init__(self, pos: pygame.Vector2, image: pygame.Surface, resize: int, tiles: list, tile_factor: int,
                  sprite_elements: list[pygame.sprite.Group], sprite_groups: list[pygame.sprite.Group]) -> None:
         super().__init__()
-        self.add(sprite_group for sprite_group in sprite_groups)
+        for sprite_group in sprite_groups:
+            self.add(sprite_group)
         self.sprite_elements = sprite_elements
+        for e in self.sprite_elements:
+            for sprite in e:
+                print(sprite)
         self.tiles = tiles
         self.tile_factor = tile_factor
         self.pos = pos
@@ -60,6 +64,7 @@ class Moving_sprite(pygame.sprite.Sprite):
                         element: Moving_platform
                         self.on_platform = element
                         self.was_on_platform = 0
+                        # self.pos.x = math.floor(self.pos.x)+element.pos.x-math.floor(element.pos.x)
         self.was_on_platform += 1
         if self.was_on_platform > 15:
             self.on_platform = False

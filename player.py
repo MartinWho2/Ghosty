@@ -3,16 +3,17 @@ import math
 import pygame
 import random
 from particle import Particle
-from math_functions import positive, limit_speed
+from math_functions import positive
 from moving_sprite import Moving_sprite
 from bullet import Bullet
 
 
 class Fantom(pygame.sprite.Sprite):
-    def __init__(self,size_world):
+    def __init__(self, size_world):
         super().__init__()
         self.size_world = size_world
-        self.image = pygame.transform.scale(pygame.image.load('media/fantome.png').convert_alpha(), (round(size_world*0.625), size_world))
+        self.image = pygame.transform.scale(pygame.image.load('media/fantome.png').convert_alpha(),
+                                            (round(size_world * 0.625), size_world))
         self.image.set_alpha(100)
         self.image_copy = self.image.copy()
         self.empty_image = self.image.copy()
@@ -35,8 +36,7 @@ class Player(Moving_sprite):
     def __init__(self, tiles: list, tile_factor: int, surface: pygame.Surface, groups: list[pygame.sprite.Group],
                  elements: list[pygame.sprite.Group], enemies: list[pygame.sprite.Group], spawn: list) -> None:
         super().__init__(pygame.Vector2(0, 0), pygame.image.load('media/chevalier.png').convert_alpha(), tile_factor,
-                         tiles,
-                         tile_factor, elements, groups)
+                         tiles, tile_factor, elements, groups)
         self.surface = surface  # A surface to draw the circle appearing when the ghost tries to run away
         self.surface_above = pygame.Surface((surface.get_width(), surface.get_height()), pygame.SRCALPHA)
         self.image_copy = self.image.copy()
@@ -50,10 +50,11 @@ class Player(Moving_sprite):
         self.facing_right = True
         self.pos = pygame.Vector2(self.rect.x, self.rect.y)
         self.fantom = Fantom(self.tile_factor)
-        self.fantom.add(group for group in groups)
+        for group in groups:
+            self.fantom.add(group)
         self.fantom.rect.center = (self.rect.x - self.fantom.rect.w / 2, self.rect.y)
         self.fantom.pos.x, self.fantom.pos.y = self.fantom.rect.x, self.fantom.rect.y
-        self.dist_max = round(self.tile_factor*3.125)
+        self.dist_max = round(self.tile_factor * 3.125)
         self.enemies = enemies
 
     def move(self, acceleration: pygame.Vector2, moving_object: Moving_sprite, dt: float,
@@ -78,10 +79,10 @@ class Player(Moving_sprite):
                 self.rect.x, self.rect.y = round(self.pos.x), round(self.pos.y)
             self.fall(acceleration, dt)
         acceleration.x += moving_object.speed.x * self.friction
+        if fall and self.on_platform:
+            print(f"moving to {0.5 * acceleration.x * (dt ** 2) + moving_object.speed.x * dt} and acceleration : {acceleration.x}")
         moving_object.pos.x += 0.5 * acceleration.x * (dt ** 2) + moving_object.speed.x * dt
-        moving_object.pos.x = round(moving_object.pos.x, 5)
         moving_object.speed.x += acceleration.x * dt
-        moving_object.speed.x = round(moving_object.speed.x, 4)
         moving_object.rect.x = round(moving_object.pos.x)
         if moving_object.__class__ == Player:
             if self.speed.x > 0:
@@ -102,7 +103,7 @@ class Player(Moving_sprite):
             self.collide(hits, False)
 
             # !!!! THIS IS REALLY BAD BUT I DON'T KNOW HOW ELSE I COULD DO IT
-            if self.speed.y > self.tile_factor/32 or self.speed.y < 0:
+            if self.speed.y > self.tile_factor / 32 or self.speed.y < 0:
                 self.is_jumping = True
 
         elif moving_object.__class__ == Fantom:
@@ -130,8 +131,9 @@ class Player(Moving_sprite):
         :param camera_pos: Position of the camera
         :return:
         """
-        distance_fantom_player = pygame.Vector2(self.fantom.pos.x + self.fantom.rect.w / 2 - self.pos.x - self.rect.w / 2,
-                                                self.fantom.pos.y + self.fantom.rect.h / 2 - self.pos.y - self.rect.h / 2)
+        distance_fantom_player = pygame.Vector2(
+            self.fantom.pos.x + self.fantom.rect.w / 2 - self.pos.x - self.rect.w / 2,
+            self.fantom.pos.y + self.fantom.rect.h / 2 - self.pos.y - self.rect.h / 2)
 
         particles_value = distance_fantom_player.length()
         if particles_value > self.dist_max:
@@ -140,7 +142,7 @@ class Player(Moving_sprite):
         alpha = positive(particles_value - 150)
         self.surface_above.fill((0, 0, 0, 0))
         pygame.draw.circle(self.surface_above, (120, 120, 120, alpha), pygame.Vector2(self.rect.center) - camera_pos,
-                           self.dist_max, round(self.tile_factor/13))
+                           self.dist_max, round(self.tile_factor / 13))
         self.surface.blit(self.surface_above, (0, 0))
         self.spawn_particles(distance_fantom_player, particles_value, dt, camera_pos)
         self.fantom.pos.x = self.pos.x + self.rect.w / 2 + distance_fantom_player.x - self.fantom.rect.w / 2
@@ -190,7 +192,7 @@ class Player(Moving_sprite):
         """
         if not self.is_jumping:
             self.is_jumping = True
-            self.speed.y = -math.sqrt(4.5*self.tile_factor*self.gravity) * dt
+            self.speed.y = -math.sqrt(4.5 * self.tile_factor * self.gravity)
 
     def shoot(self, sprite_groups: list[pygame.sprite.Group], group_collisions: list[pygame.sprite.Group]) -> None:
         """
@@ -199,11 +201,12 @@ class Player(Moving_sprite):
         :param group_collisions: Groups colliding with the bullet
         :return:
         """
-        speed = pygame.Vector2(-self.tile_factor/12.8, 0)
-        x_pos = self.rect.left - self.tile_factor/6.4
+        speed = pygame.Vector2(-self.tile_factor / 12.8, 0)
+        x_pos = self.rect.left - self.tile_factor / 6.4
         if self.heading_right:
             speed.x = -speed.x
             x_pos = self.rect.right
         pos = pygame.Vector2(x_pos, self.rect.centery)
         bullet = Bullet(pos, pygame.Vector2(speed.x, speed.y), group_collisions, self.tile_factor, self.tiles)
-        bullet.add(group for group in sprite_groups)
+        for group in sprite_groups:
+            bullet.add(group)

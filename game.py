@@ -1,3 +1,5 @@
+import time
+
 import pygame
 # import pygame.camera
 import json
@@ -33,7 +35,7 @@ class Game:
         self.w, self.h = self.window.get_width(), self.window.get_height()
         self.level = 1
         self.size_world = 64
-        self.zoom_coeff = 1
+        self.zoom_coeff = 3
         self.surface = pygame.Surface((self.w, self.h))
 
         self.map = create_map(self.level)
@@ -129,9 +131,12 @@ class Game:
         """
         if self.shot:
             dt /= 2
+            self.zoom_coeff += 0.05
             self.shot += dt
-            if self.shot > 15:
+            if self.shot > 30:
                 self.shot = 0
+        else:
+            self.zoom_coeff = 1
         return dt
 
     def update(self, dt: float) -> None:
@@ -140,7 +145,9 @@ class Game:
         :param dt: difference of time with last frame
         :return:
         """
-        # dt = self.change_dt(dt)
+        if self.player.on_platform:
+            print(self.player.pos.x-self.player.on_platform.pos.x)
+        dt = self.change_dt(dt)
         self.surface.fill(self.bg[self.moving_character])
         # self.window.fill((0, 0, 0, 0))
         scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
@@ -149,6 +156,11 @@ class Game:
         self.camera_pos += scroll
         self.draw_map()
         self.deal_with_particles()
+        fall = True
+        if self.moving_character == "fantom":
+            fall = False
+        self.player.move(self.get_input_for_movement(), self.characters_class[self.moving_character], dt,
+                         self.camera_pos, fall=fall)
         for platform in self.platform_sprites:
             platform.move(dt)
         for bullet in self.bullets:
@@ -157,11 +169,6 @@ class Game:
             person.move(dt)
         for tower in self.towers:
             tower.waiting(dt)
-        fall = True
-        if self.moving_character == "fantom":
-            fall = False
-        self.player.move(self.get_input_for_movement(), self.characters_class[self.moving_character], dt,
-                         self.camera_pos, fall=fall)
         if self.player.pos.y > 2000:
             # pygame.image.save(self.camera.get_image(), "ITS_YOU.png")
             self.player.die()
@@ -205,11 +212,13 @@ class Game:
                                                round(self.camera_pos.x),
                                                self.player.fantom.rect.y - 5 - self.a_img.get_height() - round(
                                                    self.camera_pos.y)))
-        size_zoomed = [i*self.zoom_coeff for i in self.surface.get_size()]
-        print(size_zoomed)
-        new_surf = pygame.transform.scale(self.surface,size_zoomed)
-        center_screen = [round(i/2) for i in self.surface.get_size()]
-        self.window.blit(new_surf, (-(self.zoom_coeff-1)*center_screen[0], -(self.zoom_coeff-1)*center_screen[1]))
+        if self.zoom_coeff == 1:
+            self.window.blit(self.surface,(0,0))
+        else:
+            new_surf = pygame.Surface((math.ceil(self.w/self.zoom_coeff),math.ceil(self.h/self.zoom_coeff)))
+            pos_up_left = [(i-j)/2 for i,j in zip(new_surf.get_size(),self.surface.get_size())]
+            new_surf.blit(self.surface,pos_up_left)
+            self.window.blit(pygame.transform.scale(new_surf,self.surface.get_size()),(0,0))
 
     def change_character(self, dt: float) -> None:
         """

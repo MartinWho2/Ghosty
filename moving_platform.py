@@ -43,9 +43,12 @@ class Moving_platform(pygame.sprite.Sprite):
             else:
                 self.moving.scale_to_length(self.velocity*dt)
                 if not get_move:
+                    print(f"platform moving : {self.moving.x}",end=", ")
                     self.pos.x += self.moving.x
                     self.pos.y += self.moving.y
                     self.rect.x, self.rect.bottom = round(self.pos.x), round(self.pos.y)
+                else:
+                    print(f"player moving : {self.moving.x}")
         else:
             self.moving.x, self.moving.y = 0, 0
         if get_move:
