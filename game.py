@@ -145,8 +145,6 @@ class Game:
         :param dt: difference of time with last frame
         :return:
         """
-        if self.player.on_platform:
-            print(self.player.pos.x-self.player.on_platform.pos.x)
         dt = self.change_dt(dt)
         self.surface.fill(self.bg[self.moving_character])
         # self.window.fill((0, 0, 0, 0))

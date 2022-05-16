@@ -12,9 +12,6 @@ class Moving_sprite(pygame.sprite.Sprite):
         for sprite_group in sprite_groups:
             self.add(sprite_group)
         self.sprite_elements = sprite_elements
-        for e in self.sprite_elements:
-            for sprite in e:
-                print(sprite)
         self.tiles = tiles
         self.tile_factor = tile_factor
         self.pos = pos
@@ -62,9 +59,11 @@ class Moving_sprite(pygame.sprite.Sprite):
                     get_hits.append(mask)
                     if element.__class__ == Moving_platform:
                         element: Moving_platform
+                        if not self.on_platform:
+                            self.pos.x = math.floor(self.pos.x) + element.pos.x - math.floor(element.pos.x)
                         self.on_platform = element
                         self.was_on_platform = 0
-                        # self.pos.x = math.floor(self.pos.x)+element.pos.x-math.floor(element.pos.x)
+
         self.was_on_platform += 1
         if self.was_on_platform > 15:
             self.on_platform = False
