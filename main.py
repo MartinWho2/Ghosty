@@ -23,13 +23,13 @@ def main():
     before = time.time()
     time.sleep(0.02)
     while playing:
-        clock.tick(60)
+        #clock.tick()
         dt = (time.time() - before) * fps
         while dt == 0:
             print("WTF DUDE")
             dt = (time.time() - before) * fps
         before = time.time()
-        dt = round(dt, 4)
+        dt = round(dt,4)
         # Compensate not to skip too much frames
         if dt > 5:
             dt = 5
@@ -79,6 +79,10 @@ def main():
                         if game.moving_character == "fantom" and game.can_push_button and \
                                 game.buttons_pushable[game.can_push_button]:
                             game.can_push_button.activate(game.moving_character)
+                elif e.type == pygame.MOUSEWHEEL:
+                    game.zoom_coeff += e.y/5
+                    if game.zoom_coeff < 1:
+                        game.zoom_coeff = 1
             elif game.game_not_started:
                 if e.type == pygame.KEYUP:
                     if e.key == pygame.K_SPACE:

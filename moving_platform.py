@@ -27,6 +27,7 @@ class Moving_platform(pygame.sprite.Sprite):
         self.activated = always_moving
         self.heading_to_end = True
         self.moving = pygame.Vector2(0, 0)
+        self.got_move = False
 
     def move(self, dt, get_move=False):
         if self.activated:
@@ -34,18 +35,26 @@ class Moving_platform(pygame.sprite.Sprite):
             if not self.heading_to_end:
                 toward = self.start_pos
             self.moving.x, self.moving.y = toward[0] - self.rect.x, toward[1] - self.rect.bottom
+            if self.moving.x == 0:
+                print("going up/down")
             if self.moving.length() <= self.velocity*dt:
-                if not get_move:
+                if not self.got_move:
                     self.rect.bottomleft = toward
                     if not self.always_moving:
                         self.activated = False
                     self.heading_to_end = not self.heading_to_end
+                    self.got_move = True
+                else:
+                    self.got_move = False
             else:
                 self.moving.scale_to_length(self.velocity*dt)
-                if not get_move:
+                if not self.got_move:
                     self.pos.x += self.moving.x
                     self.pos.y += self.moving.y
                     self.rect.x, self.rect.bottom = round(self.pos.x), round(self.pos.y)
+                    self.got_move = True
+                else:
+                    self.got_move = False
         else:
             self.moving.x, self.moving.y = 0, 0
         if get_move:

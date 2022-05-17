@@ -38,6 +38,14 @@ def create_map(level: int) -> list:
     return new_map
 
 
+def upleft_if_centered(pos_big:tuple[int,int], size_obj:tuple[int,int], size_big:tuple[int,int], rounding=True):
+    x = (size_big[0]-size_obj[0]) / 2 - pos_big[0]
+    y = (size_big[1] - size_obj[1]) / 2 - pos_big[1]
+    if rounding:
+        x,y = round(x),round(y)
+    return [x, y]
+
+
 def get_same_neighbours_with_possibilities(neighbours):
     """
     Guess what the tile should be (like corner topleft, center, ...)
