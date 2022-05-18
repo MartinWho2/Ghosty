@@ -35,8 +35,6 @@ class Moving_platform(pygame.sprite.Sprite):
             if not self.heading_to_end:
                 toward = self.start_pos
             self.moving.x, self.moving.y = toward[0] - self.rect.x, toward[1] - self.rect.bottom
-            if self.moving.x == 0:
-                print("going up/down")
             if self.moving.length() <= self.velocity*dt:
                 if not self.got_move:
                     self.rect.bottomleft = toward
