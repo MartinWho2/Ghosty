@@ -36,6 +36,8 @@ class Game:
         self.level = 1
         self.size_world = 64
         self.zoom_coeff = 1
+        self.can_zoom = True
+        self.zoom_max = 2
         self.surface = pygame.Surface((self.w, self.h))
 
         self.map = create_map(self.level)
@@ -229,10 +231,18 @@ class Game:
         if self.zoom_coeff == 1:
             self.window.blit(self.surface, (0, 0))
         else:
+            t1 = pygame.time.get_ticks()
             new_surf = pygame.Surface((math.ceil(self.w / self.zoom_coeff), math.ceil(self.h / self.zoom_coeff)))
+            t2 = pygame.time.get_ticks()
             pos_up_left = [(i - j) / 2 for i, j in zip(new_surf.get_size(), self.surface.get_size())]
+            t3 = pygame.time.get_ticks()
             new_surf.blit(self.surface, pos_up_left)
-            self.window.blit(pygame.transform.scale(new_surf, self.surface.get_size()), (0, 0))
+            t4 = pygame.time.get_ticks()
+            new_surf = pygame.transform.scale(new_surf, self.surface.get_size())
+            t5 = pygame.time.get_ticks()
+            self.window.blit(new_surf, (0, 0))
+            t6 = pygame.time.get_ticks()
+            print(t2-t1,t3-t2,t4-t3,t5-t4,t6-t5)
 
     def change_character(self, dt: float) -> None:
         """

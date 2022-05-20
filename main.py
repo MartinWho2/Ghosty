@@ -6,7 +6,7 @@ from game import Game
 
 pygame.init()
 w, h = 576, 576
-window = pygame.display.set_mode((0,0), pygame.SRCALPHA)
+window = pygame.display.set_mode((0,0), pygame.SRCALPHA,pygame.FULLSCREEN)
 clock = pygame.time.Clock()
 font = pygame.font.Font("media/fonts/pixel-font.ttf", 15)
 
@@ -23,7 +23,7 @@ def main():
     before = time.time()
     time.sleep(0.02)
     while playing:
-        #clock.tick()
+        clock.tick(300)
         dt = (time.time() - before) * fps
         while dt == 0:
             print("WTF DUDE")
@@ -80,9 +80,13 @@ def main():
                                 game.buttons_pushable[game.can_push_button]:
                             game.can_push_button.activate(game.moving_character)
                 elif e.type == pygame.MOUSEWHEEL:
-                    game.zoom_coeff += e.y/5
-                    if game.zoom_coeff < 1:
-                        game.zoom_coeff = 1
+                    if game.can_zoom:
+                        game.zoom_coeff += e.y/5
+                        if game.zoom_coeff < 1:
+                            game.zoom_coeff = 1
+                        elif game.zoom_coeff > game.zoom_max:
+                            game.zoom_coeff = game.zoom_max
+
             elif game.game_not_started:
                 if e.type == pygame.KEYUP:
                     if e.key == pygame.K_SPACE:
