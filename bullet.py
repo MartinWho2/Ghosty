@@ -47,7 +47,7 @@ class Bullet(pygame.sprite.Sprite):
                         self.kill()
                     elif sprite.__class__ == Enemy:
                         sprite: Enemy
-                        sprite.kill()
+                        sprite.die()
                         self.kill()
                     elif sprite.__class__ == Door:
                         sprite: Door

@@ -41,7 +41,8 @@ class Moving_platform(pygame.sprite.Sprite):
                     if not self.always_moving:
                         self.activated = False
                     self.heading_to_end = not self.heading_to_end
-                    self.got_move = True
+                    if get_move:
+                        self.got_move = True
                 else:
                     self.got_move = False
             else:
@@ -50,7 +51,8 @@ class Moving_platform(pygame.sprite.Sprite):
                     self.pos.x += self.moving.x
                     self.pos.y += self.moving.y
                     self.rect.x, self.rect.bottom = round(self.pos.x), round(self.pos.y)
-                    self.got_move = True
+                    if get_move:
+                        self.got_move = True
                 else:
                     self.got_move = False
         else:

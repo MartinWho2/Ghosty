@@ -123,8 +123,8 @@ class Game:
         self.tiles = {"fantom": load_tile_set(tiles_file, self.size_world, dark=True),
                       "player": load_tile_set(tiles_file, self.size_world)}
         self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
-        self.bg_img = pygame.transform.scale(pygame.image.load("media/background.png"),self.surface.get_size())
-        self.bg_img.set_colorkey((0,0,0))
+        #self.bg_img = pygame.transform.scale2x(pygame.image.load("media/background.webp").convert())
+        #self.bg_img.set_colorkey((0,0,0))
         self.a_img = pygame.transform.scale(pygame.image.load("media/key_space.png").convert(), (16, 16))
         self.spawn_objects(self.level)
         # self.camera = pygame.camera.Camera(pygame.camera.list_cameras()[0])
@@ -162,7 +162,9 @@ class Game:
         """
         # dt = self.change_dt(dt)
         self.surface.fill(self.bg[self.moving_character])
-        # self.surface.blit(self.bg_img, (round(-self.camera_pos.x/ 2), round(-self.camera_pos.y / 2)))
+        t = pygame.time.get_ticks()
+        #self.surface.blit(self.bg_img, (round(-self.camera_pos.x / 2), round(-self.camera_pos.y / 2)))
+        print(pygame.time.get_ticks()-t)
         # self.surface.blit(self.bg_img,(0,0))
         # self.window.fill((0, 0, 0, 0))
         scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,

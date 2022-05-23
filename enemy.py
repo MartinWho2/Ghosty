@@ -23,6 +23,7 @@ class Enemy(Moving_sprite):
         self.speeds = {True: tile_factor/64, False: -tile_factor/64}
         self.heading_right = True
         self.limit_fall = len(self.tiles)*self.tile_factor+300
+        self.dead = False
 
     def move(self, dt):
         if self.move_bool:
@@ -46,3 +47,11 @@ class Enemy(Moving_sprite):
         self.fall(pygame.Vector2(0, 0), dt)
         if self.pos.y > self.limit_fall:
             self.kill()
+
+    def die(self):
+        if self.dead:
+            self.kill()
+        self.dead = True
+        self.image = pygame.transform.scale(pygame.image.load("media/enemy-fantome.png").convert_alpha(),
+                                            (round(self.image.get_width()*11/14),round(self.image.get_height()*8/7)))
+        self.images = {True: self.image, False: pygame.transform.flip(self.image, True, False)}
