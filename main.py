@@ -34,13 +34,12 @@ def main():
         if dt > 5:
             dt = 5
             # game.update_pressed_keys()
-        if not game.game_not_started:
-            if not game.press_start:
-                game.update(dt)
-            else:
-                game.menu(dt)
-        else:
+        if game.press_start:
+            game.menu(dt)
+        elif game.game_not_started:
             game.main_menu(dt)
+        else:
+            game.update(dt)
 
         display_fps(dt)
         pygame.display.flip()
@@ -104,7 +103,6 @@ def main():
                         if game.level_boxes_rects[i].collidepoint(e.pos):
                             game.load_new_level(i+1)
                             game.game_not_started = False
-                            game.press_start = True
             elif e.type == pygame.QUIT:
                 pygame.quit()
                 playing = False

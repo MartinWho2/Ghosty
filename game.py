@@ -18,8 +18,7 @@ from moving_platform import Moving_platform
 
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
-        self.game_not_started = True
-        self.press_start = False
+
 
         self.window = window
         with open("level_objects.json", "r") as f:
@@ -124,6 +123,8 @@ class Game:
         self.texts.add(press_w_text, press_q_text, press_q_text_2, use_arrows_text,
                        use_space_text, open_doors_text, use_bullets_text, use_platforms_text,
                        lever_platforms_text, be_careful_text, turrets_text, won_text, won_text_2)
+        self.game_not_started = True
+        self.press_start = False
 
     def change_dt(self, dt: float) -> float:
         """
@@ -164,6 +165,7 @@ class Game:
         if self.player.rect.colliderect(self.cup.rect):
             try:
                 self.load_new_level(self.level+1)
+
             except:
                 self.game_not_started = True
         for platform in self.platform_sprites:
@@ -398,4 +400,5 @@ class Game:
         self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
         self.shot = 0
         self.spawn_objects(self.level)
+        self.press_start = True
 
