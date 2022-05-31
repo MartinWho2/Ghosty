@@ -19,15 +19,8 @@ from moving_platform import Moving_platform
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
         self.game_not_started = True
-        self.pause_menu = False
+        self.press_start = False
 
-        # Variables related to the menu
-        self.timer = 0
-        self.title_font = pygame.font.Font("media/fonts/pixel-font.ttf", 30)
-        self.text_white = self.title_font.render("Press space to start", True, "white")
-        self.text_dark = self.title_font.render("Press space to start", True, "black")
-
-        # pygame.camera.init()
         self.window = window
         with open("level_objects.json", "r") as f:
             self.level_objects = json.load(f)
@@ -40,8 +33,31 @@ class Game:
         self.zoom_max = 2
         self.surface = pygame.Surface((self.w, self.h))
 
+        # Variables related to the menu
+        self.timer = 0
+        self.title_font = pygame.font.Font("media/fonts/pixel-font.ttf", 40)
+        self.text_white = self.title_font.render("Press space to start", True, "white")
+        self.text_dark = self.title_font.render("Press space to start", True, "black")
+        self.level_box = pygame.transform.scale(pygame.image.load("media/level choose.png").convert(),(round(self.w/9),
+                                                                                                       round(self.h/5)))
+        self.level_boxes_rects = []
+        for row in range(2):
+            for column in range(4):
+                self.level_boxes_rects.append(pygame.rect.Rect(round(self.w/9+column*self.w/4.5),
+                                                               round(self.h/5+row*self.h/2.5),
+                                                               self.level_box.get_width(),self.level_box.get_height()
+                                                               ))
+        self.level_page = 0
+        self.numbers_in_text = []
+        self.numbers_in_text_rect = []
+        for i in range(10):
+            number = pygame.transform.scale(self.title_font.render(str(i), True, "white"),
+                                            (round(self.w/9), round(self.h/5)))
+            self.numbers_in_text.append(number)
+
+        # pygame.camera.init()
         self.map = create_map(self.level)
-        self.cups = pygame.sprite.Group()
+        self.cup = pygame.sprite.Sprite()
         self.object_sprites = pygame.sprite.Group()
         self.doors_sprites = pygame.sprite.Group()
         self.platform_sprites = pygame.sprite.Group()
@@ -50,6 +66,21 @@ class Game:
         self.towers = pygame.sprite.Group()
         self.player_sprite = pygame.sprite.Group()
         self.texts = pygame.sprite.Group()
+
+        self.can_push_button = False
+        self.buttons_pushable = {}
+        self.keys: dict = {}
+        self.characters = ["player", "fantom"]
+        self.load_new_level(self.level)
+
+        self.timer_characters: float = 0.0
+
+        tiles_file = "media/grass-tileset.png"
+        # tiles_file = "media/dirt-tileset.png"
+        self.tiles = {"fantom": load_tile_set(tiles_file, self.size_world, dark=True),
+                      "player": load_tile_set(tiles_file, self.size_world)}
+        self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
+        self.a_img = pygame.transform.scale(pygame.image.load("media/key_space.png").convert(), (16, 16))
 
         press_w_text = Text_sprite("media/fonts/pixel-font.ttf", "Press SPACE to shoot a bullet",
                                    round(self.size_world / 6.4),
@@ -94,52 +125,6 @@ class Game:
                        use_space_text, open_doors_text, use_bullets_text, use_platforms_text,
                        lever_platforms_text, be_careful_text, turrets_text, won_text, won_text_2)
 
-        self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite],
-                                     [self.doors_sprites, self.platform_sprites, self.towers], [self.enemies],
-                                     self.level_objects[str(self.level)]["Spawn"])
-        self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
-
-        self.can_push_button = False
-        self.buttons_pushable = {}
-        self.keys: dict = {}
-        self.characters = ["player", "fantom"]
-        self.characters_class: dict = {"player": self.player, "fantom": self.player.fantom}
-        self.moving_character: str = self.characters[0]
-        self.timer_characters: float = 0.0
-        self.tiles: dict = {
-            "fantom": {"1": pygame.transform.scale(pygame.image.load("tiles/fantom/up.png").convert_alpha(),
-                                                   (self.size_world, self.size_world)),
-                       "2": pygame.transform.scale(pygame.image.load("tiles/fantom/mid.png").convert(),
-                                                   (self.size_world, self.size_world)),
-                       },
-            "player": {"1": pygame.transform.scale(pygame.image.load("tiles/player/up.png").convert_alpha(),
-                                                   (self.size_world, self.size_world)),
-                       "2": pygame.transform.scale(pygame.image.load("tiles/player/mid.png").convert_alpha(),
-                                                   (self.size_world, self.size_world)),
-                       }
-        }
-        tiles_file = "media/grass-tileset.png"
-        tiles_file = "media/dirt-tileset.png"
-        self.tiles = {"fantom": load_tile_set(tiles_file, self.size_world, dark=True),
-                      "player": load_tile_set(tiles_file, self.size_world)}
-        self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
-        #self.bg_img = pygame.transform.scale2x(pygame.image.load("media/background.webp").convert())
-        #self.bg_img.set_colorkey((0,0,0))
-        self.a_img = pygame.transform.scale(pygame.image.load("media/key_space.png").convert(), (16, 16))
-        self.spawn_objects(self.level)
-        # self.camera = pygame.camera.Camera(pygame.camera.list_cameras()[0])
-        # self.camera.start()
-        self.shot = 0
-
-    def menu(self, dt: float) -> None:
-        self.timer += dt
-        self.timer %= 60
-        self.window.fill("black")
-        # self.window.blit(pygame.transform.scale(self.player.image, (256, 256)), (130, 130))
-        if self.timer < 30:
-            # self.window.blit(self.text_dark, get_corner((0,0),self.text_dark.get_size(),(self.w,self.h)))
-            self.window.blit(self.text_white, get_corner((0,0),self.text_white.get_size(),(self.w,self.h)))
-
     def change_dt(self, dt: float) -> float:
         """
         Readjusts the value of dt if the game needs to be slowed or accelerated
@@ -162,9 +147,7 @@ class Game:
         """
         # dt = self.change_dt(dt)
         self.surface.fill(self.bg[self.moving_character])
-        t = pygame.time.get_ticks()
         #self.surface.blit(self.bg_img, (round(-self.camera_pos.x / 2), round(-self.camera_pos.y / 2)))
-        print(pygame.time.get_ticks()-t)
         # self.surface.blit(self.bg_img,(0,0))
         # self.window.fill((0, 0, 0, 0))
         scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
@@ -178,6 +161,11 @@ class Game:
             fall = False
         self.player.move(self.get_input_for_movement(), self.characters_class[self.moving_character], dt,
                          self.camera_pos, fall=fall)
+        if self.player.rect.colliderect(self.cup.rect):
+            try:
+                self.load_new_level(self.level+1)
+            except:
+                self.game_not_started = True
         for platform in self.platform_sprites:
             platform.move(dt)
         for bullet in self.bullets:
@@ -216,7 +204,7 @@ class Game:
     def blit_everything(self):
 
         groups = [self.object_sprites, self.doors_sprites, self.towers, self.enemies,
-                  self.bullets, self.texts, self.platform_sprites, self.player_sprite, self.cups]
+                  self.bullets, self.texts, self.platform_sprites, self.player_sprite]
 
         # mask_sprite = self.player.mask.to_surface()
         # self.surface.blit(mask_sprite,
@@ -224,6 +212,7 @@ class Game:
         for group in groups:
             for sprite in group:
                 self.blit_sprite(sprite)
+        self.blit_sprite(self.cup)
         for item in self.buttons_pushable.items():
             if item[1]:
                 self.surface.blit(self.a_img, (self.player.fantom.rect.centerx - self.a_img.get_width() / 2 -
@@ -233,18 +222,11 @@ class Game:
         if self.zoom_coeff == 1:
             self.window.blit(self.surface, (0, 0))
         else:
-            t1 = pygame.time.get_ticks()
             new_surf = pygame.Surface((math.ceil(self.w / self.zoom_coeff), math.ceil(self.h / self.zoom_coeff)))
-            t2 = pygame.time.get_ticks()
             pos_up_left = [(i - j) / 2 for i, j in zip(new_surf.get_size(), self.surface.get_size())]
-            t3 = pygame.time.get_ticks()
             new_surf.blit(self.surface, pos_up_left)
-            t4 = pygame.time.get_ticks()
             new_surf = pygame.transform.scale(new_surf, self.surface.get_size())
-            t5 = pygame.time.get_ticks()
             self.window.blit(new_surf, (0, 0))
-            t6 = pygame.time.get_ticks()
-            print(t2-t1,t3-t2,t4-t3,t5-t4,t6-t5)
 
     def change_character(self, dt: float) -> None:
         """
@@ -339,11 +321,10 @@ class Game:
             self.spawn_button(platform[-2], [platform_sprite], lever=True)
 
     def spawn_cup(self, pos):
-        cup = pygame.sprite.Sprite(self.cups)
         size = round(self.size_world / 2)
-        cup.image = pygame.transform.scale(pygame.image.load("media/cup.png").convert_alpha(), (size, size))
-        cup.rect = cup.image.get_rect()
-        cup.rect.topleft = (int(pos[0]) * self.size_world, int(pos[1]) * self.size_world)
+        self.cup.image = pygame.transform.scale(pygame.image.load("media/cup.png").convert_alpha(), (size, size))
+        self.cup.rect = self.cup.image.get_rect()
+        self.cup.rect.topleft = (int(pos[0]) * self.size_world, int(pos[1]) * self.size_world)
 
     def spawn_objects(self, level: int) -> None:
         objects = self.level_objects[str(level)]
@@ -379,3 +360,42 @@ class Game:
             print(key, pressed[key])
             self.keys[key] = pressed[key]
         print("Keys after : ", self.keys)
+
+    def menu(self, dt: float) -> None:
+        self.timer += dt
+        self.timer %= 60
+        self.window.fill("black")
+        # self.window.blit(pygame.transform.scale(self.player.image, (256, 256)), (130, 130))
+        if self.timer < 30:
+            # self.window.blit(self.text_dark, get_corner((0,0),self.text_dark.get_size(),(self.w,self.h)))
+            self.window.blit(self.text_white, get_corner((0,0),self.text_white.get_size(),(self.w,self.h)))
+
+    def main_menu(self, dt):
+        self.window.fill("black")
+        for row in range(2):
+            for column in range(4):
+                pos = (round(self.w/9+column*self.w/4.5),round(self.h/5+row*self.h/2.5))
+                self.window.blit(self.level_box,pos)
+                tile_n = 4*row+column+1
+                self.window.blit(self.numbers_in_text[tile_n],pos)
+
+    def load_new_level(self, level_nb: int):
+        self.level = level_nb
+        self.map = create_map(level_nb)
+        self.object_sprites.empty()
+        self.doors_sprites.empty()
+        self.platform_sprites.empty()
+        self.enemies.empty()
+        self.bullets.empty()
+        self.towers.empty()
+        self.player_sprite.empty()
+        self.texts.empty()
+        self.player: Player = Player(self.map, self.size_world, self.surface, [self.player_sprite],
+                                     [self.doors_sprites, self.platform_sprites, self.towers], [self.enemies],
+                                     self.level_objects[str(self.level)]["Spawn"])
+        self.characters_class: dict = {"player": self.player, "fantom": self.player.fantom}
+        self.moving_character = "player"
+        self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
+        self.shot = 0
+        self.spawn_objects(self.level)
+

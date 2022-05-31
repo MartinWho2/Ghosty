@@ -54,4 +54,5 @@ class Enemy(Moving_sprite):
         self.dead = True
         self.image = pygame.transform.scale(pygame.image.load("media/enemy-fantome.png").convert_alpha(),
                                             (round(self.image.get_width()*11/14),round(self.image.get_height()*8/7)))
+        self.image.set_alpha(150)
         self.images = {True: self.image, False: pygame.transform.flip(self.image, True, False)}

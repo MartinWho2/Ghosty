@@ -29,26 +29,25 @@ def main():
             print("WTF DUDE")
             dt = (time.time() - before) * fps
         before = time.time()
-        dt = round(dt,4)
+        dt = round(dt, 4)
         # Compensate not to skip too much frames
         if dt > 5:
             dt = 5
             # game.update_pressed_keys()
         if not game.game_not_started:
-            if not game.pause_menu:
+            if not game.press_start:
                 game.update(dt)
             else:
-                # pause menu
-                pass
+                game.menu(dt)
         else:
-            game.menu(dt)
+            game.main_menu(dt)
 
         display_fps(dt)
         pygame.display.flip()
         for e in pygame.event.get():
-            if not game.game_not_started and not game.pause_menu:
-                if e.type == pygame.KEYDOWN:
-                    game.keys[e.key] = True
+            if e.type == pygame.KEYDOWN:
+                game.keys[e.key] = True
+                if not game.game_not_started and not game.press_start:
                     if e.key == pygame.K_q:
                         # Change Character
                         game.characters_class[game.moving_character].image = game.characters_class[
@@ -64,14 +63,6 @@ def main():
                             door.change_image(game.moving_character)
                         for platform in game.platform_sprites:
                             platform.change_image(game.moving_character)
-                    if e.key == pygame.K_w and game.moving_character == "player":
-                        # Jump
-                        game.player.jump(dt)
-                elif e.type == pygame.KEYUP:
-                    game.keys[e.key] = False
-                    if e.key == pygame.K_w and game.moving_character == "player":
-                        if game.player.is_jumping and game.player.speed.y < 0:
-                            game.player.speed.y *= 0.5
                     elif e.key == pygame.K_SPACE:
                         if game.moving_character == "player":
                             game.player.shoot([game.bullets], [game.doors_sprites, game.object_sprites, game.enemies])
@@ -79,7 +70,27 @@ def main():
                         if game.moving_character == "fantom" and game.can_push_button and \
                                 game.buttons_pushable[game.can_push_button]:
                             game.can_push_button.activate(game.moving_character)
-                elif e.type == pygame.MOUSEWHEEL:
+                    elif e.key == pygame.K_w and game.moving_character == "player":
+                        # Jump
+                        game.player.jump(dt)
+                    elif e.key == pygame.K_p:
+                        game.load_new_level(2)
+                    elif e.key == pygame.K_ESCAPE:
+                        game.game_not_started = True
+                elif game.game_not_started:
+                    if e.key == pygame.K_ESCAPE:
+                        game.game_not_started = False
+                elif game.press_start:
+                    if e.key == pygame.K_SPACE:
+                        game.press_start = False
+            elif e.type == pygame.KEYUP:
+                game.keys[e.key] = False
+                if not game.game_not_started and not game.press_start:
+                    if e.key == pygame.K_w and game.moving_character == "player":
+                        if game.player.is_jumping and game.player.speed.y < 0:
+                            game.player.speed.y *= 0.5
+            elif e.type == pygame.MOUSEWHEEL:
+                if not game.game_not_started and not game.press_start:
                     if game.can_zoom:
                         game.zoom_coeff += e.y/5
                         if game.zoom_coeff < 1:
@@ -87,11 +98,14 @@ def main():
                         elif game.zoom_coeff > game.zoom_max:
                             game.zoom_coeff = game.zoom_max
 
-            elif game.game_not_started:
-                if e.type == pygame.KEYUP:
-                    if e.key == pygame.K_SPACE:
-                        game.game_not_started = False
-            if e.type == pygame.QUIT:
+            elif e.type == pygame.MOUSEBUTTONDOWN:
+                if game.game_not_started:
+                    for i in range(8):
+                        if game.level_boxes_rects[i].collidepoint(e.pos):
+                            game.load_new_level(i+1)
+                            game.game_not_started = False
+                            game.press_start = True
+            elif e.type == pygame.QUIT:
                 pygame.quit()
                 playing = False
                 sys.exit()
