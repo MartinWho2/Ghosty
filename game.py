@@ -72,7 +72,7 @@ class Game:
         self.timer_characters: float = 0.0
 
         tiles_file = "media/grass-tileset.png"
-        # tiles_file = "media/dirt-tileset.png"
+        tiles_file = "media/dirt-tileset.png"
         self.tiles = {"fantom": load_tile_set(tiles_file, self.size_world, dark=True),
                       "player": load_tile_set(tiles_file, self.size_world)}
         self.bg: dict = {"player": (25, 78, 84), "fantom": (15, 52, 43)}
@@ -322,7 +322,7 @@ class Game:
 
     def spawn_objects(self, level: int) -> None:
         objects = self.level_objects[str(level)]
-        for pos in objects["Enemies"]:
+        for pos in objects["Ennemies"]:
             self.spawn_enemy(pos)
         for pos in objects["Doors"]:
             button_pos = pos[0]

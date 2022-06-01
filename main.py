@@ -3,6 +3,7 @@ import time
 import pygame
 import sys
 from game import Game
+from map_functions import get_tile_with_coord
 
 pygame.init()
 w, h = 576, 576

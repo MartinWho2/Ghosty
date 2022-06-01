@@ -38,11 +38,11 @@ def create_map(level: int) -> list:
     return new_map
 
 
-def upleft_if_centered(pos_big:tuple[int,int], size_obj:tuple[int,int], size_big:tuple[int,int], rounding=True):
-    x = (size_big[0]-size_obj[0]) / 2 - pos_big[0]
+def upleft_if_centered(pos_big: tuple[int, int], size_obj: tuple[int, int], size_big: tuple[int, int], rounding=True):
+    x = (size_big[0] - size_obj[0]) / 2 - pos_big[0]
     y = (size_big[1] - size_obj[1]) / 2 - pos_big[1]
     if rounding:
-        x,y = round(x),round(y)
+        x, y = round(x), round(y)
     return [x, y]
 
 
@@ -166,7 +166,6 @@ def load_tile_set(filename, final_size, size=16, dark=False):
         create_darker_image(tile_set)
     if tile_set.get_width() / 5 == tile_set.get_height() / 3 == size:
         tiles = {}
-        char_to_hex = {10: "a", 11: "b", 12: "c", 13: "d"}
         for i in range(1, 14):
             tile = pygame.surface.Surface((size, size), pygame.SRCALPHA)
             x, y = (i - 1) % 5 * size, math.floor((i - 1) / 5) * size
@@ -177,3 +176,13 @@ def load_tile_set(filename, final_size, size=16, dark=False):
     else:
         print("The tileset is not the correct format")
         raise FileNotFoundError
+
+
+def get_tile_with_coord(coord: list[int, int], size_world: int) -> list[int, int]:
+    """
+    Returns the coordinate of a specific point
+    :param coord: The position in the pixel grid
+    :param size_world: The number of pixels in a coordinate
+    :return:
+    """
+    return [math.floor(coord[0] / size_world), math.floor(coord[1] / size_world)]

@@ -2,7 +2,7 @@ import math
 
 import pygame
 from moving_platform import Moving_platform
-from map_functions import check_area_around
+from map_functions import check_area_around, get_tile_with_coord
 
 
 class Moving_sprite(pygame.sprite.Sprite):
@@ -124,6 +124,11 @@ class Moving_sprite(pygame.sprite.Sprite):
         return size[1] - found
 
     def fall(self, acceleration, dt):
+        # tile_pos_1 = get_tile_with_coord([self.rect.x, self.rect.bottom+1],self.tile_factor)
+        # tile_pos_2 = get_tile_with_coord([self.rect.right, self.rect.bottom+1],self.tile_factor)
+        # if tile_pos_1[1] < 0 or ((tile_pos_1[0] < 0 or self.tiles[tile_pos_1[1]][tile_pos_1[0]] == 0) and
+                                 #(tile_pos_2[0] < 0 or self.tiles[tile_pos_2[1]][tile_pos_2[0]] == 0)):
+            #print("in the air")
         self.pos.y += 0.5 * (acceleration.y + self.gravity) * (dt ** 2) + self.speed.y * dt
         self.speed.y += (acceleration.y + self.gravity) * dt
         # self.speed.y = limit_speed(self.speed.y, self.max_speed)
