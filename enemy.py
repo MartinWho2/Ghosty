@@ -33,7 +33,7 @@ class Enemy(Moving_sprite):
                     self.mask = self.masks[self.heading_right]
                     self.flip_mask = 0
             self.counter += round(abs(self.speed.x * dt), 5)
-            hits = self.check_collision()
+            hits = self.check_collision(dt)
             if self.counter >= self.limit or hits:
                 if hits:
                     self.collide(hits, False)

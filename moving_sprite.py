@@ -34,7 +34,7 @@ class Moving_sprite(pygame.sprite.Sprite):
     def collide_with_mask(self, mask, pos_mask):
         return self.mask.overlap_mask(mask, (pos_mask[0] - self.rect.x, pos_mask[1] - self.rect.y))
 
-    def check_collision(self, tiles=True, sprite_groups="normal") -> list[pygame.mask.Mask]:
+    def check_collision(self, dt, tiles=True, sprite_groups="normal") -> list[pygame.mask.Mask]:
         if sprite_groups == "normal":
             sprite_groups = self.sprite_elements
         get_hits = []
@@ -64,8 +64,8 @@ class Moving_sprite(pygame.sprite.Sprite):
                         self.on_platform = element
                         self.was_on_platform = 0
 
-        self.was_on_platform += 1
-        if self.was_on_platform > 15:
+        self.was_on_platform += dt
+        if self.was_on_platform > 20:
             self.on_platform = False
         return get_hits
 
@@ -128,6 +128,6 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.speed.y += (acceleration.y + self.gravity) * dt
         # self.speed.y = limit_speed(self.speed.y, self.max_speed)
         self.rect.y = round(self.pos.y)
-        hits = self.check_collision()
+        hits = self.check_collision(dt)
         self.collide(hits, True)
         self.rect.y = round(self.pos.y)

@@ -18,8 +18,6 @@ from moving_platform import Moving_platform
 
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
-
-
         self.window = window
         with open("level_objects.json", "r") as f:
             self.level_objects = json.load(f)
@@ -44,8 +42,7 @@ class Game:
             for column in range(4):
                 self.level_boxes_rects.append(pygame.rect.Rect(round(self.w/9+column*self.w/4.5),
                                                                round(self.h/5+row*self.h/2.5),
-                                                               self.level_box.get_width(),self.level_box.get_height()
-                                                               ))
+                                                               self.level_box.get_width(),self.level_box.get_height()))
         self.level_page = 0
         self.numbers_in_text = []
         self.numbers_in_text_rect = []
@@ -148,7 +145,7 @@ class Game:
         """
         # dt = self.change_dt(dt)
         self.surface.fill(self.bg[self.moving_character])
-        #self.surface.blit(self.bg_img, (round(-self.camera_pos.x / 2), round(-self.camera_pos.y / 2)))
+        # self.surface.blit(self.bg_img, (round(-self.camera_pos.x / 2), round(-self.camera_pos.y / 2)))
         # self.surface.blit(self.bg_img,(0,0))
         # self.window.fill((0, 0, 0, 0))
         scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
@@ -157,15 +154,11 @@ class Game:
         self.camera_pos += scroll
         self.draw_map()
         self.deal_with_particles()
-        fall = True
-        if self.moving_character == "fantom":
-            fall = False
         self.player.move(self.get_input_for_movement(), self.characters_class[self.moving_character], dt,
-                         self.camera_pos, fall=fall)
+                         self.camera_pos)
         if self.player.rect.colliderect(self.cup.rect):
             try:
                 self.load_new_level(self.level+1)
-
             except:
                 self.game_not_started = True
         for platform in self.platform_sprites:
@@ -176,8 +169,7 @@ class Game:
             person.move(dt)
         for tower in self.towers:
             tower.waiting(dt)
-        if self.player.pos.y > 2000:
-            # pygame.image.save(self.camera.get_image(), "ITS_YOU.png")
+        if self.player.pos.y > self.size_world*30:
             self.player.die()
             scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
                                     self.player.pos.y + self.player.rect.h / 2 - self.h / 2 - self.camera_pos.y)
@@ -314,8 +306,8 @@ class Game:
         self.spawn_button(lever, [tower], lever=True)
 
     def spawn_platforms(self, platform):
-        start_pos = ((int(platform[0][0]) + 1) * self.size_world, (int(platform[0][1]) + 1) * self.size_world)
-        end_pos = ((int(platform[1][0]) + 1) * self.size_world, (int(platform[1][1]) + 1) * self.size_world)
+        start_pos = (int(platform[0][0]) * self.size_world, int(platform[0][1]) * self.size_world)
+        end_pos = (int(platform[1][0]) * self.size_world, int(platform[1][1]) * self.size_world)
         platform_sprite = Moving_platform(start_pos, end_pos, self.size_world,
                                           always_moving=False if platform[-1] == "lever" else True)
         self.platform_sprites.add(platform_sprite)

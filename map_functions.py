@@ -67,7 +67,7 @@ def get_same_neighbours_with_possibilities(neighbours):
             return correct
     print(f"The tile is not correct. Neighbors : {neighbours}")
     # raise WindowsError
-    return "7"
+    return 7
 
 
 def get_neighbour_tiles(matrix: list, index_tile: tuple):

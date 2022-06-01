@@ -32,7 +32,7 @@ def main():
         dt = round(dt, 4)
         # Compensate not to skip too much frames
         if dt > 5:
-            dt = 5
+            dt = 5.0
             # game.update_pressed_keys()
         if game.press_start:
             game.menu(dt)

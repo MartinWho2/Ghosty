@@ -19,7 +19,7 @@ class Moving_platform(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.pos = pygame.Vector2(start_pos[0], start_pos[1])
         self.rect = self.image.get_rect()
-        self.rect.bottomleft = start_pos
+        self.rect.topleft = start_pos
         self.start_pos = start_pos
         self.end_pos = end_pos
         self.velocity = size_world/64
@@ -29,15 +29,15 @@ class Moving_platform(pygame.sprite.Sprite):
         self.moving = pygame.Vector2(0, 0)
         self.got_move = False
 
-    def move(self, dt, get_move=False):
+    def move(self, dt: float, get_move=False):
         if self.activated:
             toward = self.end_pos
             if not self.heading_to_end:
                 toward = self.start_pos
-            self.moving.x, self.moving.y = toward[0] - self.rect.x, toward[1] - self.rect.bottom
+            self.moving.x, self.moving.y = toward[0] - self.rect.x, toward[1] - self.rect.y
             if self.moving.length() <= self.velocity*dt:
                 if not self.got_move:
-                    self.rect.bottomleft = toward
+                    self.rect.topleft = toward
                     if not self.always_moving:
                         self.activated = False
                     self.heading_to_end = not self.heading_to_end
@@ -50,7 +50,7 @@ class Moving_platform(pygame.sprite.Sprite):
                 if not self.got_move:
                     self.pos.x += self.moving.x
                     self.pos.y += self.moving.y
-                    self.rect.x, self.rect.bottom = round(self.pos.x), round(self.pos.y)
+                    self.rect.x, self.rect.y = round(self.pos.x), round(self.pos.y)
                     if get_move:
                         self.got_move = True
                 else:

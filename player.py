@@ -58,14 +58,14 @@ class Player(Moving_sprite):
         self.enemies = enemies
 
     def move(self, acceleration: pygame.Vector2, moving_object: Moving_sprite, dt: float,
-             camera_pos: pygame.Vector2, fall=True) -> None:
+             camera_pos: pygame.Vector2) -> None:
         """
         Moves the player or the fantom with a given acceleration
+        Also follows the movements of a platform if on it
         :param acceleration: Acceleration of the moving object
         :param moving_object: Player or Fantom
         :param dt: Value to compensate a hypothetical FPS loss
         :param camera_pos: position of the camera
-        :param fall: Does the player fall
         :return: None
         """
         if self.flip_mask:
@@ -73,7 +73,7 @@ class Player(Moving_sprite):
             if self.flip_mask > 15:
                 self.mask = self.masks[self.heading_right]
                 self.flip_mask = 0
-        if fall:
+        if moving_object.__class__ == Player:
             if self.on_platform:
                 self.pos += self.on_platform.move(dt, get_move=True)
                 self.rect.x, self.rect.y = round(self.pos.x), round(self.pos.y)
@@ -94,10 +94,10 @@ class Player(Moving_sprite):
                     self.flip_mask = 1
                 self.heading_right = False
 
-            if self.check_collision(tiles=False, sprite_groups=self.enemies):
+            if self.check_collision(dt, tiles=False, sprite_groups=self.enemies):
                 self.die()
 
-            hits = self.check_collision()
+            hits = self.check_collision(dt)
             self.collide(hits, False)
 
             # !!!! THIS IS REALLY BAD BUT I DON'T KNOW HOW ELSE I COULD DO IT
@@ -113,6 +113,10 @@ class Player(Moving_sprite):
             self.calculate_distance(dt, camera_pos)
 
     def die(self):
+        """
+        The player goes to spawn position
+        :return: None
+        """
         self.rect.center = self.SPAWN_POS
         self.pos.x, self.pos.y = self.rect.x, self.rect.y
         self.speed.x, self.speed.y = 0, 0
