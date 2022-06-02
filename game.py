@@ -150,7 +150,7 @@ class Game:
         # self.window.fill((0, 0, 0, 0))
         scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
                                 self.player.pos.y + self.player.rect.h / 2 - self.h / 2 - self.camera_pos.y)
-        scroll /= 8
+        scroll /= 40
         self.camera_pos += scroll
         self.draw_map()
         self.deal_with_particles()
@@ -322,7 +322,7 @@ class Game:
 
     def spawn_objects(self, level: int) -> None:
         objects = self.level_objects[str(level)]
-        for pos in objects["Ennemies"]:
+        for pos in objects["Enemies"]:
             self.spawn_enemy(pos)
         for pos in objects["Doors"]:
             button_pos = pos[0]

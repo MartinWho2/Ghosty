@@ -70,7 +70,7 @@ class Player(Moving_sprite):
         """
         if self.flip_mask:
             self.flip_mask += dt
-            if self.flip_mask > 15:
+            if self.flip_mask > 0:
                 self.mask = self.masks[self.heading_right]
                 self.flip_mask = 0
         if moving_object.__class__ == Player:
@@ -81,15 +81,21 @@ class Player(Moving_sprite):
         acceleration.x += moving_object.speed.x * self.friction
         moving_object.pos.x += 0.5 * acceleration.x * (dt ** 2) + moving_object.speed.x * dt
         moving_object.speed.x += acceleration.x * dt
+        if abs(moving_object.speed.x) < 0.005:
+            pass
+            #moving_object.speed.x = 0
         moving_object.rect.x = round(moving_object.pos.x)
+        # Deals if the player is heading to the right or left
         if moving_object.__class__ == Player:
-            if self.speed.x > 0:
+            if self.speed.x > 0 and not self.heading_right:
                 self.image = self.images[True]
+                self.image_copy =self.image.copy()
                 if not self.flip_mask:
                     self.flip_mask = 1
                 self.heading_right = True
-            elif self.speed.x < 0:
+            elif self.speed.x < 0 and self.heading_right:
                 self.image = self.images[False]
+                self.image_copy = self.image.copy()
                 if not self.flip_mask:
                     self.flip_mask = 1
                 self.heading_right = False
