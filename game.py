@@ -1,3 +1,4 @@
+import ssl
 import time
 
 import pygame
@@ -122,6 +123,7 @@ class Game:
                        lever_platforms_text, be_careful_text, turrets_text, won_text, won_text_2)
         self.game_not_started = True
         self.press_start = False
+        self.camera_follow_player = True
 
     def change_dt(self, dt: float) -> float:
         """
@@ -148,9 +150,12 @@ class Game:
         # self.surface.blit(self.bg_img, (round(-self.camera_pos.x / 2), round(-self.camera_pos.y / 2)))
         # self.surface.blit(self.bg_img,(0,0))
         # self.window.fill((0, 0, 0, 0))
-        scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
+        if self.camera_follow_player:
+            scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
                                 self.player.pos.y + self.player.rect.h / 2 - self.h / 2 - self.camera_pos.y)
-        scroll /= 40
+            scroll /= 20
+        else:
+            scroll = pygame.Vector2(0,0)
         self.camera_pos += scroll
         self.draw_map()
         self.deal_with_particles()
@@ -292,8 +297,7 @@ class Game:
         return button
 
     def spawn_door(self, door):
-        pos = [round((door[0][0] + 0.5) * self.size_world), (door[0][1] + 1) * self.size_world]
-        door = Door(door[1], pos, self.moving_character, self.size_world)
+        door = Door(door, self.size_world)
         door.add(self.doors_sprites)
         return door
 
@@ -324,13 +328,12 @@ class Game:
         objects = self.level_objects[str(level)]
         for pos in objects["Enemies"]:
             self.spawn_enemy(pos)
-        for pos in objects["Doors"]:
+        for pos in objects["Door"]:
             button_pos = pos[0]
             doors = pos[1]
-            doors_class = []
-            for door in doors:
-                doors_class.append(self.spawn_door(door))
-            self.spawn_button(button_pos, doors_class, lever=True)
+            print(doors)
+            door = self.spawn_door(doors)
+            self.spawn_button(button_pos, [door], lever=True)
         for tower in objects["Towers"]:
             lever_pos = False
             if tower[-1] == "lever":

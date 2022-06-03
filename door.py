@@ -1,26 +1,38 @@
 import pygame
 from typing import Union
-
+from map_functions import create_darker_image
 
 class Door(pygame.sprite.Sprite):
-    def __init__(self, image: str, pos: Union[tuple, list], moving_character: str, size_world: int):
+    def __init__(self, pos_up_and_down: Union[tuple, list], size_world: int):
         super().__init__()
         self.open = False
         self.img_size = round(size_world / 2)
         self.empty_surface = pygame.surface.Surface((self.img_size, self.img_size), pygame.SRCALPHA)
         self.names = {"top": "door_up", "mid": "door_mid", "bot": "door_up"}
-        self.images = {"player": {False: pygame.transform.scale(pygame.image.load(
-            f"tiles/player/{self.names[image]}.png").convert_alpha(), (self.img_size, self.img_size)),
+        init_images = {"top":pygame.transform.scale(pygame.image.load(
+            f"tiles/player/door_up.png").convert_alpha(), (self.img_size, self.img_size)),
+                       "mid":pygame.transform.scale(pygame.image.load(
+                           f"tiles/player/door_mid.png").convert_alpha(), (self.img_size, self.img_size)),
+                       "bot":pygame.transform.scale(pygame.image.load(
+                           f"tiles/player/door_up.png").convert_alpha(), (self.img_size, self.img_size))
+                       }
+        init_images["bot"] = pygame.transform.flip(init_images["bot"],False,True)
+        self.pos_up = pos_up_and_down[0]
+        self.pos_down = pos_up_and_down[1]
+        if self.pos_up[0] - self.pos_down[0] == 0:
+            mids = int((self.pos_up[1] - self.pos_down[1]) * 2 - 1)
+            print(mids)
+            self.image = pygame.surface.Surface((self.img_size, self.img_size * (mids + 2)), pygame.SRCALPHA)
+            self.image.blit(init_images["top"],(0,0))
+            for i in range(mids):
+                self.image.blit(init_images["mid"],(0,self.img_size*(i+1)))
+            self.image.blit(init_images["bot"],(0,self.img_size*(mids+1)))
+        self.images = {"player": {False: self.image.copy(),
                                   True: self.empty_surface},
-                       "fantom": {False: pygame.transform.scale(pygame.image.load(
-                           f"tiles/fantom/{self.names[image]}.png").convert_alpha(), (self.img_size, self.img_size)),
+                       "fantom": {False: create_darker_image(self.image),
                                   True: self.empty_surface}}
-        if image == "bot":
-            self.images["player"][False] = pygame.transform.flip(self.images["player"][False], False, True)
-            self.images["fantom"][False] = pygame.transform.flip(self.images["fantom"][False], False, True)
-        self.image = self.images[moving_character][self.open]
         self.rect = self.image.get_rect()
-        self.rect.midbottom = pos
+        self.rect.midtop = (self.pos_up[0]*size_world,self.pos_up[1]*size_world-self.img_size)
         self.mask = pygame.mask.from_surface(self.image)
 
     def activate(self, moving_character):

@@ -74,7 +74,7 @@ def main():
                         # Jump
                         game.player.jump(dt)
                     elif e.key == pygame.K_p:
-                        game.load_new_level(2)
+                        game.camera_follow_player = not game.camera_follow_player
                     elif e.key == pygame.K_ESCAPE:
                         game.game_not_started = True
                 elif game.game_not_started:
