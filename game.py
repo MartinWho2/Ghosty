@@ -292,7 +292,7 @@ class Game:
     def spawn_button(self, button_pos: Union[list, tuple], doors: list[Union[Door, Moving_platform, Auto_Tower]],
                      lever=False) -> pygame.sprite:
         pos = [round((button_pos[0] + 0.5) * self.size_world), (button_pos[1] + 1) * self.size_world]
-        button = Button(pos, doors, self.size_world, lever=lever)
+        button = Button(pos, doors, self.size_world,self.player, lever=lever)
         button.add(self.object_sprites)
         return button
 
@@ -328,10 +328,9 @@ class Game:
         objects = self.level_objects[str(level)]
         for pos in objects["Enemies"]:
             self.spawn_enemy(pos)
-        for pos in objects["Door"]:
+        for pos in objects["Doors"]:
             button_pos = pos[0]
             doors = pos[1]
-            print(doors)
             door = self.spawn_door(doors)
             self.spawn_button(button_pos, [door], lever=True)
         for tower in objects["Towers"]:

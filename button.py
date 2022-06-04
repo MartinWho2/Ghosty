@@ -4,7 +4,7 @@ from map_functions import create_darker_image
 
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, pos: Union[tuple, list, pygame.Vector2], related: list, size_world: int, lever=False):
+    def __init__(self, pos: Union[tuple, list, pygame.Vector2], related: list, size_world: int,player, lever=False):
         """
         Initialises a button
         :param pos: Position of the button with left and bottom coordinates
@@ -40,6 +40,7 @@ class Button(pygame.sprite.Sprite):
             self.rect.centerx, self.rect.bottom = pos.x, pos.y
         self.related = related
         self.mask = pygame.mask.from_surface(self.image)
+        self.player = player
 
     def change_image(self, key: str) -> None:
         if self.lever[0]:
@@ -52,4 +53,4 @@ class Button(pygame.sprite.Sprite):
             self.lever[1] = (self.lever[1] + 1) % 2
         self.change_image(moving_character)
         for related in self.related:
-            related.activate(moving_character)
+            related.activate(moving_character, self.player)

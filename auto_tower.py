@@ -44,7 +44,7 @@ class Auto_Tower(pygame.sprite.Sprite):
         )
         self.bullets.add(bullet)
 
-    def activate(self, key):
+    def activate(self, key, player):
         self.activated = not self.activated
 
     def change_image(self, moving_character):

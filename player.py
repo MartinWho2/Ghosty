@@ -70,7 +70,7 @@ class Player(Moving_sprite):
         """
         if self.flip_mask:
             self.flip_mask += dt
-            if self.flip_mask > 0:
+            if self.flip_mask > 15:
                 self.mask = self.masks[self.heading_right]
                 self.flip_mask = 0
         if moving_object.__class__ == Player:

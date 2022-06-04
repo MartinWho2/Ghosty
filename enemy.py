@@ -23,7 +23,7 @@ class Enemy(Moving_sprite):
         self.speeds = {True: tile_factor/64, False: -tile_factor/64}
         self.heading_right = True
         self.limit_fall = len(self.tiles)*self.tile_factor+300
-        self.dead = False
+        self.dead = True
 
     def move(self, dt):
         if self.move_bool:
