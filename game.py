@@ -296,8 +296,8 @@ class Game:
         button.add(self.object_sprites)
         return button
 
-    def spawn_door(self, door):
-        door = Door(door, self.size_world)
+    def spawn_door(self, door,activated=True):
+        door = Door(door, self.size_world,activated)
         door.add(self.doors_sprites)
         return door
 
@@ -331,7 +331,10 @@ class Game:
         for pos in objects["Doors"]:
             button_pos = pos[0]
             doors = pos[1]
-            door = self.spawn_door(doors)
+            if pos[-1] != doors:
+                door = self.spawn_door(doors,activated=False)
+            else:
+                door = self.spawn_door(doors)
             self.spawn_button(button_pos, [door], lever=True)
         for tower in objects["Towers"]:
             lever_pos = False
