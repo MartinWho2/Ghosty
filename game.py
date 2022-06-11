@@ -1,6 +1,3 @@
-import ssl
-import time
-
 import pygame
 # import pygame.camera
 import json
@@ -19,6 +16,11 @@ from moving_platform import Moving_platform
 
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
+        self.shot = None
+        self.player = None
+        self.camera_pos = None
+        self.moving_character = None
+        self.characters_class = None
         self.window = window
         with open("level_objects.json", "r") as f:
             self.level_objects = json.load(f)
@@ -36,20 +38,21 @@ class Game:
         self.title_font = pygame.font.Font("media/fonts/pixel-font.ttf", 40)
         self.text_white = self.title_font.render("Press space to start", True, "white")
         self.text_dark = self.title_font.render("Press space to start", True, "black")
-        self.level_box = pygame.transform.scale(pygame.image.load("media/level choose.png").convert(),(round(self.w/9),
-                                                                                                       round(self.h/5)))
+        self.level_box = pygame.transform.scale(pygame.image.load("media/level choose.png").convert(),
+                                                (round(self.w / 9),
+                                                 round(self.h / 5)))
         self.level_boxes_rects = []
         for row in range(2):
             for column in range(4):
-                self.level_boxes_rects.append(pygame.rect.Rect(round(self.w/9+column*self.w/4.5),
-                                                               round(self.h/5+row*self.h/2.5),
-                                                               self.level_box.get_width(),self.level_box.get_height()))
+                self.level_boxes_rects.append(pygame.rect.Rect(round(self.w / 9 + column * self.w / 4.5),
+                                                               round(self.h / 5 + row * self.h / 2.5),
+                                                               self.level_box.get_width(), self.level_box.get_height()))
         self.level_page = 0
         self.numbers_in_text = []
         self.numbers_in_text_rect = []
         for i in range(10):
             number = pygame.transform.scale(self.title_font.render(str(i), True, "white"),
-                                            (round(self.w/9), round(self.h/5)))
+                                            (round(self.w / 9), round(self.h / 5)))
             self.numbers_in_text.append(number)
 
         # pygame.camera.init()
@@ -152,10 +155,10 @@ class Game:
         # self.window.fill((0, 0, 0, 0))
         if self.camera_follow_player:
             scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
-                                self.player.pos.y + self.player.rect.h / 2 - self.h / 2 - self.camera_pos.y)
+                                    self.player.pos.y + self.player.rect.h / 2 - self.h / 2 - self.camera_pos.y)
             scroll /= 20
         else:
-            scroll = pygame.Vector2(0,0)
+            scroll = pygame.Vector2(0, 0)
         self.camera_pos += scroll
         self.draw_map()
         self.deal_with_particles()
@@ -163,7 +166,7 @@ class Game:
                          self.camera_pos)
         if self.player.rect.colliderect(self.cup.rect):
             try:
-                self.load_new_level(self.level+1)
+                self.load_new_level(self.level + 1)
             except:
                 self.game_not_started = True
         for platform in self.platform_sprites:
@@ -174,8 +177,9 @@ class Game:
             person.move(dt)
         for tower in self.towers:
             tower.waiting(dt)
-        if self.player.pos.y > self.size_world*30:
+        if self.player.pos.y > self.size_world * 30:
             self.player.die()
+            self.load_new_level(self.level)
             scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
                                     self.player.pos.y + self.player.rect.h / 2 - self.h / 2 - self.camera_pos.y)
             self.camera_pos += scroll
@@ -217,7 +221,7 @@ class Game:
                 self.surface.blit(self.a_img, (self.player.fantom.rect.centerx - self.a_img.get_width() / 2 -
                                                round(self.camera_pos.x),
                                                self.player.fantom.rect.y - 5 - self.a_img.get_height() - round(
-                                               self.camera_pos.y)))
+                                                   self.camera_pos.y)))
         if self.zoom_coeff == 1:
             self.window.blit(self.surface, (0, 0))
         else:
@@ -292,12 +296,12 @@ class Game:
     def spawn_button(self, button_pos: Union[list, tuple], doors: list[Union[Door, Moving_platform, Auto_Tower]],
                      lever=False) -> pygame.sprite:
         pos = [round((button_pos[0] + 0.5) * self.size_world), (button_pos[1] + 1) * self.size_world]
-        button = Button(pos, doors, self.size_world,self.player, lever=lever)
+        button = Button(pos, doors, self.size_world, self.player, lever=lever)
         button.add(self.object_sprites)
         return button
 
-    def spawn_door(self, door,activated=True):
-        door = Door(door, self.size_world,activated)
+    def spawn_door(self, door, activated=True):
+        door = Door(door, self.size_world, activated)
         door.add(self.doors_sprites)
         return door
 
@@ -305,13 +309,13 @@ class Game:
         pos = [round((pos[0] + 0.5) * self.size_world), (pos[1] + 1) * self.size_world]
         tower = Auto_Tower(pos, self.size_world, self.map, "media/turret.png", (self.size_world, self.size_world), 20,
                            0.5,
-                           [self.player_sprite, self.enemies], self.bullets, orientation)
+                           [self.player_sprite, self.enemies, self.doors_sprites, self.platform_sprites], self.bullets, orientation)
         tower.add(self.towers)
         self.spawn_button(lever, [tower], lever=True)
 
     def spawn_platforms(self, platform):
-        start_pos = (int(platform[0][0]) * self.size_world, int(platform[0][1]) * self.size_world)
-        end_pos = (int(platform[1][0]) * self.size_world, int(platform[1][1]) * self.size_world)
+        start_pos = (platform[0][0] * self.size_world, platform[0][1] * self.size_world)
+        end_pos = (platform[1][0] * self.size_world, platform[1][1] * self.size_world)
         platform_sprite = Moving_platform(start_pos, end_pos, self.size_world,
                                           always_moving=False if platform[-1] == "lever" else True)
         self.platform_sprites.add(platform_sprite)
@@ -332,7 +336,7 @@ class Game:
             button_pos = pos[0]
             doors = pos[1]
             if pos[-1] != doors:
-                door = self.spawn_door(doors,activated=False)
+                door = self.spawn_door(doors, activated=False)
             else:
                 door = self.spawn_door(doors)
             self.spawn_button(button_pos, [door], lever=True)
@@ -367,16 +371,16 @@ class Game:
         # self.window.blit(pygame.transform.scale(self.player.image, (256, 256)), (130, 130))
         if self.timer < 30:
             # self.window.blit(self.text_dark, get_corner((0,0),self.text_dark.get_size(),(self.w,self.h)))
-            self.window.blit(self.text_white, get_corner((0,0),self.text_white.get_size(),(self.w,self.h)))
+            self.window.blit(self.text_white, get_corner((0, 0), self.text_white.get_size(), (self.w, self.h)))
 
     def main_menu(self, dt):
         self.window.fill("black")
         for row in range(2):
             for column in range(4):
-                pos = (round(self.w/9+column*self.w/4.5),round(self.h/5+row*self.h/2.5))
-                self.window.blit(self.level_box,pos)
-                tile_n = 4*row+column+1
-                self.window.blit(self.numbers_in_text[tile_n],pos)
+                pos = (round(self.w / 9 + column * self.w / 4.5), round(self.h / 5 + row * self.h / 2.5))
+                self.window.blit(self.level_box, pos)
+                tile_n = 4 * row + column + 1
+                self.window.blit(self.numbers_in_text[tile_n], pos)
 
     def load_new_level(self, level_nb: int):
         self.level = level_nb
@@ -398,4 +402,3 @@ class Game:
         self.shot = 0
         self.spawn_objects(self.level)
         self.press_start = True
-

@@ -3,6 +3,7 @@ from map_functions import collide_with_rects, check_area_around
 from button import Button
 from enemy import Enemy
 from door import Door
+from moving_platform import Moving_platform
 import player
 
 
@@ -49,7 +50,7 @@ class Bullet(pygame.sprite.Sprite):
                         sprite: Enemy
                         sprite.die()
                         self.kill()
-                    elif sprite.__class__ == Door:
+                    elif sprite.__class__ in {Door, Moving_platform}:
                         sprite: Door
                         self.kill()
                     else:
