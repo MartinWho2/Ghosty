@@ -41,8 +41,10 @@ class Game:
         self.level_box = pygame.transform.scale(pygame.image.load("media/level choose.png").convert(),
                                                 (round(self.w / 9),
                                                  round(self.h / 5)))
+        self.choose_level_text = self.title_font.render("Select a level", True, "white")
+        self.choose_level_text_rect = self.choose_level_text.get_rect(midtop=(round(self.w/2), round(self.h/80)))
         self.level_boxes_rects = []
-        for row in range(2):
+        for row in range(1):
             for column in range(4):
                 self.level_boxes_rects.append(pygame.rect.Rect(round(self.w / 9 + column * self.w / 4.5),
                                                                round(self.h / 5 + row * self.h / 2.5),
@@ -179,7 +181,7 @@ class Game:
             tower.waiting(dt)
         if self.player.pos.y > self.size_world * 30:
             self.player.die()
-            self.load_new_level(self.level)
+            self.load_new_level(self.level, dead=True)
             scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
                                     self.player.pos.y + self.player.rect.h / 2 - self.h / 2 - self.camera_pos.y)
             self.camera_pos += scroll
@@ -375,14 +377,15 @@ class Game:
 
     def main_menu(self, dt):
         self.window.fill("black")
-        for row in range(2):
+        self.window.blit(self.choose_level_text, self.choose_level_text_rect)
+        for row in range(1):
             for column in range(4):
                 pos = (round(self.w / 9 + column * self.w / 4.5), round(self.h / 5 + row * self.h / 2.5))
                 self.window.blit(self.level_box, pos)
                 tile_n = 4 * row + column + 1
                 self.window.blit(self.numbers_in_text[tile_n], pos)
 
-    def load_new_level(self, level_nb: int):
+    def load_new_level(self, level_nb: int, dead=False):
         self.level = level_nb
         self.map = create_map(level_nb)
         self.object_sprites.empty()
@@ -401,4 +404,5 @@ class Game:
         self.camera_pos = pygame.Vector2(self.player.rect.centerx - self.w / 2, self.player.rect.centery - self.h / 2)
         self.shot = 0
         self.spawn_objects(self.level)
-        self.press_start = True
+        if not dead:
+            self.press_start = True
