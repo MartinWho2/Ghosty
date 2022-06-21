@@ -54,7 +54,7 @@ class Player(Moving_sprite):
             self.fantom.add(group)
         self.fantom.rect.center = (self.rect.x - self.fantom.rect.w / 2, self.rect.y)
         self.fantom.pos.x, self.fantom.pos.y = self.fantom.rect.x, self.fantom.rect.y
-        self.dist_max = round(self.tile_factor * 3.125)
+        self.dist_max = round(self.tile_factor * 4)
         self.enemies = enemies
 
     def move(self, acceleration: pygame.Vector2, moving_object: Moving_sprite, dt: float,

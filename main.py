@@ -100,7 +100,7 @@ def main():
 
             elif e.type == pygame.MOUSEBUTTONDOWN:
                 if game.game_not_started:
-                    for i in range(4):
+                    for i in range(8):
                         if game.level_boxes_rects[i].collidepoint(e.pos):
                             game.load_new_level(i+1)
                             game.game_not_started = False

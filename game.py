@@ -44,7 +44,7 @@ class Game:
         self.choose_level_text = self.title_font.render("Select a level", True, "white")
         self.choose_level_text_rect = self.choose_level_text.get_rect(midtop=(round(self.w/2), round(self.h/80)))
         self.level_boxes_rects = []
-        for row in range(1):
+        for row in range(2):
             for column in range(4):
                 self.level_boxes_rects.append(pygame.rect.Rect(round(self.w / 9 + column * self.w / 4.5),
                                                                round(self.h / 5 + row * self.h / 2.5),
@@ -282,18 +282,17 @@ class Game:
                 movement.y += value
         return movement
 
-    def spawn_enemy(self, pos: Union[list, tuple]) -> None:
+    def spawn_enemy(self, pos: Union[list, tuple]) -> Enemy:
         """
         Spawns an enemy
         :param pos: Given position of spawn
         """
-        move = True
-        if pos[-1] == "stay":
-            move = False
-        Enemy(pygame.image.load("media/enemy.png").convert_alpha(),
+        move = not(pos[-1] == "stay")
+        enemy = Enemy(pygame.image.load("media/enemy.png").convert_alpha(),
               pygame.Vector2(pos[0] * self.size_world, pos[1] * self.size_world),
               move, round(self.size_world * 1.56), self.map, self.size_world, [self.enemies],
               [self.doors_sprites, self.object_sprites, self.platform_sprites])
+        return enemy
 
     def spawn_button(self, button_pos: Union[list, tuple], doors: list[Union[Door, Moving_platform, Auto_Tower]],
                      lever=False) -> pygame.sprite:
@@ -302,18 +301,21 @@ class Game:
         button.add(self.object_sprites)
         return button
 
-    def spawn_door(self, door, activated=True):
-        door = Door(door, self.size_world, activated)
+    def spawn_door(self, door):
+        activated = (door[2] == 1)
+        pos = [door[0],door[1]]
+        door = Door(pos, self.size_world, activated)
         door.add(self.doors_sprites)
         return door
 
-    def spawn_tower(self, pos, orientation, lever):
+    def spawn_tower(self, turret: list):
+        pos, orientation = turret[0], turret[1]
         pos = [round((pos[0] + 0.5) * self.size_world), (pos[1] + 1) * self.size_world]
         tower = Auto_Tower(pos, self.size_world, self.map, "media/turret.png", (self.size_world, self.size_world), 20,
                            0.5,
                            [self.player_sprite, self.enemies, self.doors_sprites, self.platform_sprites], self.bullets, orientation)
         tower.add(self.towers)
-        self.spawn_button(lever, [tower], lever=True)
+        return tower
 
     def spawn_platforms(self, platform):
         start_pos = (platform[0][0] * self.size_world, platform[0][1] * self.size_world)
@@ -321,37 +323,37 @@ class Game:
         platform_sprite = Moving_platform(start_pos, end_pos, self.size_world,
                                           always_moving=False if platform[-1] == "lever" else True)
         self.platform_sprites.add(platform_sprite)
-        if platform[-1] == "lever":
-            self.spawn_button(platform[-2], [platform_sprite], lever=True)
+        return platform_sprite
 
     def spawn_cup(self, pos):
         size = round(self.size_world / 2)
         self.cup.image = pygame.transform.scale(pygame.image.load("media/cup.png").convert_alpha(), (size, size))
         self.cup.rect = self.cup.image.get_rect()
         self.cup.rect.topleft = (int(pos[0]) * self.size_world, int(pos[1]) * self.size_world)
+        return self.cup
 
     def spawn_objects(self, level: int) -> None:
         objects = self.level_objects[str(level)]
-        for pos in objects["Enemies"]:
-            self.spawn_enemy(pos)
-        for pos in objects["Doors"]:
-            button_pos = pos[0]
-            doors = pos[1]
-            if pos[-1] != doors:
-                door = self.spawn_door(doors, activated=False)
-            else:
-                door = self.spawn_door(doors)
-            self.spawn_button(button_pos, [door], lever=True)
-        for tower in objects["Towers"]:
-            lever_pos = False
-            if tower[-1] == "lever":
-                lever_pos = tower[-2]
-            pos = tower[0]
-            orientation = tower[1]
-            self.spawn_tower(pos, orientation, lever_pos)
-        for platform in objects["Platforms"]:
-            self.spawn_platforms(platform)
-        self.spawn_cup(objects["Cup"])
+        object_counter = 1
+        indexes = {}
+        while objects["Enemies"].get(str(object_counter)):
+            indexes[object_counter] = self.spawn_enemy(objects["Enemies"].get(str(object_counter)))
+            object_counter += 1
+        while objects["Doors"].get(str(object_counter)):
+            indexes[object_counter] = self.spawn_door(objects["Doors"].get(str(object_counter)))
+            object_counter += 1
+        while objects["Towers"].get(str(object_counter)):
+            indexes[object_counter] = self.spawn_tower(objects["Towers"].get(str(object_counter)))
+            object_counter += 1
+        while objects["Platforms"].get(str(object_counter)):
+            indexes[object_counter] = self.spawn_platforms(objects["Platforms"].get(str(object_counter)))
+            object_counter += 1
+        indexes[object_counter] = self.spawn_cup(objects["Cup"].get(str(object_counter)))
+        for button in objects["Buttons"]:
+            doors = []
+            for index in button[1]:
+                doors.append(indexes[index])
+            self.spawn_button(button[0], doors,lever=True)
         for button in self.object_sprites:
             self.buttons_pushable[button] = False
 
@@ -378,7 +380,7 @@ class Game:
     def main_menu(self, dt):
         self.window.fill("black")
         self.window.blit(self.choose_level_text, self.choose_level_text_rect)
-        for row in range(1):
+        for row in range(2):
             for column in range(4):
                 pos = (round(self.w / 9 + column * self.w / 4.5), round(self.h / 5 + row * self.h / 2.5))
                 self.window.blit(self.level_box, pos)
