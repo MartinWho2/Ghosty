@@ -1,11 +1,15 @@
+import sys
+import time
+
 import pygame
 # import pygame.camera
 import json
 import math
 from typing import Union
 
+import player
 from player import Player
-from map_functions import create_map, load_tile_set, upleft_if_centered as get_corner
+from map_functions import create_map, load_tile_set, upleft_if_centered as get_corner, check_area_around
 from enemy import Enemy
 from button import Button
 from door import Door
@@ -16,11 +20,12 @@ from moving_platform import Moving_platform
 
 class Game:
     def __init__(self, window: pygame.Surface) -> None:
-        self.shot = None
-        self.player = None
-        self.camera_pos = None
-        self.moving_character = None
-        self.characters_class = None
+        self.map_size: list[int, int]
+        self.shot: bool
+        self.player: player.Player
+        self.camera_pos: pygame.Vector2
+        self.moving_character: str
+        self.characters_class: dict
         self.window = window
         with open("level_objects.json", "r") as f:
             self.level_objects = json.load(f)
@@ -42,7 +47,7 @@ class Game:
                                                 (round(self.w / 9),
                                                  round(self.h / 5)))
         self.choose_level_text = self.title_font.render("Select a level", True, "white")
-        self.choose_level_text_rect = self.choose_level_text.get_rect(midtop=(round(self.w/2), round(self.h/80)))
+        self.choose_level_text_rect = self.choose_level_text.get_rect(midtop=(round(self.w / 2), round(self.h / 80)))
         self.level_boxes_rects = []
         for row in range(2):
             for column in range(4):
@@ -58,7 +63,7 @@ class Game:
             self.numbers_in_text.append(number)
 
         # pygame.camera.init()
-        self.map = create_map(self.level)
+        self.map = None
         self.cup = pygame.sprite.Sprite()
         self.object_sprites = pygame.sprite.Group()
         self.doors_sprites = pygame.sprite.Group()
@@ -179,7 +184,7 @@ class Game:
             person.move(dt)
         for tower in self.towers:
             tower.waiting(dt)
-        if self.player.pos.y > self.size_world * 30:
+        if self.player.pos.y > (self.map_size[0] + 5) * self.size_world + 30:
             self.player.die()
             self.load_new_level(self.level, dead=True)
             scroll = pygame.Vector2(self.player.pos.x + self.player.rect.w / 2 - self.w / 2 - self.camera_pos.x,
@@ -247,9 +252,14 @@ class Game:
             self.timer_characters = 0
 
     def draw_map(self) -> None:
+        mid = (round((self.camera_pos.x + self.w / 2) / self.size_world),
+               round((self.camera_pos.y + self.h / 2) / self.size_world))
+        size = (math.ceil(self.w / (self.size_world * 2 * self.zoom_coeff)) + 5,
+                math.ceil(self.h / (self.size_world * 2 * self.zoom_coeff)) + 5)
+        rows, columns = check_area_around(mid, size, self.map_size, draw_map=True)
         tiles = self.tiles[self.moving_character]
-        for row in range(len(self.map)):
-            for column in range(len(self.map[row])):
+        for row in range(rows[0], rows[1]):
+            for column in range(columns[0], columns[1]):
                 tile = self.map[row][column]
                 if tile != 0:
                     self.surface.blit(tiles[tile], (
@@ -287,11 +297,11 @@ class Game:
         Spawns an enemy
         :param pos: Given position of spawn
         """
-        move = not(pos[-1] == "stay")
+        move = not (pos[-1] == "stay")
         enemy = Enemy(pygame.image.load("media/enemy.png").convert_alpha(),
-              pygame.Vector2(pos[0] * self.size_world, pos[1] * self.size_world),
-              move, round(self.size_world * 1.56), self.map, self.size_world, [self.enemies],
-              [self.doors_sprites, self.object_sprites, self.platform_sprites])
+                      pygame.Vector2(pos[0] * self.size_world, pos[1] * self.size_world),
+                      move, round(self.size_world * 1.56), self.map, self.size_world, [self.enemies],
+                      [self.doors_sprites, self.object_sprites, self.platform_sprites])
         return enemy
 
     def spawn_button(self, button_pos: Union[list, tuple], doors: list[Union[Door, Moving_platform, Auto_Tower]],
@@ -303,7 +313,7 @@ class Game:
 
     def spawn_door(self, door):
         activated = (door[2] == 1)
-        pos = [door[0],door[1]]
+        pos = [door[0], door[1]]
         door = Door(pos, self.size_world, activated)
         door.add(self.doors_sprites)
         return door
@@ -313,7 +323,8 @@ class Game:
         pos = [round((pos[0] + 0.5) * self.size_world), (pos[1] + 1) * self.size_world]
         tower = Auto_Tower(pos, self.size_world, self.map, "media/turret.png", (self.size_world, self.size_world), 20,
                            0.5,
-                           [self.player_sprite, self.enemies, self.doors_sprites, self.platform_sprites], self.bullets, orientation)
+                           [self.player_sprite, self.enemies, self.doors_sprites, self.platform_sprites], self.bullets,
+                           orientation)
         tower.add(self.towers)
         return tower
 
@@ -353,7 +364,7 @@ class Game:
             doors = []
             for index in button[1]:
                 doors.append(indexes[index])
-            self.spawn_button(button[0], doors,lever=True)
+            self.spawn_button(button[0], doors, lever=True)
         for button in self.object_sprites:
             self.buttons_pushable[button] = False
 
@@ -390,6 +401,8 @@ class Game:
     def load_new_level(self, level_nb: int, dead=False):
         self.level = level_nb
         self.map = create_map(level_nb)
+        print(f" The map actually takes {sys.getsizeof(self.map)} bytes")
+        self.map_size = [len(self.map), len(self.map[0])]
         self.object_sprites.empty()
         self.doors_sprites.empty()
         self.platform_sprites.empty()

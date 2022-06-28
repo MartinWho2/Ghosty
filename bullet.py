@@ -12,6 +12,7 @@ class Bullet(pygame.sprite.Sprite):
                  size_world: int, plan: list[list[str]], image="media/bullet.png") -> None:
         super().__init__()
         self.map = plan
+        self.map_size = [len(self.map), len(self.map[0])]
         self.size_world = size_world
         self.image = pygame.image.load(image).convert_alpha()
         if speed.x < 0:
@@ -61,7 +62,7 @@ class Bullet(pygame.sprite.Sprite):
                             print("The bullet collided with something unknown...")
                             raise WindowsError
         sprite_pos = [round(self.rect.x / self.size_world), round(self.rect.y / self.size_world)]
-        rows, columns = check_area_around(sprite_pos, self.approximate_size, self.map)
+        rows, columns = check_area_around(sprite_pos, self.approximate_size, self.map_size)
         for row in range(rows[0], rows[1]):
             for column in range(columns[0], columns[1]):
                 if self.map[row][column] != 0:

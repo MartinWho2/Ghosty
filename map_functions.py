@@ -1,6 +1,7 @@
 import pygame
 import math
 import numpy as np
+import time
 
 
 def create_map(level: int) -> list:
@@ -25,13 +26,16 @@ def create_map(level: int) -> list:
             carte.append(temporary_list)
         file.close()
     new_map = []
+    padded_map = np.pad(carte, 1, constant_values=0)
     for row in range(len(carte)):
         temporary_list = []
         for column in range(len(carte[row])):
             if carte[row][column] == "1":
-                neighbours = get_neighbour_tiles(carte, (row, column))
-
+                neighbours = get_neighbour_tiles(padded_map, (row, column))
                 temporary_list.append(get_same_neighbours_with_possibilities(neighbours))
+            elif carte[row][column] == "2":
+                pass
+                # Need to implement spikes
             else:
                 temporary_list.append(0)
         new_map.append(temporary_list)
@@ -55,7 +59,7 @@ def get_same_neighbours_with_possibilities(neighbours):
                                    (1, 1, 1, 1, 1, 1, 1, 1), (1, 2, 0, 2, 1, 1, 1, 1), (1, 0, 1, 1, 1, 1, 1, 1),
                                    (1, 1, 1, 1, 1, 1, 1, 0), (1, 1, 1, 2, 0, 2, 0, 2), (1, 1, 1, 2, 0, 2, 1, 1),
                                    (1, 2, 0, 2, 0, 2, 1, 1)]
-    dec_to_hex = {10: "a", 11: "b", 12: "c", 13: "d"}
+    # 0 stands for empty, 1 for full and 2 for both states(which means the state of this tile doesn't matter)
     for index in range(len(tile_neighbor_possibilities)):
         correct = index + 1
         possibility = tile_neighbor_possibilities[index]
@@ -70,11 +74,10 @@ def get_same_neighbours_with_possibilities(neighbours):
     return 7
 
 
-def get_neighbour_tiles(matrix: list, index_tile: tuple):
+def get_neighbour_tiles(padded_map: np.ndarray, index_tile: tuple):
     """
     Gets the neighbours of an element in a matrix
     """
-    padded_map = np.pad(matrix, 1, constant_values=0)
     return (int(padded_map[index_tile[0]][index_tile[1] + 1]), int(padded_map[index_tile[0]][index_tile[1] + 2]),
             int(padded_map[index_tile[0] + 1][index_tile[1] + 2]),
             int(padded_map[index_tile[0] + 2][index_tile[1] + 2]),
@@ -112,28 +115,31 @@ def show_mask(mask: pygame.mask.Mask):
             mask_list.append(mask.get_at((column, row)))
 
 
-def check_area_around(pos: [int, int], size: [int, int], tiles: list[list]) -> [[int, int], [int, int]]:
+def check_area_around(pos: [int, int], size: [int, int], map_size: list[int, int], draw_map=False) -> [[int, int],
+                                                                                                       [int, int]]:
     """
-    Gets the area around the position of a moving sprite (f.i. the player or an ennemy) with a given size
+    Gets the area around the position of a moving sprite (f.i. the player or an ennemy) with a given size OR
+    Gets the tiles it needs to blit when drawing the map
     :param pos: Position of object (approximate)
     :param size: Size of object (approximate)
-    :param tiles: Matrix of "0" and "1"
+    :param map_size: y and x size of the map
+    :param draw_map: True if it is drawing the map
     :return: rows and columns
     """
     columns = [pos[0] - size[0],
                pos[0] + size[0]]
     if columns[0] < 0:
         columns[0] = 0  # If too left
-    if columns[1] > len(tiles[0]):
-        columns[1] = len(tiles[0])  # If too right
-    if columns[1] < size[1]:
+    if columns[1] > map_size[1]:
+        columns[1] = map_size[1]  # If too right
+    if columns[1] < size[1] and not draw_map:
         columns[1] = size[1]  # If far too left
     rows = [pos[1] - size[1], pos[1] + size[1]]
     if rows[0] < 0:
         rows[0] = 0  # If too up
-    if rows[1] > len(tiles):
-        rows[1] = len(tiles)  # If too down
-    if rows[1] < size[1]:
+    if rows[1] > map_size[0]:
+        rows[1] = map_size[0]  # If too down
+    if rows[1] < size[1] and not draw_map:
         rows[1] = size[1]  # If far too up
     return rows, columns
 

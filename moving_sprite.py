@@ -30,6 +30,7 @@ class Moving_sprite(pygame.sprite.Sprite):
         self.tile = pygame.mask.Mask((tile_factor, tile_factor), fill=True)
         self.on_platform = False
         self.was_on_platform = 0
+        self.map_size = [len(self.tiles), len(self.tiles[0])]
 
     def collide_with_mask(self, mask, pos_mask):
         return self.mask.overlap_mask(mask, (pos_mask[0] - self.rect.x, pos_mask[1] - self.rect.y))
@@ -42,7 +43,7 @@ class Moving_sprite(pygame.sprite.Sprite):
         if tiles:
             # Only verifies tiles around the sprite
             sprite_approximate_pos = [round(self.rect.x / self.tile_factor), round(self.rect.y / self.tile_factor)]
-            rows, columns = check_area_around(sprite_approximate_pos, self.approximate_size, self.tiles)
+            rows, columns = check_area_around(sprite_approximate_pos, self.approximate_size, self.map_size)
             # Checks for collisions with tiles near the sprite
             for row in range(rows[0], rows[1]):
                 for column in range(columns[0], columns[1]):
