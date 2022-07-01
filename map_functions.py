@@ -34,7 +34,13 @@ def create_map(level: int) -> list:
                 neighbours = get_neighbour_tiles(padded_map, (row, column))
                 temporary_list.append(get_same_neighbours_with_possibilities(neighbours))
             elif carte[row][column] == "2":
-                pass
+                tile_up_down = [padded_map[row][column+1],padded_map[row+2][column+1]]
+                if tile_up_down[0] == "0":
+                    # spikes seeing up
+                    pass
+                elif tile_up_down[1] == "0":
+                    # spikes seeing down
+                    pass
                 # Need to implement spikes
             else:
                 temporary_list.append(0)
@@ -54,17 +60,17 @@ def get_same_neighbours_with_possibilities(neighbours):
     """
     Guess what the tile should be (like corner topleft, center, ...)
     """
-    tile_neighbor_possibilities = [(0, 2, 1, 1, 1, 2, 0, 2), (0, 2, 1, 1, 1, 1, 1, 2), (0, 2, 0, 2, 1, 1, 1, 2),
-                                   (1, 1, 1, 0, 1, 1, 1, 1), (1, 1, 1, 1, 1, 0, 1, 1), (1, 1, 1, 1, 1, 2, 0, 2),
-                                   (1, 1, 1, 1, 1, 1, 1, 1), (1, 2, 0, 2, 1, 1, 1, 1), (1, 0, 1, 1, 1, 1, 1, 1),
-                                   (1, 1, 1, 1, 1, 1, 1, 0), (1, 1, 1, 2, 0, 2, 0, 2), (1, 1, 1, 2, 0, 2, 1, 1),
-                                   (1, 2, 0, 2, 0, 2, 1, 1)]
-    # 0 stands for empty, 1 for full and 2 for both states(which means the state of this tile doesn't matter)
+    tile_neighbor_possibilities = [(0, 9, 1, 1, 1, 9, 0, 9), (0, 9, 1, 1, 1, 1, 1, 9), (0, 9, 0, 9, 1, 1, 1, 9),
+                                   (1, 1, 1, 0, 1, 1, 1, 1), (1, 1, 1, 1, 1, 0, 1, 1), (1, 1, 1, 1, 1, 9, 0, 9),
+                                   (1, 1, 1, 1, 1, 1, 1, 1), (1, 9, 0, 9, 1, 1, 1, 1), (1, 0, 1, 1, 1, 1, 1, 1),
+                                   (1, 1, 1, 1, 1, 1, 1, 0), (1, 1, 1, 9, 0, 9, 0, 9), (1, 1, 1, 9, 0, 9, 1, 1),
+                                   (1, 9, 0, 9, 0, 9, 1, 1)]
+    # 0 stands for empty, 1 for full and 9 for both states(which means the state of this tile doesn't matter)
     for index in range(len(tile_neighbor_possibilities)):
         correct = index + 1
         possibility = tile_neighbor_possibilities[index]
         for i in range(len(possibility)):
-            if possibility[i] != 2 and possibility[i] != neighbours[i]:
+            if possibility[i] != 9 and (possibility[i] != neighbours[i]):
                 correct = False
                 break
         if type(correct) == int:
@@ -76,7 +82,8 @@ def get_same_neighbours_with_possibilities(neighbours):
 
 def get_neighbour_tiles(padded_map: np.ndarray, index_tile: tuple):
     """
-    Gets the neighbours of an element in a matrix
+    Gets the neighbours of an element in a matrix :
+    top, topright, midright, botright, bottom, botleft, midleft, topleft
     """
     return (int(padded_map[index_tile[0]][index_tile[1] + 1]), int(padded_map[index_tile[0]][index_tile[1] + 2]),
             int(padded_map[index_tile[0] + 1][index_tile[1] + 2]),
